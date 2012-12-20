@@ -3,7 +3,7 @@
 
 #include "Bootil/Bootil.h"
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__linux__)
 
 namespace Bootil 
 {
