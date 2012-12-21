@@ -4,6 +4,28 @@
 #ifdef _WIN32
 #define _WIN32_WINNT  0x0502
 #include <windows.h>
+#elif __linux__
+#include <sys/select.h>
+#include <sys/inotify.h>
+
+typedef std::map<int, Bootil::BString> WatchMap;
+
+namespace
+{
+	// Slightly ugly, but it works.
+	void RecurseDirectories(Bootil::String::List& folders, const Bootil::BString& folder)
+	{
+		Bootil::String::List curDir;
+		int i = Bootil::File::Find( NULL, &curDir, folder + "/*", false );
+
+		BOOTIL_FOREACH_CONST( f, curDir, Bootil::String::List )
+		{
+			folders.push_back( *f );
+			RecurseDirectories( folders, *f );
+		}
+	}
+}
+
 #endif 
 
 namespace Bootil 
@@ -21,6 +43,8 @@ namespace Bootil
 			#ifdef _WIN32
 				m_pData = (void*)new OVERLAPPED;
 				memset( m_pData, 0, sizeof(OVERLAPPED) );
+			#elif __linux__
+				m_pData = (void*)new int( inotify_init() );
 			#endif			
 		}
 
@@ -31,6 +55,11 @@ namespace Bootil
 			#endif
 
 			Stop();
+
+			#ifdef __linux__
+				close( *(int*)m_pData );
+				delete (int*)m_pData;
+			#endif
 		}
 
 		bool ChangeMonitor::WatchFolder( const BString& strFolder, bool bWatchSubtree )
@@ -48,6 +77,36 @@ namespace Bootil
 					return false;
 
 				((OVERLAPPED*)m_pData)->hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+				StartWatch();
+
+			#elif __linux__
+
+				int flags = IN_CREATE|IN_DELETE|IN_MODIFY|IN_MOVED_FROM|IN_MOVED_TO;
+				int handle;
+				m_dirHandle = new WatchMap();
+
+				handle = inotify_add_watch( *(int*)m_pData, strFolder.c_str(), flags );
+				if ( handle < 0 )
+					return false;
+
+				(*(WatchMap*)m_dirHandle)[handle] = strFolder;
+
+				if ( bWatchSubtree )
+				{
+					String::List folders;
+					RecurseDirectories( folders, strFolder );
+
+					BOOTIL_FOREACH_CONST( folder, folders, String::List )
+					{
+						handle = inotify_add_watch( *(int*)m_pData, folder->c_str(), flags );
+
+						if ( handle < 0 )
+							return false;
+
+						(*(WatchMap*)m_dirHandle)[handle] = *folder;
+					}
+				}
 
 				StartWatch();
 
@@ -73,6 +132,14 @@ namespace Bootil
 			{
 				#ifdef _WIN32
 					CloseHandle( m_dirHandle );
+					m_dirHandle = NULL;
+				#elif __linux__
+					BOOTIL_FOREACH_CONST( handle, (*(WatchMap*)m_dirHandle), WatchMap )
+					{
+						inotify_rm_watch( *(int*)m_pData, handle->first );
+					}
+
+					delete (WatchMap*)m_dirHandle;
 					m_dirHandle = NULL;
 				#endif
 			}
@@ -133,6 +200,41 @@ namespace Bootil
 					}
 
 					iOffset += pNotify->NextEntryOffset;
+				}
+
+			#elif __linux__
+
+				int inotify_fd = *(int*)m_pData;
+
+				timeval timeout;
+				timeout.tv_sec = 0;
+				timeout.tv_usec = 0;
+
+				fd_set fds;
+				FD_ZERO( &fds );
+				FD_SET( inotify_fd, &fds );
+
+				select( inotify_fd + 1, &fds, NULL, NULL, &timeout );
+
+				if ( FD_ISSET(inotify_fd, &fds) )
+				{
+					int i = 0;
+					int ret = read( inotify_fd, m_Buffer, sizeof(m_Buffer) );
+
+					if ( ret < 0 )
+						return;
+
+					while ( i < ret )
+					{	
+						inotify_event* event = (inotify_event*)&m_Buffer[i];
+
+						if (event->len > 0)
+						{
+							NoteFileChanged( (*(WatchMap*)m_dirHandle)[event->wd] + "/" + event->name );
+						}
+
+						i += sizeof( inotify_event ) + event->len;
+					}
 				}
 
 			#endif
