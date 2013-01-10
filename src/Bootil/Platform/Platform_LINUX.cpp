@@ -13,6 +13,8 @@
 #include <errno.h>
 #include <pwd.h>
 #include <cstdlib>
+#include <unistd.h> 
+#include <sys/types.h>
 
 #ifdef X11_GRAPHICAL
 #include <X11/Xlib.h>
