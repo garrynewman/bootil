@@ -5,6 +5,7 @@
 #define _WIN32_WINNT  0x0502
 #include <windows.h>
 #elif __linux__
+#include <unistd.h>
 #include <sys/select.h>
 #include <sys/inotify.h>
 
