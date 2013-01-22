@@ -6,6 +6,9 @@ namespace Bootil
 	namespace CommandLine
 	{
 		String::List	g_ArgList;
+		BString			g_Full;
+
+		BString GetFull(){ return g_Full; }
 
 		void AddArgument( const BString& str )
 		{
@@ -17,6 +20,7 @@ namespace Bootil
 			for (int i=1; i<argc; i++ )
 			{
 				AddArgument( argv[i] );
+				g_Full = g_Full + argv[i] + " ";
 			}
 		}
 
@@ -30,6 +34,21 @@ namespace Bootil
 			if ( iNum < 0 || iNum >= GetArgCount() ) return strDefault;
 
 			return g_ArgList[ iNum ];
+		}
+
+		BOOTIL_EXPORT BString GetSwitch( const BString& strName, const BString& strDefault )
+		{
+			bool bFound = false;
+			BOOTIL_FOREACH_CONST( arg, g_ArgList, String::List )
+			{
+				if ( bFound )
+					return *arg;
+
+				if ( *arg == strName )
+					bFound = true;
+			}
+
+			return strDefault;
 		}
 	}
 
