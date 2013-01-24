@@ -18,7 +18,7 @@ namespace Bootil
 		BOOTIL_EXPORT bool					Write( const BString& strFileName, const BString& strOut );
 
 		BOOTIL_EXPORT bool					IsFolder( const BString& strFileName );
-		BOOTIL_EXPORT bool					CreateFolder( const BString& strFileName );
+		BOOTIL_EXPORT bool					CreateFolder( const BString& strFileName, bool bRecursive = false );
 		BOOTIL_EXPORT bool					RemoveFolder( const BString& strFileName, bool bAndFilesRecursive = false );
 
 		BOOTIL_EXPORT bool					RemoveFile( const BString& strFileName );

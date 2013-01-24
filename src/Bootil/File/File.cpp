@@ -132,12 +132,31 @@ namespace Bootil
 
 		}
 
-		BOOTIL_EXPORT bool CreateFolder( const BString& strFileName )
+		BOOTIL_EXPORT bool CreateFolder( const BString& strFileName, bool bRecursive )
 		{
+			// Fix slashes, trim last slash
+			BString strFixed = Bootil::String::File::GetFixSlashes( strFileName );
+			Bootil::String::Util::TrimAfter( strFixed, "/\\" );
+
+			// Folder exists, don't do anything
+			if ( IsFolder( strFixed ) )
+				return false;
+
+			//
+			// If recursive then we'll create the parent folder first
+			//
+			if ( bRecursive )
+			{
+				CreateFolder( Bootil::String::File::GetUpOneDirectory( strFixed ), bRecursive );
+			}
+
+			//
+			// Actually create the folder
+			//
 			#ifdef _WIN32
-				return 0 == mkdir( strFileName.c_str() );
+				return 0 == mkdir( strFixed.c_str() );
 			#else
-				return mkdir ( strFileName.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+				return mkdir ( strFixed.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 			#endif
 		}
 
