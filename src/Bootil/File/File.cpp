@@ -33,6 +33,15 @@ namespace Bootil
 			return fileStat.st_size;
 		}
 
+		BOOTIL_EXPORT int Exists( const BString& strFileName )
+		{
+			struct stat fileStat; 
+			int err = stat( strFileName.c_str(), &fileStat ); 
+			if ( err != 0 ) return false; 
+
+			return true;
+		}
+
 		BOOTIL_EXPORT bool Read( const BString& strFileName, Bootil::Buffer& bufferOut )
 		{
 			std::ifstream f( strFileName.c_str(), std::ios_base::in|std::ios::ate|std::ios::binary );
