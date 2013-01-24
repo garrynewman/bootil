@@ -64,7 +64,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT BString TemporaryFilename( void )
 		{
-			char buffer[MAX_PATH];
+			char buffer[L_tmpnam];
 			return Bootil::String::File::GetFixSlashes( TemporaryDir() + tmpnam( buffer ) );
 		}
 
