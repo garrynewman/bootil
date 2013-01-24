@@ -221,6 +221,17 @@ namespace Bootil
 				execvp( strProcess.c_str(), (char*const*)args );
 			}
 		}
+
+		BOOTIL_EXPORT BString TemporaryDir( void )
+		{
+			return "/tmp";
+		}
+
+		BOOTIL_EXPORT BString TemporaryFilename( void )
+		{
+			char buffer[MAX_PATH];
+			return Bootil::String::File::GetFixSlashes( TemporaryDir() + tmpnam( buffer ) );
+		}
 	}
 }
 

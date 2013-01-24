@@ -70,6 +70,11 @@ namespace Bootil
 		{
 			
 		}
+
+		BOOTIL_EXPORT BString TemporaryFile( void )
+		{
+			return "";
+		}
 	}
 }
 

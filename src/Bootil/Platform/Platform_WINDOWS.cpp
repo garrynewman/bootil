@@ -62,6 +62,12 @@ namespace Bootil
 			return str;
 		}
 
+		BOOTIL_EXPORT BString TemporaryFilename( void )
+		{
+			char buffer[MAX_PATH];
+			return Bootil::String::File::GetFixSlashes( TemporaryDir() + tmpnam( buffer ) );
+		}
+
 		BString CurrentUserName( void )
 		{
 			DWORD bufCharCount = 128;

@@ -12,6 +12,8 @@ namespace Bootil
 		BOOTIL_EXPORT BString CurrentUserName( void );
 		BOOTIL_EXPORT BString CurrentDir( void );
 		BOOTIL_EXPORT void ChangeDir( const BString& strName );
+
+		BOOTIL_EXPORT BString TemporaryFilename( void );
 		BOOTIL_EXPORT BString TemporaryDir( void );
 
 		BOOTIL_EXPORT void SetupAssociation( BString ext );
