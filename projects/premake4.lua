@@ -7,8 +7,8 @@ solution "Bootil"
 	includedirs { "../include/", "../src/3rdParty/" }
 	
 	if os.is( "linux" ) or os.is( "macosx" ) then
-		buildoptions { "-fPIC" }
-		linkoptions  { "-fPIC" }
+		buildoptions { "-fPIC -pthread" }
+		linkoptions  { "-fPIC -pthread" }
 	end
 	
 	configurations
