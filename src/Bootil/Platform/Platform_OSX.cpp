@@ -1,9 +1,9 @@
-// foundation.cpp : Defines the entry point for the DLL application.
-//
+
+#ifdef __APPLE__ && __MACH__
 
 #include "Bootil/Bootil.h"
 
-#if !defined(_WIN32) && !defined(__linux__) && (!defined(__APPLE__) && !defined(__MACH__))
+#include <stdio.h>
 
 namespace Bootil 
 {
@@ -11,44 +11,42 @@ namespace Bootil
 	{
 		BOOTIL_EXPORT BString LastError()
 		{
-			return "<UNKNOWN>";
+			return "todo";
 		}
 
-		BString FullProgramName( void )
+		BOOTIL_EXPORT BString FullProgramName( void )
 		{
-			return "<UNKNOWN>";
+			return "todo";
 		}
 
-		BString ProgramName( void )
+		BOOTIL_EXPORT BString ProgramName( void )
 		{
-			return "<UNKNOWN>";
+			return "todo";
 		}
 
-		BString ProgramFolder( void )
+		BOOTIL_EXPORT BString ProgramFolder( void )
 		{
-			BString strFolder = FullProgramName();
-			String::File::StripFilename( strFolder );
-			return strFolder;
+			return "todo";
 		}
 
-		BString CurrentUserName( void )
+		BOOTIL_EXPORT BString CurrentUserName( void )
 		{
-			return "<UNKNOWN>";
+			// todo.
 		}
 
 		BOOTIL_EXPORT void SetupAssociation( BString ext )
 		{
-			
+			// todo.
 		}
 
 		BOOTIL_EXPORT unsigned int DesktopWidth( void )
 		{
-			return 1024;
+			return 800;
 		}
 
 		BOOTIL_EXPORT unsigned int DesktopHeight( void )
 		{
-			return 768;
+			return 600;
 		}
 
 		BOOTIL_EXPORT bool Popup( const BString& strName, const BString& strText )
@@ -63,17 +61,29 @@ namespace Bootil
 
 		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString& strFind, bool bUpUpFolders )
 		{
+			// todo.
 			return 0;
 		}
 
 		BOOTIL_EXPORT void OpenWebpage( const BString& strURL )
 		{
-			
+			// todo.
 		}
 
-		BOOTIL_EXPORT BString TemporaryFile( void )
+		BOOTIL_EXPORT void StartProcess( const BString& strProcess, bool AndWait )
 		{
-			return "";
+			// todo.
+		}
+
+		BOOTIL_EXPORT BString TemporaryDir( void )
+		{
+			return "/tmp";
+		}
+
+		BOOTIL_EXPORT BString TemporaryFilename( void )
+		{
+			char buffer[MAX_PATH];
+			return Bootil::String::File::GetFixSlashes( TemporaryDir() + tmpnam( buffer ) );
 		}
 	}
 }
