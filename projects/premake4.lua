@@ -11,10 +11,6 @@ solution "Bootil"
 		linkoptions  { "-fPIC" }
 	end
 
-	if os.is( "linux" ) then
-		links { "pthread" }
-	end
-
 	configurations
 	{ 
 		"Release",
