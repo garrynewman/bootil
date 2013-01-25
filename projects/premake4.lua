@@ -12,7 +12,7 @@ solution "Bootil"
 	end
 
 	if os.is( "linux" ) then
-		links { "-pthread" }
+		links { "pthread" }
 	end
 
 	configurations
