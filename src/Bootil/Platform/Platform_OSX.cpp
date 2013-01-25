@@ -1,5 +1,5 @@
 
-#ifdef __APPLE__ && __MACH__
+#if defined(__APPLE__) && defined( __MACH__ )
 
 #include "Bootil/Bootil.h"
 
