@@ -75,6 +75,11 @@ namespace Bootil
 		{
 			return "";
 		}
+
+		BOOTIL_EXPORT void Sleep( unsigned int ms )
+		{
+
+		}
 	}
 }
 

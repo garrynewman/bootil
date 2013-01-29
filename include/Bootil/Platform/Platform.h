@@ -29,5 +29,7 @@ namespace Bootil
 		BOOTIL_EXPORT void OpenWebpage( const BString& strURL );
 		BOOTIL_EXPORT void StartProcess( const BString& strProcess, bool AndWait = true );
 
+		BOOTIL_EXPORT void Sleep( unsigned int ms );
+
 	}
 }
