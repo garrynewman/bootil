@@ -232,6 +232,11 @@ namespace Bootil
 			char buffer[ L_tmpnam ];
 			return Bootil::String::File::GetFixSlashes( TemporaryDir() + tmpnam( buffer ) );
 		}
+
+		BOOTIL_EXPORT void Sleep( unsigned int ms )
+		{
+			::usleep( ms * 1000 );
+		}
 	}
 }
 

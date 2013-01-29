@@ -177,6 +177,11 @@ namespace Bootil
 
 			spawnv( P_WAIT, strProcess.c_str(), args );
 		}
+
+		BOOTIL_EXPORT void Sleep( unsigned int ms )
+		{
+			::Sleep( ms );
+		}
 		
 	}
 }
