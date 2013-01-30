@@ -65,6 +65,9 @@
 #include "Bootil/Data/Tree.h"
 #include "Bootil/Data/Json.h"
 
+#include "Bootil/Image/Image.h"
+#include "Bootil/Image/JPEG.h"
+
 namespace Bootil 
 {
 	BOOTIL_EXPORT void Startup();
