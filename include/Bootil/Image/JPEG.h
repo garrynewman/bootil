@@ -6,7 +6,7 @@ namespace Bootil
 	{
 		namespace JPEG 
 		{
-
+			BOOTIL_EXPORT bool Load( Bootil::Buffer& input, Bootil::Image::Format& output );
 		}
 	}
 
