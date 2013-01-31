@@ -22,6 +22,12 @@ namespace Bootil
 		BOOTIL_EXPORT BString LastError();
 		BOOTIL_EXPORT void PopupMessage( const char* str, ... );
 
+		//
+		// By default calls to Error will pop up an error message
+		// This behavior isn't ideal for some apps, so disable using this.
+		//
+		BOOTIL_EXPORT void SuppressPopups( bool bSuppress );
+
 		namespace Internal 
 		{
 			BOOTIL_EXPORT void DoAssert( const char* strFile, unsigned int iLine, const char* strFunction, const char* strModule, const char* format, ... );

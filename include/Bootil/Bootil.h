@@ -68,6 +68,8 @@
 #include "Bootil/Image/Image.h"
 #include "Bootil/Image/JPEG.h"
 
+#include "Bootil/Console/Console.h"
+
 namespace Bootil 
 {
 	BOOTIL_EXPORT void Startup();

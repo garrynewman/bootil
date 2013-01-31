@@ -20,7 +20,13 @@ namespace Bootil
 			Listeners().remove( listener );
 		}
 
-		static BString s_strError = "";
+		static BString	s_strError				= "";
+		static bool		s_bSuppressPopups		= false;
+
+		BOOTIL_EXPORT void SuppressPopups( bool bSuppress )
+		{ 
+			s_bSuppressPopups = bSuppress; 
+		}
 
 		BOOTIL_EXPORT BString LastError()
 		{
@@ -49,7 +55,14 @@ namespace Bootil
 			Output::Warning( strBuilt.c_str() );
 			printf( "%s", strBuilt.c_str() );
 
-			Bootil::Platform::Popup( "Bootil", strBuilt );
+			//
+			// Pop up a message unless SuppressPopups was set
+			//
+			if ( !s_bSuppressPopups )
+			{
+				Bootil::Platform::Popup( "Bootil", strBuilt );
+			}
+			
 		}
 
 	}
@@ -77,11 +90,18 @@ namespace Bootil
 				(*i)->Error( strBuilt.c_str() );
 			}
 
-			Msg( "Error:\n\n" );
-			Msg( "%s", strBuilt.c_str() );
-			Msg( "\n\n" );
+			Console::FGColorPush( Console::Black );
+			Console::BGColorPush( Console::Red );
+				Msg( "Error:\n\n" );
+				Msg( "%s", strBuilt.c_str() );
+				Msg( "\n\n" );
+			Console::FGColorPop();
+			Console::BGColorPop();
 
-			Bootil::Platform::Popup( "Error", strBuilt );
+			if ( !Debug::s_bSuppressPopups )
+			{
+				Bootil::Platform::Popup( "Error", strBuilt );
+			}
 
 			#ifdef _WIN32
 			//	_asm { int 3 }
@@ -99,12 +119,15 @@ namespace Bootil
 			BString strBuilt;
 			Bootil_FormatString( strBuilt, str );
 
-			Output::Msg( "%s", strBuilt.c_str() );
+			Console::FGColorPush( Console::Red );
+				Output::Msg( "%s", strBuilt.c_str() );
+			Console::FGColorPop();
 
 			for ( Debug::IListener::List::iterator i = Debug::Listeners().begin(); i != Debug::Listeners().end(); i++ )
 			{
 				(*i)->Warning( strBuilt.c_str() );
 			}
+			
 		}
 
 
