@@ -20,7 +20,16 @@ namespace Bootil
 
 			BOOTIL_EXPORT bool Contains( const BString& haystack, const BString& needle, bool IgnoreCaps )
 			{
-				if ( needle == "" ) return true;
+				if ( needle.empty() ) return true;
+
+				//
+				// If we're ignoring caps then lowercase the haystack and needle
+				// then test without ignoring caps.
+				//
+				if ( IgnoreCaps )
+				{
+					return Contains( String::GetLower( haystack ), String::GetLower( needle ), false );
+				}
 
 				size_t i;
 
