@@ -147,6 +147,10 @@ namespace Bootil
 			BString strFixed = Bootil::String::File::GetFixSlashes( strFileName );
 			Bootil::String::Util::TrimAfter( strFixed, "/\\" );
 
+			// We have reached the peak, bail!
+			if ( strFileName.empty() )
+				return false;
+
 			// Folder exists, don't do anything
 			if ( IsFolder( strFixed ) )
 				return false;
