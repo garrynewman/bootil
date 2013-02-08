@@ -5,22 +5,22 @@ solution "Bootil"
 	flags { "Symbols", "NoEditAndContinue", "NoPCH", "StaticRuntime", "EnableSSE" }
 	targetdir ( "../lib/" .. os.get() .. "/" .. _ACTION )
 	includedirs { "../include/", "../src/3rdParty/" }
-	
+
 	if os.is( "linux" ) or os.is( "macosx" ) then
 		buildoptions { "-fPIC" }
-		linkoptions  { "-fPIC" }
+		-- linkoptions  { "-fPIC" }  -- OSX does not need this for linking
 	end
-	
+
 	configurations
-	{ 
+	{
 		"Release",
 		"Debug"
 	}
-	
+
 configuration "Release"
 	defines { "NDEBUG" }
 	flags{ "OptimizeSpeed", "FloatFast" }
-	
+
 configuration "Debug"
 	defines { "_DEBUG" }
 	targetsuffix "_debug"
@@ -38,5 +38,3 @@ project "Bootil-Static"
 	files { "../src/**.*", "../include/**.*" }
 	kind "StaticLib"
 	targetname( "bootil_static" )
-
-    

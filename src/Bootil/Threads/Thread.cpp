@@ -1,4 +1,4 @@
-#pragma once
+
 #include "Bootil/Bootil.h"
 #include "tinythreadpp/tinythread.h"
 #include "tinythreadpp/fast_mutex.h"

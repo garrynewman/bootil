@@ -1,4 +1,4 @@
-#pragma once
+
 #include "Bootil/Bootil.h"
 
 #ifdef _WIN32
