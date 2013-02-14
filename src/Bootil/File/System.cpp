@@ -2,15 +2,14 @@
 #include "Bootil/Bootil.h"
 
 
-namespace Bootil 
+namespace Bootil
 {
 	BOOTIL_EXPORT File::System FileSystem( "" );
 
-	namespace File 
+	namespace File
 	{
 		System::System()
 		{
-
 		}
 
 		System::System( BString strInitalPath )
@@ -24,8 +23,7 @@ namespace Bootil
 			strPath = File::RelativeToAbsolute( strPath );
 			String::Util::TrimRight( strPath, "/" );
 			String::Util::TrimRight( strPath, "\\" );
-
-			m_Paths.push_back( strPath + "/" );	
+			m_Paths.push_back( strPath + "/" );
 		}
 
 

@@ -2,9 +2,9 @@
 
 #include "Bootil/Bootil.h"
 
-namespace Bootil 
+namespace Bootil
 {
-	namespace File 
+	namespace File
 	{
 		/*
 
@@ -16,7 +16,7 @@ namespace Bootil
 		- Set up
 
 		mychangemonitor.WatchFolder( "blah/blah/", true );
-	
+
 
 		- In a loop somewhere safe
 
@@ -36,26 +36,26 @@ namespace Bootil
 				ChangeMonitor();
 				~ChangeMonitor();
 
-				bool WatchFolder( const BString& strFolder, bool bWatchSubtree = false );
+				bool WatchFolder( const BString & strFolder, bool bWatchSubtree = false );
 				void Stop();
 
 				bool HasChanges();
 				BString GetChange();
 
-				const BString& FolderName(){ return m_strFolderName; }
+				const BString & FolderName() { return m_strFolderName; }
 
 			private:
 
-				void NoteFileChanged( const BString& strName );
+				void NoteFileChanged( const BString & strName );
 				void CheckForChanges();
 				void StartWatch();
-				
+
 				void*				m_pData;
 				char				m_Buffer[1024];
 				void* 				m_dirHandle;
 				BString				m_strFolderName;
 				std::list<BString>	m_Changes;
 				bool				m_bWatchSubtree;
-			};
+		};
 	}
 }

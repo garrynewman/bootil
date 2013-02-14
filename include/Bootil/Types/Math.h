@@ -4,7 +4,7 @@ namespace Bootil
 {
 	namespace Math
 	{
-		namespace Random 
+		namespace Random
 		{
 			BOOTIL_EXPORT void Seed( unsigned int Seed );
 

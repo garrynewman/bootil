@@ -2,22 +2,22 @@
 
 namespace Bootil
 {
-	namespace String 
+	namespace String
 	{
-		namespace Convert 
+		namespace Convert
 		{
-			BOOTIL_EXPORT BString FromWide( const WString& strIn )
+			BOOTIL_EXPORT BString FromWide( const WString & strIn )
 			{
 				BString temp( strIn.length(), ' ' );
 				std::copy( strIn.begin(), strIn.end(), temp.begin() );
-				return temp; 
+				return temp;
 			}
 
-			BOOTIL_EXPORT WString ToWide( const BString& strIn )
+			BOOTIL_EXPORT WString ToWide( const BString & strIn )
 			{
 				WString temp( strIn.length(), L' ' );
 				std::copy( strIn.begin(), strIn.end(), temp.begin() );
-				return temp; 
+				return temp;
 			}
 		}
 	}

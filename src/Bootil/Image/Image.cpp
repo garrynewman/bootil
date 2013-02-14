@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Image
 	{

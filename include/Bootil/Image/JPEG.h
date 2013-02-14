@@ -1,12 +1,12 @@
 #pragma once
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Image
 	{
-		namespace JPEG 
+		namespace JPEG
 		{
-			BOOTIL_EXPORT bool Load( Bootil::Buffer& input, Bootil::Image::Format& output );
+			BOOTIL_EXPORT bool Load( Bootil::Buffer & input, Bootil::Image::Format & output );
 		}
 	}
 

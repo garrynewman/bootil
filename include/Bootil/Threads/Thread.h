@@ -7,7 +7,7 @@ namespace tthread
 	class fast_mutex;
 };
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Threads
 	{

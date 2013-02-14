@@ -1,10 +1,10 @@
 #include "Bootil/Bootil.h"
 
-namespace Bootil 
+namespace Bootil
 {
-	namespace Debug 
+	namespace Debug
 	{
-		IListener::List& Listeners()
+		IListener::List & Listeners()
 		{
 			static IListener::List Listeners;
 			return Listeners;
@@ -24,8 +24,8 @@ namespace Bootil
 		static bool		s_bSuppressPopups		= false;
 
 		BOOTIL_EXPORT void SuppressPopups( bool bSuppress )
-		{ 
-			s_bSuppressPopups = bSuppress; 
+		{
+			s_bSuppressPopups = bSuppress;
 		}
 
 		BOOTIL_EXPORT BString LastError()
@@ -33,15 +33,13 @@ namespace Bootil
 			return s_strError;
 		}
 
-		namespace Internal 
+		namespace Internal
 		{
 			BOOTIL_EXPORT void DoAssert( const char* strFile, unsigned int iLine, const char* strFunction, const char* strModule, const char* format, ... )
 			{
 				BString strBuilt;
 				Bootil_FormatString( strBuilt, format );
-
 				BString strError = String::Format::Print( "%s\n\nModule:\t%s\nFile:\t%s\nLine:\t%i\nFunction:\t%s\n", strBuilt.c_str(), strModule, strFile, iLine, strFunction );
-
 				Output::Warning( "%s", strError.c_str() );
 			}
 		}
@@ -51,7 +49,6 @@ namespace Bootil
 		{
 			BString strBuilt;
 			Bootil_FormatString( strBuilt, str );
-
 			Output::Warning( strBuilt.c_str() );
 			printf( "%s", strBuilt.c_str() );
 
@@ -62,7 +59,6 @@ namespace Bootil
 			{
 				Bootil::Platform::Popup( "Bootil", strBuilt );
 			}
-			
 		}
 
 	}
@@ -73,28 +69,27 @@ namespace Bootil
 		bool bWarning;
 	};
 
-	namespace Output 
+	namespace Output
 	{
 		//-----------------------------------------------------------------------------
-		//  
+		//
 		//-----------------------------------------------------------------------------
 		BOOTIL_EXPORT void Error( const char* str, ... )
 		{
 			BString strBuilt;
 			Bootil_FormatString( strBuilt, str );
-
 			Debug::s_strError = strBuilt;
 
 			for ( Debug::IListener::List::iterator i = Debug::Listeners().begin(); i != Debug::Listeners().end(); i++ )
 			{
-				(*i)->Error( strBuilt.c_str() );
+				( *i )->Error( strBuilt.c_str() );
 			}
 
 			Console::FGColorPush( Console::Black );
 			Console::BGColorPush( Console::Red );
-				Msg( "Error:\n\n" );
-				Msg( "%s", strBuilt.c_str() );
-				Msg( "\n\n" );
+			Msg( "Error:\n\n" );
+			Msg( "%s", strBuilt.c_str() );
+			Msg( "\n\n" );
 			Console::FGColorPop();
 			Console::BGColorPop();
 
@@ -103,51 +98,47 @@ namespace Bootil
 				Bootil::Platform::Popup( "Error", strBuilt );
 			}
 
-			#ifdef _WIN32
+#ifdef _WIN32
 			//	_asm { int 3 }
-			#endif
-
+#endif
 			exit( 0 );
 		}
 
 
 		//-----------------------------------------------------------------------------
-		//  
+		//
 		//-----------------------------------------------------------------------------
 		BOOTIL_EXPORT void Warning( const char* str, ... )
 		{
 			BString strBuilt;
 			Bootil_FormatString( strBuilt, str );
-
 			Console::FGColorPush( Console::Red );
-				Output::Msg( "%s", strBuilt.c_str() );
+			Output::Msg( "%s", strBuilt.c_str() );
 			Console::FGColorPop();
 
 			for ( Debug::IListener::List::iterator i = Debug::Listeners().begin(); i != Debug::Listeners().end(); i++ )
 			{
-				(*i)->Warning( strBuilt.c_str() );
+				( *i )->Warning( strBuilt.c_str() );
 			}
-			
 		}
 
 
 		//-----------------------------------------------------------------------------
-		//  
+		//
 		//-----------------------------------------------------------------------------
 		BOOTIL_EXPORT void Msg( const char* str, ... )
 		{
 			BString strBuilt;
 			Bootil_FormatString( strBuilt, str );
-
 			printf( "%s", strBuilt.c_str() );
 			Platform::DebuggerOutput( strBuilt );
 
 			if ( Bootil::IsShuttingDown() )
-				return;
+			{ return; }
 
 			for ( Debug::IListener::List::iterator i = Debug::Listeners().begin(); i != Debug::Listeners().end(); i++ )
 			{
-				(*i)->Msg( strBuilt.c_str() );
+				( *i )->Msg( strBuilt.c_str() );
 			}
 		}
 	}

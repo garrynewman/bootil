@@ -3,13 +3,13 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#else 
+#else
 #include <pthread.h>
-#endif 
+#endif
 
 
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Threads
 	{
@@ -18,7 +18,7 @@ namespace Bootil
 #ifdef _WIN32
 			return GetCurrentThreadId();
 #else
-			return (unsigned long long) pthread_self();
+			return ( unsigned long long ) pthread_self();
 #endif
 		}
 	}

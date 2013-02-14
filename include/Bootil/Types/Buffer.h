@@ -2,7 +2,7 @@
 
 namespace Bootil
 {
-	class Buffer 
+	class Buffer
 	{
 		public:
 
@@ -12,16 +12,16 @@ namespace Bootil
 			void SetExternalBuffer( void* pData, int iSize );
 
 			void Write( const void* pData, unsigned int iSize );
-			void WriteBuffer( const Buffer& buffer );
-			
+			void WriteBuffer( const Buffer & buffer );
+
 			unsigned int Read( void* pData, int iSize );
 
 			unsigned int	GetSize() const;
 
 			unsigned int	GetPos() const;
 			bool			SetPos( unsigned int iPos );
-			void			Start(){ SetPos( 0 ); }
-			void			End(){ SetPos( GetWritten() ); }
+			void			Start() { SetPos( 0 ); }
+			void			End() { SetPos( GetWritten() ); }
 
 			void			SetWritten( unsigned int iSize );
 			unsigned int	GetWritten() const;
@@ -35,33 +35,33 @@ namespace Bootil
 			//
 			virtual void	Clear();
 
-			bool			Forward( unsigned int iAmt ){ return SetPos( GetPos() + iAmt ); }
-			bool			Backward( unsigned int iAmt ){ return SetPos( GetPos() - iAmt ); }
+			bool			Forward( unsigned int iAmt ) { return SetPos( GetPos() + iAmt ); }
+			bool			Backward( unsigned int iAmt ) { return SetPos( GetPos() - iAmt ); }
 
 			virtual bool	EnsureCapacity( unsigned int iSize );
 
 			//
 			// Read/Write a null terminated string
 			//
-			int WriteString( const Bootil::BString& str );
+			int WriteString( const Bootil::BString & str );
 			Bootil::BString ReadString();
 
 			template <typename T>
-			int WriteType( const T& var)
-			{ 
-				Write( (void*)&var, sizeof(T) ); 
-				return sizeof(T); 
+			int WriteType( const T & var )
+			{
+				Write( ( void* )&var, sizeof( T ) );
+				return sizeof( T );
 			}
 
 			template <typename T>
 			T ReadType()
-			{ 
-				T var; 
-				Read( (void*)&var, sizeof(T) ); 
-				return var; 
+			{
+				T var;
+				Read( ( void* )&var, sizeof( T ) );
+				return var;
 			}
 
-			
+
 
 		protected:
 
@@ -69,7 +69,7 @@ namespace Bootil
 
 			void*				m_pData;
 			unsigned int		m_iSize;
-			unsigned int		m_iPos;	
+			unsigned int		m_iPos;
 			unsigned int		m_iWritten;
 	};
 

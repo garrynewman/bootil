@@ -1,7 +1,7 @@
 #pragma once
 #include "Bootil/Bootil.h"
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Threads
 	{

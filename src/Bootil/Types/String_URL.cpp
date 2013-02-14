@@ -2,20 +2,19 @@
 
 namespace Bootil
 {
-	namespace String 
+	namespace String
 	{
 		namespace URL
 		{
-			BOOTIL_EXPORT void URI( BString& strURL )
+			BOOTIL_EXPORT void URI( BString & strURL )
 			{
 				const BString Protocol( "://" );
-
 				std::size_t pos = strURL.find( Protocol );
 
 				if ( pos != std::string::npos )
-					pos = strURL.find_first_of( "/", pos + Protocol.length() );
+				{ pos = strURL.find_first_of( "/", pos + Protocol.length() ); }
 				else
-					pos = strURL.find_first_of( "/" );
+				{ pos = strURL.find_first_of( "/" ); }
 
 				if ( pos != std::string::npos )
 				{
@@ -26,7 +25,7 @@ namespace Bootil
 				strURL = "/";
 			}
 
-			BOOTIL_EXPORT void Query( BString& strURL )
+			BOOTIL_EXPORT void Query( BString & strURL )
 			{
 				URI( strURL );
 
@@ -37,6 +36,7 @@ namespace Bootil
 				}
 
 				std::size_t pos = strURL.find_first_of( "?" );
+
 				if ( pos != std::string::npos )
 				{
 					strURL = strURL.substr( pos );
@@ -46,26 +46,28 @@ namespace Bootil
 				strURL = "";
 			}
 
-			BOOTIL_EXPORT int ParseArguments( BString strQuery, String::Map& map )
+			BOOTIL_EXPORT int ParseArguments( BString strQuery, String::Map & map )
 			{
-				if ( strQuery[0] == '?') strQuery = strQuery.substr( 1 );
+				if ( strQuery[0] == '?' ) { strQuery = strQuery.substr( 1 ); }
 
 				int i = 0;
 				String::List lst;
 				String::Util::Split( strQuery, "&", lst );
-
 				BOOTIL_FOREACH( str, lst, String::List )
 				{
 					std::size_t pos = str->find_first_of( "=" );
-					if ( pos == std::string::npos ) continue;
-					if ( pos == 0 ) continue;
-					if ( pos == str->length() ) continue;
-					if ( str->find_last_of( "=" ) != pos ) continue;
+
+					if ( pos == std::string::npos ) { continue; }
+
+					if ( pos == 0 ) { continue; }
+
+					if ( pos == str->length() ) { continue; }
+
+					if ( str->find_last_of( "=" ) != pos ) { continue; }
 
 					map[ str->substr( 0, pos ) ] = str->substr( pos + 1 );
 					i++;
-				} 
-
+				}
 				return i;
 				/*
 				int iArguments = 0;
@@ -76,7 +78,7 @@ namespace Bootil
 				url_parse::Component query = parsed.query;
 				url_parse::Component key, value;
 
-				while ( url_parse::ExtractQueryKeyValue( strURL.c_str(), &query, &key, &value) ) 
+				while ( url_parse::ExtractQueryKeyValue( strURL.c_str(), &query, &key, &value) )
 				{
 					map[ strURL.substr( key.begin, key.begin + key.len ) ] = strURL.substr( value.begin, value.begin + value.len );
 					iArguments++;

@@ -1,6 +1,6 @@
 #include "Bootil/Bootil.h"
 
-namespace Bootil 
+namespace Bootil
 {
 	//LONG WINAPI BootilCrashHandler( PEXCEPTION_POINTERS pExceptionInfo );
 
@@ -9,7 +9,6 @@ namespace Bootil
 	BOOTIL_EXPORT void Startup()
 	{
 		//Bootil::Threads::Internal::Initialize();
-
 		//timeBeginPeriod( 1 );
 		//SetUnhandledExceptionFilter( BootilCrashHandler );
 	}
@@ -18,10 +17,8 @@ namespace Bootil
 	{
 		g_bShuttingDown = true;
 		Output::Msg( "Exiting..\n" );
-
 		//Interface::UnloadAll();
 		//File::Shutdown();
-
 		Output::Msg( "Exited\n" );
 	}
 

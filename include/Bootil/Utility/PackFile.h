@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Bootil 
+namespace Bootil
 {
 #if 0
 	class PackFile
@@ -9,12 +9,12 @@ namespace Bootil
 
 			void Initialize();
 
-			bool AddFile( Bootil::BString strName, const Bootil::Buffer& data );
+			bool AddFile( Bootil::BString strName, const Bootil::Buffer & data );
 
 			//void Save();
 			//void Load( const Bootil::BString& strFileName );
 
-			bool GetFile( Bootil::BString strName, Bootil::Buffer& buffer );
+			bool GetFile( Bootil::BString strName, Bootil::Buffer & buffer );
 
 		protected:
 

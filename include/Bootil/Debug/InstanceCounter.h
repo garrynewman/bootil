@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Bootil 
+namespace Bootil
 {
-	namespace Debug 
+	namespace Debug
 	{
 		class CInstanceCounter
 		{
@@ -20,10 +20,10 @@ namespace Bootil
 				~CInstanceCounter()
 				{
 					static bool bMoaned = false;
-
 					Assert( iInstances >= 0 );
-					if ( iInstances == 0 ) return;
-					
+
+					if ( iInstances == 0 ) { return; }
+
 					if ( !bMoaned )
 					{
 						PopupMessage( "%i unreleased instances of %s", iInstances, name.c_str() );

@@ -5,7 +5,7 @@
 
 #if !defined(_WIN32) && !defined(__linux__) && (!defined(__APPLE__) && !defined(__MACH__))
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Platform
 	{
@@ -38,7 +38,6 @@ namespace Bootil
 
 		BOOTIL_EXPORT void SetupAssociation( BString ext )
 		{
-			
 		}
 
 		BOOTIL_EXPORT unsigned int DesktopWidth( void )
@@ -51,24 +50,23 @@ namespace Bootil
 			return 768;
 		}
 
-		BOOTIL_EXPORT bool Popup( const BString& strName, const BString& strText )
+		BOOTIL_EXPORT bool Popup( const BString & strName, const BString & strText )
 		{
 			return true;
 		}
 
-		BOOTIL_EXPORT void DebuggerOutput( const BString& strText )
+		BOOTIL_EXPORT void DebuggerOutput( const BString & strText )
 		{
 			printf( "%s", strText.c_str() );
 		}
 
-		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString& strFind, bool bUpUpFolders )
+		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString & strFind, bool bUpUpFolders )
 		{
 			return 0;
 		}
 
-		BOOTIL_EXPORT void OpenWebpage( const BString& strURL )
+		BOOTIL_EXPORT void OpenWebpage( const BString & strURL )
 		{
-			
 		}
 
 		BOOTIL_EXPORT BString TemporaryFile( void )
@@ -78,7 +76,6 @@ namespace Bootil
 
 		BOOTIL_EXPORT void Sleep( unsigned int ms )
 		{
-
 		}
 	}
 }

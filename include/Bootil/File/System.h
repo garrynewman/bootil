@@ -1,12 +1,12 @@
 #pragma once
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace File
-	{		
+	{
 		class BOOTIL_EXPORT System
 		{
-			public:	
+			public:
 
 				typedef std::list<BString> Paths;
 
