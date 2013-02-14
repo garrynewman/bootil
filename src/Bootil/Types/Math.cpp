@@ -8,7 +8,7 @@ class InitialRandomSeeder
 
 		InitialRandomSeeder()
 		{
-			Bootil::Math::Random::Seed( time(NULL) );
+			Bootil::Math::Random::Seed( static_cast< unsigned int >(time(NULL)) );
 		}
 };
 

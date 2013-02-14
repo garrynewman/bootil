@@ -32,9 +32,9 @@ namespace Bootil
 
 			bool Compress( const void* pData, unsigned int iLength, Bootil::Buffer& output )
 			{
-				int iStartPos = output.GetPos();
+				unsigned int iStartPos = output.GetPos();
 
-				if ( !output.EnsureCapacity( iStartPos + iLength * 1.5 ) )
+				if ( !output.EnsureCapacity( static_cast<unsigned int>(iStartPos + iLength * 1.5) ) )
 					return false;
 
 				int iSize = fastlz_compress_level( 2, pData, iLength, output.GetCurrent() );
@@ -64,7 +64,7 @@ namespace Bootil
 					//
 					if ( ret == -1 )
 					{
-						if ( !output.EnsureCapacity( output.GetSize() * 1.20f ) )
+						if ( !output.EnsureCapacity( static_cast<unsigned int>(output.GetSize() * 1.20f) ) )
 							return false;
 
 						continue;

@@ -1,5 +1,9 @@
 #include "Bootil/Bootil.h"
 
+#if WIN32
+	#define sscanf sscanf_s
+#endif
+
 namespace Bootil
 {
 	namespace String 
