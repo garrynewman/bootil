@@ -2,19 +2,19 @@
 
 namespace Bootil
 {
-	namespace String 
+	namespace String
 	{
 		namespace Sanitize
 		{
-			BOOTIL_EXPORT void Javascript( BString& str )
+			BOOTIL_EXPORT void Javascript( BString & str )
 			{
 				Util::FindAndReplace( str, "\\", "\\\\" );
 				Util::FindAndReplace( str, "\"", "\\\"" );
 				Util::FindAndReplace( str, "\n", "\\n" );
-				Util::FindAndReplace( str, "\r", "\\r" );		
+				Util::FindAndReplace( str, "\r", "\\r" );
 			}
 
-			BOOTIL_EXPORT void Filename( BString& str )
+			BOOTIL_EXPORT void Filename( BString & str )
 			{
 				Util::FindAndReplace( str, "\\", "" );
 				Util::FindAndReplace( str, "/", "" );

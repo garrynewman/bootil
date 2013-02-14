@@ -6,7 +6,7 @@ namespace tthread
 	class fast_mutex;
 };
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Threads
 	{
@@ -30,7 +30,7 @@ namespace Bootil
 		{
 			public:
 
-				Guard( Mutex* m ) : m_mutex(m)
+				Guard( Mutex* m ) : m_mutex( m )
 				{
 					m_mutex->Lock();
 				}
@@ -41,7 +41,7 @@ namespace Bootil
 				}
 
 				Mutex* m_mutex;
-		};		
+		};
 	}
 }
 

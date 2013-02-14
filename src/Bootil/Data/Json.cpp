@@ -8,12 +8,12 @@
 
 namespace Bootil
 {
-	namespace Data 
+	namespace Data
 	{
 		namespace Json
 		{
 			template <typename Writer>
-			void WriteValue( Writer& writer, const Bootil::Data::Tree& tree )
+			void WriteValue( Writer & writer, const Bootil::Data::Tree & tree )
 			{
 				if ( tree.IsVar<float>() )
 				{
@@ -43,8 +43,8 @@ namespace Bootil
 			}
 
 			template <typename Writer>
-			void DoJsonExport( Writer& writer, const Bootil::Data::Tree& tree )
-			{	
+			void DoJsonExport( Writer & writer, const Bootil::Data::Tree & tree )
+			{
 				//
 				// If none of the children have keys then it's an array
 				//
@@ -59,15 +59,14 @@ namespace Bootil
 				}
 
 				if ( IsArray )
-					writer.StartArray();
+				{ writer.StartArray(); }
 				else
-					writer.StartObject();
+				{ writer.StartObject(); }
 
 				int iUniqueKey = 1;
-
 				BOOTIL_FOREACH_CONST( a, tree.Children(), Bootil::Data::Tree::List )
 				{
-					const Bootil::BString& strKey = a->Name();
+					const Bootil::BString & strKey = a->Name();
 
 					// If we're not an array then write the key
 					if ( !IsArray )
@@ -83,10 +82,9 @@ namespace Bootil
 						}
 					}
 
-					
 					if ( a->HasChildren() || a->IsBranch() )
 					{
-						// If it's a parent we ignore the value and 
+						// If it's a parent we ignore the value and
 						// just treat it like an object/array
 						DoJsonExport<Writer>( writer, *a );
 					}
@@ -97,12 +95,12 @@ namespace Bootil
 				}
 
 				if ( IsArray )
-					writer.EndArray();
+				{ writer.EndArray(); }
 				else
-					writer.EndObject();
+				{ writer.EndObject(); }
 			}
 
-			bool Export( const Bootil::Data::Tree& tree, Bootil::BString& output, bool bPretty )
+			bool Export( const Bootil::Data::Tree & tree, Bootil::BString & output, bool bPretty )
 			{
 				rapidjson::StringBuffer f;
 
@@ -123,40 +121,41 @@ namespace Bootil
 			}
 
 
-			void DoImport( Bootil::Data::Tree& tree, rapidjson::Document::ValueType& doc )
+			void DoImport( Bootil::Data::Tree & tree, rapidjson::Document::ValueType & doc )
 			{
 				if ( doc.IsArray() )
 				{
 					rapidjson::Document::ValueType::ValueIterator it = doc.Begin();
+
 					while ( it != doc.End() )
 					{
 						if ( it->IsObject() || it->IsArray() )
 						{
-							Bootil::Data::Tree& child = tree.AddChild();
+							Bootil::Data::Tree & child = tree.AddChild();
 							DoImport( child, *it );
 						}
 
 						if ( it->IsString() )
 						{
-							Bootil::Data::Tree& child = tree.AddChild();
+							Bootil::Data::Tree & child = tree.AddChild();
 							child.Value( it->GetString() );
 						}
 
 						if ( it->IsBool() )
 						{
-							Bootil::Data::Tree& child = tree.AddChild();
+							Bootil::Data::Tree & child = tree.AddChild();
 							child.Var<bool>( it->GetBool() );
 						}
 
 						if ( it->IsInt() )
 						{
-							Bootil::Data::Tree& child = tree.AddChild();
+							Bootil::Data::Tree & child = tree.AddChild();
 							child.Var<int>( it->GetInt() );
 						}
 
 						if ( it->IsNumber() )
 						{
-							Bootil::Data::Tree& child = tree.AddChild();
+							Bootil::Data::Tree & child = tree.AddChild();
 							child.Var<float>( it->GetDouble() );
 						}
 
@@ -167,11 +166,12 @@ namespace Bootil
 				if ( doc.IsObject() )
 				{
 					rapidjson::Document::MemberIterator it = doc.MemberBegin();
+
 					while ( it != doc.MemberEnd() )
 					{
 						if ( it->value.IsObject() || it->value.IsArray() )
 						{
-							Bootil::Data::Tree& child = tree.AddChild( it->name.GetString() );
+							Bootil::Data::Tree & child = tree.AddChild( it->name.GetString() );
 							DoImport( child, it->value );
 						}
 
@@ -195,15 +195,14 @@ namespace Bootil
 						++it;
 					}
 				}
-
 			}
 
-			bool Import( Bootil::Data::Tree& tree, const Bootil::BString& input )
+			bool Import( Bootil::Data::Tree & tree, const Bootil::BString & input )
 			{
 				rapidjson::Document doc;
 
 				if ( doc.Parse<0>( input.c_str() ).HasParseError() )
-					return false;
+				{ return false; }
 
 				if ( doc.IsObject() || doc.IsArray() )
 				{

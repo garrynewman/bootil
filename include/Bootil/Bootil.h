@@ -1,19 +1,19 @@
 #pragma once
 
 #ifdef BOOTIL_COMPILE_DLL
-	#ifdef _WIN32
-		#if defined(__GNUC__)
-			#define BOOTIL_EXPORT __attribute__((dllexport))
-		#else
-			#define BOOTIL_EXPORT __declspec(dllexport)
-		#endif
-	#else
-		#define BOOTIL_EXPORT
-	#endif 
+#ifdef _WIN32
+#if defined(__GNUC__)
+#define BOOTIL_EXPORT __attribute__((dllexport))
+#else
+#define BOOTIL_EXPORT __declspec(dllexport)
+#endif
+#else
+#define BOOTIL_EXPORT
+#endif
 #else
 
-	#define BOOTIL_EXPORT 
-#endif 
+#define BOOTIL_EXPORT
+#endif
 
 
 // Standards
@@ -70,35 +70,35 @@
 
 #include "Bootil/Console/Console.h"
 
-namespace Bootil 
+namespace Bootil
 {
 	BOOTIL_EXPORT void Startup();
 	BOOTIL_EXPORT void Shutdown();
 	BOOTIL_EXPORT bool IsShuttingDown();
 }
 
-namespace Bootil 
+namespace Bootil
 {
-	template<typename T> void SafeDelete( T*& Ptr ) 
+	template<typename T> void SafeDelete( T* & Ptr )
 	{
 		delete Ptr;
 		Ptr = NULL;
 	}
 
-	template<typename T> void SafeRelease( T*& Ptr ) 
+	template<typename T> void SafeRelease( T* & Ptr )
 	{
-		if ( !Ptr ) return;
+		if ( !Ptr ) { return; }
 
 		Ptr->Release();
 		Ptr = NULL;
 	}
 
-	template <typename T> T Min(T a, T b) 
+	template <typename T> T Min( T a, T b )
 	{
 		return a < b ? a : b;
 	}
 
-	template <typename T> T Max(T a, T b) 
+	template <typename T> T Max( T a, T b )
 	{
 		return a > b ? a : b;
 	}

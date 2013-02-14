@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Bootil 
+namespace Bootil
 {
-	namespace Debug 
+	namespace Debug
 	{
 		class IListener
 		{
@@ -14,9 +14,9 @@ namespace Bootil
 
 			public:
 
-				virtual void Msg( const char* ){};
-				virtual void Warning( const char* ){};
-				virtual void Error( const char* ){};
+				virtual void Msg( const char* ) {};
+				virtual void Warning( const char* ) {};
+				virtual void Error( const char* ) {};
 		};
 
 		BOOTIL_EXPORT BString LastError();
@@ -28,20 +28,20 @@ namespace Bootil
 		//
 		BOOTIL_EXPORT void SuppressPopups( bool bSuppress );
 
-		namespace Internal 
+		namespace Internal
 		{
 			BOOTIL_EXPORT void DoAssert( const char* strFile, unsigned int iLine, const char* strFunction, const char* strModule, const char* format, ... );
 		}
 
 	}
 
-	namespace Output 
+	namespace Output
 	{
 		BOOTIL_EXPORT void Error( const char* str, ... );
 		BOOTIL_EXPORT void Msg( const char* str, ... );
 		BOOTIL_EXPORT void Warning( const char* str, ... );
 	}
-	
+
 
 
 }

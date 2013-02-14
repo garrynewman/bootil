@@ -4,7 +4,7 @@
 
 
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Threads
 	{

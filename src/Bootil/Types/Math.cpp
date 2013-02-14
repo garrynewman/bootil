@@ -8,7 +8,7 @@ class InitialRandomSeeder
 
 		InitialRandomSeeder()
 		{
-			Bootil::Math::Random::Seed( time(NULL) );
+			Bootil::Math::Random::Seed( time( NULL ) );
 		}
 };
 
@@ -16,9 +16,9 @@ InitialRandomSeeder seeder;
 
 namespace Bootil
 {
-	namespace Math 
+	namespace Math
 	{
-		namespace Random 
+		namespace Random
 		{
 			BOOTIL_EXPORT void Seed( unsigned int Seed )
 			{
@@ -27,7 +27,7 @@ namespace Bootil
 
 			BOOTIL_EXPORT int Int( int iMin, int iMax )
 			{
-				return iMin + (rand()%(iMax-iMin));
+				return iMin + ( rand()%( iMax-iMin ) );
 			}
 
 			BOOTIL_EXPORT bool Bool()

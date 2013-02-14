@@ -1,26 +1,27 @@
 #include "Bootil/Bootil.h"
 
-bool globber( const char *wild, const char *string );
+bool globber( const char* wild, const char* string );
 
 namespace Bootil
 {
-	namespace String 
+	namespace String
 	{
 		namespace Test
 		{
-			BOOTIL_EXPORT bool StartsWith( const BString& str, const BString& strFind )
-			{	return str.find( strFind ) == 0;
+			BOOTIL_EXPORT bool StartsWith( const BString & str, const BString & strFind )
+			{
+				return str.find( strFind ) == 0;
 			}
 
-			BOOTIL_EXPORT bool EndsWith( const BString& str, const BString& strFind )
+			BOOTIL_EXPORT bool EndsWith( const BString & str, const BString & strFind )
 			{
 				size_t i = str.rfind( strFind );
-				return (i != std::string::npos) && (i == (str.length() - strFind.length()));
+				return ( i != std::string::npos ) && ( i == ( str.length() - strFind.length() ) );
 			}
 
-			BOOTIL_EXPORT bool Contains( const BString& haystack, const BString& needle, bool IgnoreCaps )
+			BOOTIL_EXPORT bool Contains( const BString & haystack, const BString & needle, bool IgnoreCaps )
 			{
-				if ( needle.empty() ) return true;
+				if ( needle.empty() ) { return true; }
 
 				//
 				// If we're ignoring caps then lowercase the haystack and needle
@@ -32,45 +33,46 @@ namespace Bootil
 				}
 
 				size_t i;
-
 				i = haystack.find( needle );
-
-				return (i != std::string::npos);
+				return ( i != std::string::npos );
 			}
 
-			BOOTIL_EXPORT bool ContainsChar( const BString& strContents, char c )
+			BOOTIL_EXPORT bool ContainsChar( const BString & strContents, char c )
 			{
 				std::string::const_iterator tmp( strContents.begin() );
 				std::string::const_iterator const tmp_end( strContents.end() );
-				for(; tmp != tmp_end; ++tmp)
+
+				for ( ; tmp != tmp_end; ++tmp )
 				{
-					if ( *tmp == c ) return true;
+					if ( *tmp == c ) { return true; }
 				}
 
 				return false;
 			}
 
-			BOOTIL_EXPORT bool ContainsOnly( const BString& str, const BString& strContents )
+			BOOTIL_EXPORT bool ContainsOnly( const BString & str, const BString & strContents )
 			{
 				std::string::const_iterator tmp( str.begin() );
 				std::string::const_iterator const tmp_end( str.end() );
-				for(; tmp != tmp_end; ++tmp)
+
+				for ( ; tmp != tmp_end; ++tmp )
 				{
 					if ( !ContainsChar( strContents, *tmp ) )
-						return false;
+					{ return false; }
 				}
 
 				return true;
 			}
 
-			BOOTIL_EXPORT bool ContainsAny( const BString& str, const BString& strContents )
+			BOOTIL_EXPORT bool ContainsAny( const BString & str, const BString & strContents )
 			{
 				std::string::const_iterator tmp( str.begin() );
 				std::string::const_iterator const tmp_end( str.end() );
-				for(; tmp != tmp_end; ++tmp)
+
+				for ( ; tmp != tmp_end; ++tmp )
 				{
 					if ( ContainsChar( strContents, *tmp ) )
-						return true;
+					{ return true; }
 				}
 
 				return false;
@@ -81,18 +83,18 @@ namespace Bootil
 				return globber( strWildcard.c_str(), strHaystack.c_str() );
 			}
 
-			BOOTIL_EXPORT bool ICompare( const BString& strA, const BString& strB )
+			BOOTIL_EXPORT bool ICompare( const BString & strA, const BString & strB )
 			{
 				if ( strA.size() != strB.size() ) { return false; }
 
-				for ( unsigned int i = 0; i < strA.length(); i++ ) 
+				for ( unsigned int i = 0; i < strA.length(); i++ )
 				{
-					if ( tolower( strA[i] ) != tolower( strB[i] ) ) return false;
+					if ( tolower( strA[i] ) != tolower( strB[i] ) ) { return false; }
 				}
 
 				return true;
 			}
-		
+
 		}
 	}
 }

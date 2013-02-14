@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-namespace Bootil 
+namespace Bootil
 {
 	namespace Platform
 	{
@@ -49,28 +49,28 @@ namespace Bootil
 			return 600;
 		}
 
-		BOOTIL_EXPORT bool Popup( const BString& strName, const BString& strText )
+		BOOTIL_EXPORT bool Popup( const BString & strName, const BString & strText )
 		{
 			return true;
 		}
 
-		BOOTIL_EXPORT void DebuggerOutput( const BString& strText )
+		BOOTIL_EXPORT void DebuggerOutput( const BString & strText )
 		{
 			printf( "%s", strText.c_str() );
 		}
 
-		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString& strFind, bool bUpUpFolders )
+		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString & strFind, bool bUpUpFolders )
 		{
 			// todo.
 			return 0;
 		}
 
-		BOOTIL_EXPORT void OpenWebpage( const BString& strURL )
+		BOOTIL_EXPORT void OpenWebpage( const BString & strURL )
 		{
 			// todo.
 		}
 
-		BOOTIL_EXPORT void StartProcess( const BString& strProcess, bool AndWait )
+		BOOTIL_EXPORT void StartProcess( const BString & strProcess, bool AndWait )
 		{
 			// todo.
 		}

@@ -4,14 +4,14 @@
 
 namespace Bootil
 {
-	namespace String 
+	namespace String
 	{
-		BOOTIL_EXPORT void Lower( BString& str )
+		BOOTIL_EXPORT void Lower( BString & str )
 		{
 			std::transform( str.begin(), str.end(), str.begin(), tolower );
 		}
 
-		BOOTIL_EXPORT void Upper( BString& str )
+		BOOTIL_EXPORT void Upper( BString & str )
 		{
 			std::transform( str.begin(), str.end(), str.begin(), toupper );
 		}
@@ -22,21 +22,21 @@ namespace Bootil
 
 			for ( int i=0; i<iSize; i++ )
 			{
-				if ( bLetters && Math::Random::Bool() ) str += (char) Bootil::Math::Random::Int( 'a', 'z' );
-				else if ( bCapitals && Math::Random::Bool() ) str += (char) Bootil::Math::Random::Int( 'A', 'Z' );
-				else if ( bNumbers && Math::Random::Bool() ) str += (char) Bootil::Math::Random::Int( '0', '9' );
-				else str += (char) Bootil::Math::Random::Int( 'a', 'z' );
+				if ( bLetters && Math::Random::Bool() ) { str += ( char ) Bootil::Math::Random::Int( 'a', 'z' ); }
+				else if ( bCapitals && Math::Random::Bool() ) { str += ( char ) Bootil::Math::Random::Int( 'A', 'Z' ); }
+				else if ( bNumbers && Math::Random::Bool() ) { str += ( char ) Bootil::Math::Random::Int( '0', '9' ); }
+				else { str += ( char ) Bootil::Math::Random::Int( 'a', 'z' ); }
 			}
 
 			return str;
 		}
 
-		BOOTIL_EXPORT void SortList( String::List& list, bool bReverse )
+		BOOTIL_EXPORT void SortList( String::List & list, bool bReverse )
 		{
 			if ( bReverse )
-				std::sort( list.rbegin(), list.rend() );
-			else 
-				std::sort( list.begin(), list.end() );
+			{ std::sort( list.rbegin(), list.rend() ); }
+			else
+			{ std::sort( list.begin(), list.end() ); }
 		}
 	}
 }
