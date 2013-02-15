@@ -22,6 +22,9 @@ namespace Bootil
 			//
 			bool Is( const void* pData, unsigned int iLength )
 			{
+				if ( !pData ) return false;
+				if ( iLength < 2 ) return false;
+
 				int level = ( ( *( const unsigned char* )pData ) >> 5 ) + 1;
 
 				if ( level != 1 && level != 2 ) { return false; }
