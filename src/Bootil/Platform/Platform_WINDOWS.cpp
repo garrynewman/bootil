@@ -87,10 +87,10 @@ namespace Bootil
 			BString strmv = "\"" + FullProgramName() + "\" %1";
 			String::File::ToWindowsSlashes( strmv );
 			BString keyName = ext + "\\shell\\open\\command";
-			LONG lRet  = RegCreateKeyEx( HKEY_CLASSES_ROOT, keyName.c_str(), 0L,NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey,dwDisp );
+			LONG lRet  = RegCreateKeyEx( HKEY_CLASSES_ROOT, keyName.c_str(), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, dwDisp );
 
 			if ( !lRet )
-			{ RegSetValueEx( hKey, NULL, 0, REG_SZ, ( BYTE* )strmv.c_str(), strmv.length()+1 ); }
+			{ RegSetValueEx( hKey, NULL, 0, REG_SZ, ( BYTE* )strmv.c_str(), strmv.length() + 1 ); }
 		}
 
 		BOOTIL_EXPORT unsigned int DesktopWidth( void )

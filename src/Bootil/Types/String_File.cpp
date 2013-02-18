@@ -46,7 +46,7 @@ namespace Bootil
 
 				if ( i == BString::npos ) { return; }
 
-				str = str.substr( i+1, str.length() );
+				str = str.substr( i + 1, str.length() );
 			}
 
 			BOOTIL_EXPORT void StripFilename( BString & str )
@@ -57,7 +57,7 @@ namespace Bootil
 
 				if ( i == BString::npos ) { str = ""; return; }
 
-				str = str.substr( 0, i+1 );
+				str = str.substr( 0, i + 1 );
 			}
 
 			BOOTIL_EXPORT BString GetFileExtension( const BString & str )
@@ -66,7 +66,7 @@ namespace Bootil
 
 				if ( i == BString::npos ) { return ""; }
 
-				return str.substr( i+1, str.length() );
+				return str.substr( i + 1, str.length() );
 			}
 
 			BOOTIL_EXPORT void StripExtension( BString & str )
@@ -107,7 +107,7 @@ namespace Bootil
 
 				if ( i == BString::npos ) { str = ""; return; }
 
-				str = str.substr( i+1, str.length() );
+				str = str.substr( i + 1, str.length() );
 			}
 
 		}

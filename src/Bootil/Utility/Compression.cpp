@@ -23,6 +23,7 @@ namespace Bootil
 			bool Is( const void* pData, unsigned int iLength )
 			{
 				if ( !pData ) return false;
+
 				if ( iLength < 2 ) return false;
 
 				int level = ( ( *( const unsigned char* )pData ) >> 5 ) + 1;
@@ -58,7 +59,7 @@ namespace Bootil
 				// We loop here because we want to guess the extracted size.
 				// We won't loop at all if output has the right capacity when it's passed in
 				//
-				for ( int i=0; i<128; i++ )
+				for ( int i = 0; i < 128; i++ )
 				{
 					int ret = fastlz_decompress( pData, iLength, output.GetCurrent(), output.GetSize() - output.GetPos() );
 
@@ -259,7 +260,7 @@ namespace Bootil
 			{
 				int iItems = GetNumItems();
 
-				for ( int i=0; i<iItems; i++ )
+				for ( int i = 0; i < iItems; i++ )
 				{
 					BString FileName = GetFileName( i );
 					BString LocalFolder = String::File::GetStripFilename( FileName );
@@ -280,7 +281,7 @@ namespace Bootil
 				XZip::GetZipItem( ( XZip::HZIP )m_pRead, -1, &ze );
 				int iCount = ze.index;
 
-				for ( int i=0; i<iCount; i++ )
+				for ( int i = 0; i < iCount; i++ )
 				{
 					XZip::GetZipItem( ( XZip::HZIP )m_pRead, i, &ze );
 					m_Files[ i ].Name = ze.name;

@@ -49,12 +49,12 @@ namespace Bootil
 		ChangeMonitor::~ChangeMonitor()
 		{
 #ifdef _WIN32
-			delete ( ( OVERLAPPED* )m_pData );
+			delete( ( OVERLAPPED* )m_pData );
 #endif
 			Stop();
 #ifdef __linux__
 			close( *( int* )m_pData );
-			delete ( int* )m_pData;
+			delete( int* )m_pData;
 #endif
 		}
 
@@ -64,7 +64,7 @@ namespace Bootil
 			m_bWatchSubtree = bWatchSubtree;
 #ifdef _WIN32
 			memset( m_pData, 0, sizeof( OVERLAPPED ) );
-			m_dirHandle = CreateFileA( strFolder.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
+			m_dirHandle = CreateFileA( strFolder.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
 			if ( m_dirHandle == INVALID_HANDLE_VALUE )
 			{ return false; }
@@ -72,7 +72,7 @@ namespace Bootil
 			( ( OVERLAPPED* )m_pData )->hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
 			StartWatch();
 #elif __linux__
-			int flags = IN_CREATE|IN_DELETE|IN_MODIFY|IN_MOVED_FROM|IN_MOVED_TO;
+			int flags = IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO;
 			int handle;
 			m_dirHandle = new WatchMap();
 			handle = inotify_add_watch( *( int* )m_pData, strFolder.c_str(), flags );
@@ -124,7 +124,7 @@ namespace Bootil
 				{
 					inotify_rm_watch( *( int* )m_pData, handle->first );
 				}
-				delete ( WatchMap* )m_dirHandle;
+				delete( WatchMap* )m_dirHandle;
 				m_dirHandle = NULL;
 #endif
 			}

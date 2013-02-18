@@ -26,64 +26,64 @@ namespace Bootil
 
 			switch ( fg )
 			{
-			case White:
-				win_fg = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-				break;
+				case White:
+					win_fg = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+					break;
 
-			case Black:
-				win_fg = 0;
-				break;
+				case Black:
+					win_fg = 0;
+					break;
 
-			case Grey:
-				win_fg = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-				break;
+				case Grey:
+					win_fg = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+					break;
 
-			case Red:
-				win_fg = FOREGROUND_RED | FOREGROUND_INTENSITY;
-				break;
+				case Red:
+					win_fg = FOREGROUND_RED | FOREGROUND_INTENSITY;
+					break;
 
-			case Blue:
-				win_fg = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-				break;
+				case Blue:
+					win_fg = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+					break;
 
-			case Green:
-				win_fg = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-				break;
+				case Green:
+					win_fg = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+					break;
 
-			case Yellow:
-				win_fg = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-				break;
+				case Yellow:
+					win_fg = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+					break;
 			}
 
 			switch ( bg )
 			{
-			case White:
-				win_bg = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY;
-				break;
+				case White:
+					win_bg = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY;
+					break;
 
-			case Black:
-				win_bg = 0;
-				break;
+				case Black:
+					win_bg = 0;
+					break;
 
-			case Grey:
-				win_bg = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
-				break;
+				case Grey:
+					win_bg = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
+					break;
 
-			case Red:
-				win_bg = BACKGROUND_RED | BACKGROUND_INTENSITY;
-				break;
+				case Red:
+					win_bg = BACKGROUND_RED | BACKGROUND_INTENSITY;
+					break;
 
-			case Blue:
-				win_bg = BACKGROUND_BLUE | BACKGROUND_INTENSITY;
-				break;
+				case Blue:
+					win_bg = BACKGROUND_BLUE | BACKGROUND_INTENSITY;
+					break;
 
-			case Green:
-				win_bg = BACKGROUND_GREEN | BACKGROUND_INTENSITY;
-				break;
+				case Green:
+					win_bg = BACKGROUND_GREEN | BACKGROUND_INTENSITY;
+					break;
 
-			case Yellow:
-				win_bg = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_INTENSITY;
-				break;
+				case Yellow:
+					win_bg = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_INTENSITY;
+					break;
 			}
 
 			HANDLE hcon = GetStdHandle( STD_OUTPUT_HANDLE );

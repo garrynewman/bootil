@@ -46,7 +46,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT bool Read( const BString & strFileName, Bootil::Buffer & bufferOut )
 		{
-			std::ifstream f( strFileName.c_str(), std::ios_base::in|std::ios::ate|std::ios::binary );
+			std::ifstream f( strFileName.c_str(), std::ios_base::in | std::ios::ate | std::ios::binary );
 
 			if ( !f.is_open() ) { return false; }
 
@@ -75,7 +75,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT bool Write( const BString & strFileName, const Bootil::Buffer & bufferOut )
 		{
-			std::ofstream f( strFileName.c_str(), std::ios_base::out|std::ios::binary );
+			std::ofstream f( strFileName.c_str(), std::ios_base::out | std::ios::binary );
 
 			if ( !f.is_open() ) { return false; }
 
@@ -168,7 +168,7 @@ namespace Bootil
 #ifdef _WIN32
 			return 0 == mkdir( strFixed.c_str() );
 #else
-			return mkdir ( strFixed.c_str(), S_IRWXU | S_IRWXG | S_IRWXO );
+			return mkdir( strFixed.c_str(), S_IRWXU | S_IRWXG | S_IRWXO );
 #endif
 		}
 
@@ -208,7 +208,7 @@ namespace Bootil
 
 			if ( !f1.is_open() ) { return false; }
 
-			std::ofstream f2( strTo.c_str(), std::fstream::trunc|std::fstream::binary );
+			std::ofstream f2( strTo.c_str(), std::fstream::trunc | std::fstream::binary );
 
 			if ( !f2.is_open() ) { return false; }
 
