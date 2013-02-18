@@ -84,12 +84,12 @@ namespace Bootil
 				BString str = Print( "%i", i );
 				unsigned int iCommas = ( str.length() / 3 );
 
-				for ( unsigned int i =0; i<iCommas; i++ )
+				for ( unsigned int i = 0; i < iCommas; i++ )
 				{
-					if ( str.length() <= ( ( i+1 )*3 )+i )
+					if ( str.length() <= ( ( i + 1 ) * 3 ) + i )
 					{ continue; }
 
-					str.insert( str.length() - ( ( ( i+1 )*3 )+i ), "," );
+					str.insert( str.length() - ( ( ( i + 1 ) * 3 ) + i ), "," );
 				}
 
 				return str;
@@ -98,10 +98,10 @@ namespace Bootil
 			BOOTIL_EXPORT BString Time( const BString & strFormat, unsigned int iTime )
 			{
 				time_t rawtime = iTime;
-				time ( &rawtime );
+				time( &rawtime );
 				struct tm* timeinfo = localtime( &rawtime );
 				char buffer[ 512 ];
-				strftime ( buffer, 512, strFormat.c_str(), timeinfo );
+				strftime( buffer, 512, strFormat.c_str(), timeinfo );
 				return BString( buffer );
 			}
 
@@ -126,7 +126,7 @@ namespace Bootil
 				BString str = "";
 				const unsigned char* pBytes = ( const unsigned char* ) pData;
 
-				for ( unsigned int i = 0; i <iLength; i++ )
+				for ( unsigned int i = 0; i < iLength; i++ )
 				{
 					str += Print( "%02x", pBytes[i] );
 				}

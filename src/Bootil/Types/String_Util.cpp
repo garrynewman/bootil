@@ -19,7 +19,7 @@ namespace Bootil
 
 			BOOTIL_EXPORT void TrimRight( BString & str, const BString & strChars )
 			{
-				str.erase( str.find_last_not_of( strChars )+1 );
+				str.erase( str.find_last_not_of( strChars ) + 1 );
 			}
 
 			BOOTIL_EXPORT void TrimLeft( BString & str, const BString & strChars )
@@ -43,12 +43,12 @@ namespace Bootil
 
 				while ( i != std::string::npos )
 				{
-					outbits.push_back( str.substr( iOffset, i-iOffset ) );
+					outbits.push_back( str.substr( iOffset, i - iOffset ) );
 					iOffset = i + iSepLen;
 					i = str.find( seperator, iOffset );
 				}
 
-				outbits.push_back( str.substr( iOffset, iLength-iOffset ) );
+				outbits.push_back( str.substr( iOffset, iLength - iOffset ) );
 			}
 
 			BOOTIL_EXPORT int Count( const BString & str, char chrFind )

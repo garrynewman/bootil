@@ -18,7 +18,7 @@ namespace Bootil
 
 				if ( pos != std::string::npos )
 				{
-					strURL= strURL.substr( pos );
+					strURL = strURL.substr( pos );
 					return;
 				}
 

@@ -20,7 +20,7 @@ namespace Bootil
 		{
 			BString str;
 
-			for ( int i=0; i<iSize; i++ )
+			for ( int i = 0; i < iSize; i++ )
 			{
 				if ( bLetters && Math::Random::Bool() ) { str += ( char ) Bootil::Math::Random::Int( 'a', 'z' ); }
 				else if ( bCapitals && Math::Random::Bool() ) { str += ( char ) Bootil::Math::Random::Int( 'A', 'Z' ); }

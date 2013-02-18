@@ -49,7 +49,7 @@ int wildcmp( const char* wild, const char* string )
 			}
 
 			mp = wild;
-			cp = string+1;
+			cp = string + 1;
 		}
 		else if ( ( *wild == *string ) || ( *wild == '?' ) )
 		{
@@ -201,7 +201,7 @@ namespace Bootil
 			pid = fork();
 
 			if ( pid == 0 )
-			{ execvp( "/usr/bin/xdg-open", ( char*const* )args ); }
+			{ execvp( "/usr/bin/xdg-open", ( char * const* )args ); }
 		}
 
 		BOOTIL_EXPORT void StartProcess( const BString & strProcess, bool AndWait )
@@ -220,7 +220,7 @@ namespace Bootil
 				const char* args[2];
 				args[0] = strProcess.c_str();
 				args[1] = NULL;
-				execvp( strProcess.c_str(), ( char*const* )args );
+				execvp( strProcess.c_str(), ( char * const* )args );
 			}
 		}
 

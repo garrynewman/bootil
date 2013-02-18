@@ -155,7 +155,7 @@ namespace Bootil
 	{
 		int iWritten = 0;
 
-		for ( int i=0; i<str.length(); i++ )
+		for ( int i = 0; i < str.length(); i++ )
 		{
 			WriteType<char>( str[i] );
 			iWritten++;

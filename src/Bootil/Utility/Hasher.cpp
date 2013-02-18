@@ -4,9 +4,9 @@
 void crc32( const void* key, int len, unsigned long seed, unsigned long* out );
 void md5( unsigned char* input, int ilen, unsigned char output[16] );
 
-unsigned long crc32_start ( unsigned long seed );
-void crc32_add ( unsigned long & crc, const void* key, int len );
-void crc32_end ( unsigned long & crc );
+unsigned long crc32_start( unsigned long seed );
+void crc32_add( unsigned long & crc, const void* key, int len );
+void crc32_end( unsigned long & crc );
 
 namespace Bootil
 {

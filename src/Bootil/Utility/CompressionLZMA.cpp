@@ -33,16 +33,16 @@ namespace Bootil
 				unsigned char* pPropStart = ( unsigned char* ) output.GetCurrent();
 				unsigned char* pSizeStart = pPropStart + LZMA_PROPS_SIZE;
 				unsigned char* pBodyStart = pSizeStart + 8;
-				int res = LzmaCompress(		pBodyStart,						&iDestSize,		// Dest out
-											( unsigned char* ) pInputData,	iInputLength,	// Input in
-											pPropStart,						&props_size,	// Props out
-											iLevel,			// level [0-9]
-											iDictSize,		// dict size ( ie 1 << 4 )
-											3,
-											0,
-											2,
-											32,
-											2 );
+				int res = LzmaCompress(	pBodyStart,						&iDestSize,		// Dest out
+										( unsigned char* ) pInputData,	iInputLength,	// Input in
+										pPropStart,						&props_size,	// Props out
+										iLevel,			// level [0-9]
+										iDictSize,		// dict size ( ie 1 << 4 )
+										3,
+										0,
+										2,
+										32,
+										2 );
 
 				if ( props_size != LZMA_PROPS_SIZE )
 				{ return false; }

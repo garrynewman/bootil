@@ -22,17 +22,17 @@ namespace Bootil
 		{
 			BOOTIL_EXPORT void Seed( unsigned int Seed )
 			{
-				srand ( Seed );
+				srand( Seed );
 			}
 
 			BOOTIL_EXPORT int Int( int iMin, int iMax )
 			{
-				return iMin + ( rand()%( iMax-iMin ) );
+				return iMin + ( rand() % ( iMax - iMin ) );
 			}
 
 			BOOTIL_EXPORT bool Bool()
 			{
-				return rand()%2 == 1;
+				return rand() % 2 == 1;
 			}
 		}
 

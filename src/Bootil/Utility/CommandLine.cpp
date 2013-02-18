@@ -17,7 +17,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT void Set( int argc, char* argv[] )
 		{
-			for ( int i=1; i<argc; i++ )
+			for ( int i = 1; i < argc; i++ )
 			{
 				AddArgument( argv[i] );
 				g_Full = g_Full + argv[i] + " ";

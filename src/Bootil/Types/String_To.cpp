@@ -54,7 +54,7 @@ namespace Bootil
 
 				if ( lst.size() != iCount ) { return false; }
 
-				for ( int i=0; i<iCount; i++ )
+				for ( int i = 0; i < iCount; i++ )
 				{
 					f[i] = String::To::Float( lst[i] );
 				}

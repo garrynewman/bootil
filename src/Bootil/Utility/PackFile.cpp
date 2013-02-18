@@ -64,7 +64,7 @@ namespace Bootil
 			fe.iLength = iSize;
 			fe.iStartPos = iOffset;
 			m_FileMap[ strName ] = fe;
-			iOffset+= iSize;
+			iOffset += iSize;
 		}
 
 		Msg( "End Pos Files: %i\n", iOffset );
