@@ -172,6 +172,8 @@ namespace Bootil
 
 		while ( true )
 		{
+			if ( m_iPos + 1 > m_iSize ) { break; }
+
 			char c = ReadType<char>();
 
 			if ( c == 0 ) { break; }
