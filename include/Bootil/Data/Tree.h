@@ -52,11 +52,13 @@ namespace Bootil
 				// mychild = SetChild( "Name", "Value" );	[adds a named child with value]
 				// mychild = GetChild( "Name" );			[returns child, or creates child if not exists]
 				// bool b  = HasChild( "Name" );			[returns true if child exists]
+				// mychild = GetChildNum( 7 );				[returns 7th child, or creates 7 child if not exists (if empty, will create 7 children and return the 7th etc)]
 				TreeT<TString> & AddChild();
 				TreeT<TString> & AddChild( TString name );
 				TreeT<TString> & SetChild( TString strKey, TString strValue );
 				TreeT<TString> & GetChild( const TString & name );
 				bool			HasChild( const TString & name ) const;
+				TreeT<TString> & GetChildNum( int iNum );
 
 				//
 				// Getting Child Value
@@ -183,6 +185,24 @@ namespace Bootil
 				if ( a->Name() == name ) { return ( *a ); }
 			}
 			return AddChild( name );
+		}
+
+		template <typename TString>
+		TreeT<TString> & TreeT<TString>::GetChildNum( int iNum )
+		{
+			BOOTIL_FOREACH( a, Children(), typename List )
+			{
+				if ( iNum == 0 ) { return ( *a ); }
+
+				iNum--;
+			}
+
+			while ( iNum > 0 )
+			{
+				AddChild();
+			}
+
+			return AddChild();
 		}
 
 		template <typename TString>
