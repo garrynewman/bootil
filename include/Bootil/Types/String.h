@@ -42,15 +42,24 @@ namespace Bootil
 
 		namespace Util
 		{
-			BOOTIL_EXPORT void TrimLeft( BString & str, const BString & strChars );
-			BOOTIL_EXPORT void TrimRight( BString & str, const BString & strChars );
 			BOOTIL_EXPORT void Trim( BString & str, const BString & strChars = " \n\t\r" );
+			inline BString GetTrim( BString str, const BString & strChars ) { Trim( str, strChars ); return str; }
+
+			BOOTIL_EXPORT void TrimLeft( BString & str, const BString & strChars );
+			inline BString GetTrimLeft( BString str, const BString & strChars ) { TrimLeft( str, strChars ); return str; }
+
+			BOOTIL_EXPORT void TrimRight( BString & str, const BString & strChars );
+			inline BString GetTrimRight( BString str, const BString & strChars ) { TrimRight( str, strChars ); return str; }
+
+			BOOTIL_EXPORT void TrimBefore( Bootil::BString & str, const Bootil::BString & strFind, bool bIncluding = false );
+			inline BString GetTrimBefore( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { GetTrimBefore( str, strFind, bIncluding ); return str; }
+
+			BOOTIL_EXPORT void TrimAfter( Bootil::BString & str, const Bootil::BString & strFind, bool bIncluding = false );
+			inline BString GetTrimAfter( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { GetTrimAfter( str, strFind, bIncluding ); return str; }
+
 			BOOTIL_EXPORT void Split( const BString & str, const BString & seperator, String::List & outbits );
 			BOOTIL_EXPORT void FindAndReplace( BString & strIn, const BString & strFind, const BString & strReplace );
 			BOOTIL_EXPORT int Count( const BString & str, char chrFind );
-
-			BOOTIL_EXPORT void TrimBefore( Bootil::BString & str, const Bootil::BString & strFind, bool bIncluding = false );
-			BOOTIL_EXPORT void TrimAfter( Bootil::BString & str, const Bootil::BString & strFind, bool bIncluding = false );
 		}
 
 		namespace Test
