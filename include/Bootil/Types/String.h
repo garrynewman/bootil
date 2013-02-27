@@ -52,10 +52,10 @@ namespace Bootil
 			inline BString GetTrimRight( BString str, const BString & strChars ) { TrimRight( str, strChars ); return str; }
 
 			BOOTIL_EXPORT void TrimBefore( Bootil::BString & str, const Bootil::BString & strFind, bool bIncluding = false );
-			inline BString GetTrimBefore( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { GetTrimBefore( str, strFind, bIncluding ); return str; }
+			inline BString GetTrimBefore( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { TrimBefore( str, strFind, bIncluding ); return str; }
 
 			BOOTIL_EXPORT void TrimAfter( Bootil::BString & str, const Bootil::BString & strFind, bool bIncluding = false );
-			inline BString GetTrimAfter( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { GetTrimAfter( str, strFind, bIncluding ); return str; }
+			inline BString GetTrimAfter( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { TrimAfter( str, strFind, bIncluding ); return str; }
 
 			BOOTIL_EXPORT void Split( const BString & str, const BString & seperator, String::List & outbits );
 			BOOTIL_EXPORT void FindAndReplace( BString & strIn, const BString & strFind, const BString & strReplace );
