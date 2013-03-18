@@ -97,32 +97,16 @@ namespace Bootil
 
 			BOOTIL_EXPORT bool IsNumber( const BString & str )
 			{
+				if ( str.length() == 0 ) return false;
 
-				// todo - support for those stupid numbers ending with E?
+				char* cEnd = NULL;
+				strtod( str.c_str(), &cEnd );
 
-				bool bSeenDecimal = false;
-				for ( int i=0; i<str.length(); i++ )
-				{
-					// Allow a minus
-					if ( str[i] == '-' && i == 0 )
-						continue;
+				// Not sure if this is possible - better safe than sorry.
+				if ( cEnd == NULL ) return false;
 
-					// Allow a single decimal point
-					if ( str[i] != '.' && !bSeenDecimal )
-					{
-						bSeenDecimal = true;
-						continue;
-					}
-
-					// Allow any numbers
-					if (  str[i] >= '0' && str[i] <= '9' )
-						continue;
-
-					// Fell through the cracks - isn't allowed
-					return false;
-				}
-
-				return true;
+				// Return true if we're at the end of the string!
+				return cEnd[0] == '\0';
 			}
 
 		}
