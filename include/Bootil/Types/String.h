@@ -72,6 +72,7 @@ namespace Bootil
 			BOOTIL_EXPORT bool Wildcard( BString strWildcard, BString strHaystack );
 			BOOTIL_EXPORT bool ContainsChar( const BString & strHaystack, char c );
 			BOOTIL_EXPORT bool ICompare( const BString & strA, const BString & strB );
+			BOOTIL_EXPORT bool IsNumber( const BString & strA );
 		}
 
 		namespace Sanitize
