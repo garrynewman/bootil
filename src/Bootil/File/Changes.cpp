@@ -1,5 +1,5 @@
 #include "Bootil/Bootil.h"
-#ifdef WIN32
+#ifdef _WIN32
 #define _WIN32_WINNT 0x0502
 
 #include <windows.h>
@@ -14,7 +14,7 @@ namespace
 	struct WatcherData
 	{
 		Bootil::BString directory;
-#ifdef WIN32
+#ifdef _WIN32
 		HANDLE directoryHandle;
 
 		OVERLAPPED overlapped;
@@ -82,7 +82,7 @@ namespace Bootil
 			WatcherData watcherData;
 
 			watcherData.directory = strFolder;
-#ifdef WIN32
+#ifdef _WIN32
 			watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
 			memset( &watcherData.overlapped, 0, sizeof( watcherData.overlapped ) );
@@ -110,7 +110,7 @@ namespace Bootil
 					WatcherData watcherData;
 
 					watcherData.directory = *directory;
-#ifdef WIN32
+#ifdef _WIN32
 					watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
 					memset( &watcherData.overlapped, 0, sizeof( watcherData.overlapped ) );
@@ -151,7 +151,7 @@ namespace Bootil
 
 			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
-#ifdef WIN32
+#ifdef _WIN32
 				CloseHandle( watcherData->directoryHandle );
 				watcherData->directoryHandle = NULL;
 #elif __linux__
@@ -186,7 +186,7 @@ namespace Bootil
 
 			// Check for changes.
 
-#ifdef WIN32
+#ifdef _WIN32
 			for ( WatcherData& watcherData: *( ( std::vector<WatcherData>* ) m_dirHandles ) )
 			{
 				CancelIo( watcherData.directoryHandle );
@@ -278,7 +278,7 @@ namespace Bootil
 		{
 			// Start looking for changes.
 
-#ifdef WIN32
+#ifdef _WIN32
 			for ( WatcherData& watcherData: *( ( std::vector<WatcherData>* ) m_dirHandles ) )
 			{
 				std::fill( watcherData.buffer, watcherData.buffer + 512, 0 );
