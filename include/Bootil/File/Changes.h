@@ -50,9 +50,7 @@ namespace Bootil
 				void CheckForChanges();
 				void StartWatch();
 
-				void*				m_pData;
-				char				m_Buffer[1024];
-				void* 				m_dirHandle;
+				void* 				m_dirHandles;
 				BString				m_strFolderName;
 				std::list<BString>	m_Changes;
 				bool				m_bWatchSubtree;
