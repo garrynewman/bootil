@@ -1,32 +1,33 @@
+#define _WIN32_WINNT 0x0502
 
-#include "Bootil/Bootil.h"
-
-#ifdef _WIN32
-#define _WIN32_WINNT  0x0502
 #include <windows.h>
-#elif __linux__
-#include <unistd.h>
-#include <sys/select.h>
-#include <sys/inotify.h>
-
-typedef std::map<int, Bootil::BString> WatchMap;
+#include "Bootil/Bootil.h"
 
 namespace
 {
-	// Slightly ugly, but it works.
-	void RecurseDirectories( Bootil::String::List & folders, const Bootil::BString & folder )
+	struct WatcherData
 	{
-		Bootil::String::List curDir;
-		int i = Bootil::File::Find( NULL, &curDir, folder + "/*", false );
-		BOOTIL_FOREACH_CONST( f, curDir, Bootil::String::List )
+		Bootil::BString directory;
+		HANDLE directoryHandle;
+
+		OVERLAPPED overlapped;
+
+		char buffer[512];
+	};
+
+	void RecurseDirectories( Bootil::String::List & directories, const Bootil::BString & path )
+	{
+		Bootil::String::List currentDirectory;
+
+		Bootil::File::Find( NULL, &currentDirectory, path + "/*", false );
+		BOOTIL_FOREACH_CONST( directory, currentDirectory, Bootil::String::List )
 		{
-			folders.push_back( *f );
-			RecurseDirectories( folders, *f );
+			Bootil::BString directoryPath = path + "/" + *directory;
+			directories.push_back( directoryPath );
+			RecurseDirectories( directories, directoryPath );
 		}
 	}
 }
-
-#endif
 
 namespace Bootil
 {
@@ -34,72 +35,61 @@ namespace Bootil
 	{
 		ChangeMonitor::ChangeMonitor()
 		{
-			m_dirHandle		= NULL;
-			m_pData			= NULL;
-			m_bWatchSubtree	= false;
-			memset( m_Buffer, 0, sizeof( m_Buffer ) );
-#ifdef _WIN32
-			m_pData = ( void* )new OVERLAPPED;
-			memset( m_pData, 0, sizeof( OVERLAPPED ) );
-#elif __linux__
-			m_pData = ( void* )new int( inotify_init() );
-#endif
+			m_dirHandles = NULL;
 		}
 
 		ChangeMonitor::~ChangeMonitor()
 		{
-#ifdef _WIN32
-			delete( ( OVERLAPPED* )m_pData );
-#endif
 			Stop();
-#ifdef __linux__
-			close( *( int* )m_pData );
-			delete( int* )m_pData;
-#endif
 		}
 
 		bool ChangeMonitor::WatchFolder( const BString & strFolder, bool bWatchSubtree )
 		{
 			Stop();
+
+			m_strFolderName = strFolder;
 			m_bWatchSubtree = bWatchSubtree;
-#ifdef _WIN32
-			memset( m_pData, 0, sizeof( OVERLAPPED ) );
-			m_dirHandle = CreateFileA( strFolder.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
-			if ( m_dirHandle == INVALID_HANDLE_VALUE )
-			{ return false; }
+			m_dirHandles = new std::vector<WatcherData>;
 
-			( ( OVERLAPPED* )m_pData )->hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
-			StartWatch();
-#elif __linux__
-			int flags = IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO;
-			int handle;
-			m_dirHandle = new WatchMap();
-			handle = inotify_add_watch( *( int* )m_pData, strFolder.c_str(), flags );
+			// Watch the main folder.
 
-			if ( handle < 0 )
-			{ return false; }
+			WatcherData watcherData;
 
-			( *( WatchMap* )m_dirHandle )[handle] = strFolder;
+			watcherData.directory = strFolder;
+			watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
-			if ( bWatchSubtree )
+			memset( &watcherData.overlapped, 0, sizeof( watcherData.overlapped ) );
+			watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
+
+			std::fill( watcherData.buffer, watcherData.buffer + 512, 0 );
+
+			( ( std::vector<WatcherData>* ) m_dirHandles )->push_back( watcherData );
+
+			// And subfolders if we were told to.
+
+			if ( m_bWatchSubtree )
 			{
-				String::List folders;
-				RecurseDirectories( folders, strFolder );
-				BOOTIL_FOREACH_CONST( folder, folders, String::List )
+				Bootil::String::List directories;
+				RecurseDirectories( directories, strFolder );
+				BOOTIL_FOREACH_CONST( directory, directories, Bootil::String::List )
 				{
-					handle = inotify_add_watch( *( int* )m_pData, folder->c_str(), flags );
+					WatcherData watcherData;
 
-					if ( handle < 0 )
-					{ return false; }
+					watcherData.directory = *directory;
+					watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
-					( *( WatchMap* )m_dirHandle )[handle] = *folder;
+					memset( &watcherData.overlapped, 0, sizeof( watcherData.overlapped ) );
+					watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
+
+					std::fill( watcherData.buffer, watcherData.buffer + 512, 0 );
+
+					( ( std::vector<WatcherData>* ) m_dirHandles )->push_back( watcherData );
 				}
 			}
 
 			StartWatch();
-#endif
-			m_strFolderName = strFolder;
+
 			return true;
 		}
 
@@ -114,30 +104,18 @@ namespace Bootil
 
 		void ChangeMonitor::Stop()
 		{
-			if ( m_dirHandle )
+			if ( !m_dirHandles )
 			{
-#ifdef _WIN32
-				CloseHandle( m_dirHandle );
-				m_dirHandle = NULL;
-#elif __linux__
-				BOOTIL_FOREACH_CONST( handle, ( *( WatchMap* )m_dirHandle ), WatchMap )
-				{
-					inotify_rm_watch( *( int* )m_pData, handle->first );
-				}
-				delete( WatchMap* )m_dirHandle;
-				m_dirHandle = NULL;
-#endif
+				return;
 			}
 
-#ifdef _WIN32
-
-			if ( ( ( OVERLAPPED* )m_pData )->hEvent )
+			for ( WatcherData& watcherData: *( ( std::vector<WatcherData>* ) m_dirHandles ) )
 			{
-				CloseHandle( ( ( OVERLAPPED* )m_pData )->hEvent );
-				( ( OVERLAPPED* )m_pData )->hEvent = NULL;
+				CloseHandle( watcherData.directoryHandle );
+				watcherData.directoryHandle = NULL;
 			}
 
-#endif
+			delete m_dirHandles;
 		}
 
 		bool ChangeMonitor::HasChanges()
@@ -157,75 +135,76 @@ namespace Bootil
 
 		void ChangeMonitor::CheckForChanges()
 		{
-			if ( m_dirHandle == NULL ) { return; }
-
-#ifdef _WIN32
-			DWORD dwNumberbytes;
-
-			if ( !GetOverlappedResult( m_dirHandle, ( ( OVERLAPPED* )m_pData ), &dwNumberbytes, false ) )
-			{ return; }
-
-			ResetEvent( ( ( OVERLAPPED* )m_pData )->hEvent );
-			int iOffset = 0;
-
-			while ( true )
+			if ( !m_dirHandles )
 			{
-				FILE_NOTIFY_INFORMATION* pNotify = ( FILE_NOTIFY_INFORMATION* )&m_Buffer[iOffset];
-				BString strName = Bootil::String::Convert::FromWide( WString( pNotify->FileName, pNotify->FileNameLength / sizeof( wchar_t ) ) );
-
-				if ( pNotify->FileNameLength > 0 )
-				{
-					NoteFileChanged( strName );
-				}
-
-				if ( pNotify->NextEntryOffset == 0 )
-				{
-					StartWatch();
-					return;
-				}
-
-				iOffset += pNotify->NextEntryOffset;
+				return;
 			}
 
-#elif __linux__
-			int inotify_fd = *( int* )m_pData;
-			timeval timeout;
-			timeout.tv_sec = 0;
-			timeout.tv_usec = 0;
-			fd_set fds;
-			FD_ZERO( &fds );
-			FD_SET( inotify_fd, &fds );
-			select( inotify_fd + 1, &fds, NULL, NULL, &timeout );
+			// Check for changes.
 
-			if ( FD_ISSET( inotify_fd, &fds ) )
+			for ( WatcherData& watcherData: *( ( std::vector<WatcherData>* ) m_dirHandles ) )
 			{
-				int i = 0;
-				int ret = read( inotify_fd, m_Buffer, sizeof( m_Buffer ) );
+				CancelIo( watcherData.directoryHandle );
 
-				if ( ret < 0 )
-				{ return; }
+				DWORD dwNumberBytes;
 
-				while ( i < ret )
+				GetOverlappedResult( watcherData.directoryHandle, &watcherData.overlapped, &dwNumberBytes, FALSE );
+
+				ResetEvent( watcherData.overlapped.hEvent );
+
+				int iOffset = 0;
+				while ( true )
 				{
-					inotify_event* event = ( inotify_event* )&m_Buffer[i];
+					FILE_NOTIFY_INFORMATION* pNotify = ( FILE_NOTIFY_INFORMATION* ) &watcherData.buffer[iOffset];
+					iOffset += pNotify->NextEntryOffset;
 
-					if ( event->len > 0 )
+					if ( pNotify->FileNameLength > 0 )
 					{
-						NoteFileChanged( ( *( WatchMap* )m_dirHandle )[event->wd] + "/" + event->name );
+						// Found a changed file. Get the relative path to it.
+
+						BString path;
+
+						if ( watcherData.directory == m_strFolderName )
+						{
+							path = "";
+						}
+						else
+						{
+							path = watcherData.directory.substr( m_strFolderName.size() + 1 ) + "/";	
+						}
+
+						path += Bootil::String::Convert::FromWide( WString( pNotify->FileName, pNotify->FileNameLength / sizeof( wchar_t ) ) );
+
+						// Add it to the change list.
+
+						NoteFileChanged( path );
 					}
 
-					i += sizeof( inotify_event ) + event->len;
+					if ( pNotify->NextEntryOffset == 0 )
+					{
+						// We reached the end of the changes. Start looking for them again.
+
+						std::fill( watcherData.buffer, watcherData.buffer + 512, 0 );
+
+						ReadDirectoryChangesW( watcherData.directoryHandle, &watcherData.buffer, sizeof( watcherData.buffer ), FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE, NULL, &watcherData.overlapped, NULL );
+
+						break;
+					}
 				}
 			}
-
-#endif
 		}
 
 		void ChangeMonitor::StartWatch()
 		{
-#ifdef _WIN32
-			ReadDirectoryChangesW( m_dirHandle, m_Buffer, sizeof( m_Buffer ), m_bWatchSubtree, FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE, NULL, ( ( OVERLAPPED* )m_pData ), NULL );
-#endif
+			// Start looking for changes.
+
+			for ( WatcherData& watcherData: *( ( std::vector<WatcherData>* ) m_dirHandles ) )
+			{
+				std::fill( watcherData.buffer, watcherData.buffer + 512, 0 );
+
+				ReadDirectoryChangesW( watcherData.directoryHandle, &watcherData.buffer, sizeof( watcherData.buffer ), FALSE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE, NULL, &watcherData.overlapped, NULL );
+			}
+
 			CheckForChanges();
 		}
 	}
