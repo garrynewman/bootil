@@ -50,6 +50,9 @@ namespace Bootil
 				void CheckForChanges();
 				void StartWatch();
 
+#ifdef __linux__
+				int                 m_inotify;
+#endif
 				void* 				m_dirHandles;
 				BString				m_strFolderName;
 				std::list<BString>	m_Changes;
