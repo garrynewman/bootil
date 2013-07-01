@@ -6,6 +6,11 @@ solution "Bootil"
 	targetdir ( "../lib/" .. os.get() .. "/" .. _ACTION )
 	includedirs { "../include/", "../src/3rdParty/" }
 
+	-- For CURL
+	defines { "BUILDING_LIBCURL", "CURL_STATICLIB", "CURL_DISABLE_LDAP" }
+	includedirs { "../src/3rdParty/curl/include/" }
+	if ( os.is( "windows" ) ) then links{ "Ws2_32" } end
+	
 	if os.is( "linux" ) or os.is( "macosx" ) then
 		buildoptions { "-fPIC" }
 		-- linkoptions  { "-fPIC" }  -- OSX does not need this for linking
