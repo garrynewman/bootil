@@ -8,12 +8,12 @@ namespace Bootil
 	{
 		BOOTIL_EXPORT void Lower( BString & str )
 		{
-			std::transform( str.begin(), str.end(), str.begin(), tolower );
+			std::transform( str.begin(), str.end(), str.begin(), ::tolower );
 		}
 
 		BOOTIL_EXPORT void Upper( BString & str )
 		{
-			std::transform( str.begin(), str.end(), str.begin(), toupper );
+			std::transform( str.begin(), str.end(), str.begin(), ::toupper );
 		}
 
 		BOOTIL_EXPORT BString Random( int iSize, bool bLetters, bool bCapitals, bool bNumbers, bool Specials )
