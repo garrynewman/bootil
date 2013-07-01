@@ -2,7 +2,7 @@
 #include "Bootil/Bootil.h"
 
 void crc32( const void* key, int len, unsigned long seed, unsigned long* out );
-void md5( unsigned char* input, int ilen, unsigned char output[16] );
+void md5( unsigned char *input, int ilen, unsigned char output[16] );
 
 unsigned long crc32_start( unsigned long seed );
 void crc32_add( unsigned long & crc, const void* key, int len );
@@ -48,7 +48,7 @@ namespace Bootil
 			Bootil::BString	Easy( const void* pData, unsigned int iLength )
 			{
 				unsigned char output[16];
-				md5( ( unsigned char* ) pData, iLength, output );
+				::md5( ( unsigned char* ) pData, iLength, output );
 				return Bootil::String::Format::BinaryToHex( output, sizeof( output ) );
 			}
 
