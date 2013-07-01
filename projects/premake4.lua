@@ -8,7 +8,10 @@ solution "Bootil"
 	
 	if os.is( "linux" ) or os.is( "macosx" ) then
 		buildoptions { "-fPIC" }
-		-- linkoptions  { "-fPIC" }  -- OSX does not need this for linking
+	end
+	
+	if os.is( "windows" ) then
+		links { "WS2_32" }
 	end
 
 	configurations
