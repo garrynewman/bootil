@@ -11,6 +11,19 @@ namespace Bootil
 				virtual bool Finished() = 0;
 				virtual void Destroy() = 0;
 				virtual bool Success() = 0;
+
+				virtual float GetProgress() = 0;
+		};
+
+		//
+		// You can use this class to get progress when extracting.
+		// Return false in OnProgress to cancel the process
+		//
+		class BOOTIL_EXPORT ProgressCallback
+		{
+			public:
+
+				virtual bool OnProgress( float fPercent, unsigned int iDataSize, unsigned int iDataProcessed ) = 0;
 		};
 
 		namespace FastLZ
@@ -26,7 +39,7 @@ namespace Bootil
 		namespace LZMA
 		{
 			BOOTIL_EXPORT bool Compress( const void* pData, unsigned int iLength, Bootil::Buffer & output, int iLevel = 5, int iDictSize = 65536 );
-			BOOTIL_EXPORT bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output );
+			BOOTIL_EXPORT bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, ProgressCallback* pProgress = NULL );
 
 			// This sucks but I'm in a rush. TODO: Clean Up.
 			BOOTIL_EXPORT Job* ExtractInThread( const void* pData, unsigned int iLength, const Bootil::BString & strOutputFile );

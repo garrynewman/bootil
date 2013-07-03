@@ -82,7 +82,7 @@ namespace Bootil
 				return true;
 			}
 
-			bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output )
+			bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, ProgressCallback* pProgress )
 			{
 				const unsigned char* pPropsBuf = ( unsigned char* ) pData;
 				const unsigned char* pSizeBuf = pPropsBuf + LZMA_PROPS_SIZE;
@@ -117,6 +117,8 @@ namespace Bootil
 				size_t srcLen = iLength - LZMA_PROPS_SIZE - 8;
 				int res = LzmaUncompress( ( unsigned char* )output.GetCurrent(), &iDestLen, pDataBuf, &srcLen, pPropsBuf, LZMA_PROPS_SIZE );
 
+				// TODO! pProgress
+
 				if ( res != SZ_OK )
 				{ return false; }
 
@@ -128,7 +130,7 @@ namespace Bootil
 				return true;
 			}
 
-			bool ExtractToFile( const void* pData, unsigned int iLength, const Bootil::BString & output )
+			bool ExtractToFile( const void* pData, unsigned int iLength, const Bootil::BString & output, ProgressCallback* pProgress )
 			{
 				std::ofstream OutputFile;
 				const unsigned char* pPropsBuf = ( unsigned char* ) pData;
@@ -162,15 +164,16 @@ namespace Bootil
 
 					if ( !OutputFile.is_open() ) { return false; }
 				}
+				unsigned int		iChunkSize		= 1024 * 256;
 				bool				bReturnStatus	= false;
 				unsigned int		iOutPos			= 0;
 				unsigned			inPos			= 0;
-				unsigned char*		pDestBuffer		= new unsigned char[ 1024 * 1024 * 2 ];
+				unsigned char*		pDestBuffer		= new unsigned char[ iChunkSize ];
 
 				while ( true )
 				{
 					SizeT iInputSize	= iDataLength - inPos;
-					SizeT iOutputSize	= 1024 * 1024 * 2;
+					SizeT iOutputSize	= iChunkSize;
 					ELzmaStatus	status;
 					SRes res = LzmaDec_DecodeToBuf( &state, pDestBuffer, &iOutputSize, pDataBuf + inPos, &iInputSize, LZMA_FINISH_ANY, &status );
 
@@ -203,7 +206,17 @@ namespace Bootil
 						break;
 					}
 
+					if ( pProgress )
+					{
+						pProgress->OnProgress( (float)iOutPos / (float)iDataLength,  iDataLength, iOutPos );
+					}
+
 					inPos += iInputSize;
+				}
+
+				if ( pProgress )
+				{
+					pProgress->OnProgress( 1.0f, iDataLength, iDataLength );
 				}
 
 				// Clean up
@@ -223,7 +236,7 @@ namespace Bootil
 				return bReturnStatus;
 			}
 
-			class ExtractionThread : public Threads::Thread, public Job
+			class ExtractionThread : public Threads::Thread, public Job, public ProgressCallback
 			{
 				public:
 
@@ -233,13 +246,14 @@ namespace Bootil
 						m_strOutputFile = strOutputFile;
 						m_bFinished = false;
 						m_bSuccess = false;
+						m_fProgress = 0.0f;
 						StartInThread();
 					}
 
 					virtual void Run()
 					{
 						AutoBuffer buffer;
-						bool bSuccess = ExtractToFile( m_Buffer.GetBase(), m_Buffer.GetWritten(), m_strOutputFile );
+						bool bSuccess = ExtractToFile( m_Buffer.GetBase(), m_Buffer.GetWritten(), m_strOutputFile, this );
 						m_Buffer.Clear();
 						Lock();
 						m_bFinished = true;
@@ -264,11 +278,28 @@ namespace Bootil
 						return m_bSuccess;
 					}
 
+					virtual float GetProgress()
+					{
+						Threads::Guard g( &m_Mutex );
+						return m_fProgress;
+					}
+
+					virtual bool OnProgress( float fPercent, unsigned int iDataSize, unsigned int iDataProcessed )
+					{
+						Lock();
+							m_fProgress = fPercent;
+						Unlock();
+
+						return true;
+					}
+
 					Bootil::BString		m_strOutputFile;
 					AutoBuffer			m_Buffer;
 
 					bool m_bFinished;
 					bool m_bSuccess;
+
+					float	m_fProgress;
 			};
 
 			Job* ExtractInThread( const void* pData, unsigned int iLength, const Bootil::BString & strOutputFile )
