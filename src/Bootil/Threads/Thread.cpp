@@ -36,6 +36,7 @@ namespace Bootil
 		{
 			if ( m_pThread ) { return false; }
 
+			m_bRunning = true;
 			m_pThread = new tthread::thread( RunInThread, this );
 			return true;
 		}
