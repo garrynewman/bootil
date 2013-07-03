@@ -144,6 +144,8 @@ namespace Bootil
 						return m_bSuccess;
 					}
 
+					virtual float GetProgress(){ return 0.5f; }
+
 					Bootil::BString		m_strOutputFile;
 					AutoBuffer			m_Buffer;
 					unsigned int		m_TargetSize;
