@@ -208,7 +208,7 @@ namespace Bootil
 
 					if ( pProgress )
 					{
-						pProgress->OnProgress( (float)iOutPos / (float)iDataLength,  iDataLength, iOutPos );
+						pProgress->OnProgress( (float)iOutPos / (float)iDestLen,  iDestLen, iOutPos );
 					}
 
 					inPos += iInputSize;
@@ -216,7 +216,7 @@ namespace Bootil
 
 				if ( pProgress )
 				{
-					pProgress->OnProgress( 1.0f, iDataLength, iDataLength );
+					pProgress->OnProgress( 1.0f, iDestLen, iDestLen );
 				}
 
 				// Clean up
