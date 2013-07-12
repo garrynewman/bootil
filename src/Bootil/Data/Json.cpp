@@ -197,12 +197,14 @@ namespace Bootil
 				}
 			}
 
-			bool Import( Bootil::Data::Tree & tree, const Bootil::BString & input )
+			bool Import( Bootil::Data::Tree & tree, const char* strInput )
 			{
 				rapidjson::Document doc;
 
-				if ( doc.Parse<0>( input.c_str() ).HasParseError() )
-				{ return false; }
+				{
+					if ( doc.Parse<0>( strInput ).HasParseError() )
+					{ return false; }
+				}
 
 				if ( doc.IsObject() || doc.IsArray() )
 				{

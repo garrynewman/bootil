@@ -6,8 +6,8 @@ namespace Bootil
 	{
 		namespace Json
 		{
-			bool Export( const Bootil::Data::Tree & tree, Bootil::BString & output, bool bPretty = false );
-			bool Import( Bootil::Data::Tree & tree, const Bootil::BString & input );
+			BOOTIL_EXPORT bool Export( const Bootil::Data::Tree & tree, Bootil::BString & output, bool bPretty = false );
+			BOOTIL_EXPORT bool Import( Bootil::Data::Tree & tree, const char* strInput );
 		}
 	}
 }

@@ -28,16 +28,10 @@ configuration "Debug"
 	defines { "_DEBUG" }
 	targetsuffix "_debug"
 
-project "Bootil-Shared"
-	uuid ( "22348F3E-2CE7-42fd-B7DC-2861A17D9FEE" )
-	defines { "BOOTIL_COMPILE_DLL" }
-	files { "../src/**.cpp", "../src/**.c", "../src/**.cc" }
-	kind "SharedLib"
-	targetname( "bootil" )
 
 project "Bootil-Static"
 	uuid ( "AB8E7B19-A70C-4767-88DE-F02160167C2E" )
 	defines { "BOOTIL_COMPILE_STATIC" }
-	files { "../src/**.cpp", "../src/**.c", "../src/**.cc" }
+	files { "../src/**.cpp", "../include/**.h", "../src/**.c", "../src/**.cc" }
 	kind "StaticLib"
 	targetname( "bootil_static" )

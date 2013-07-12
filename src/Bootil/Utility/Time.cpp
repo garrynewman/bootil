@@ -15,6 +15,18 @@ namespace Bootil
 		{
 			return Bootil::String::Format::Print( "%llu", UnixTimestamp() );
 		}
+
+		BOOTIL_EXPORT float Seconds()
+		{
+			clock_t t = clock();
+			return ( (float) t) / CLOCKS_PER_SEC;
+		}
+
+		BOOTIL_EXPORT float MilliSeconds()
+		{
+			clock_t t = clock();
+			return ( (double) t) / ( CLOCKS_PER_SEC * 1000.0 );
+		}
 	}
 
 }

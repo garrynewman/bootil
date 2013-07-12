@@ -2,7 +2,7 @@
 
 namespace Bootil
 {
-	class Buffer
+	class BOOTIL_EXPORT Buffer
 	{
 		public:
 
@@ -73,7 +73,7 @@ namespace Bootil
 			unsigned int		m_iWritten;
 	};
 
-	class AutoBuffer : public Buffer
+	class BOOTIL_EXPORT AutoBuffer : public Buffer
 	{
 		public:
 

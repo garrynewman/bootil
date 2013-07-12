@@ -70,6 +70,8 @@
 
 #include "Bootil/Console/Console.h"
 
+#include "Bootil/Utility/HTTP.h"
+
 namespace Bootil
 {
 	BOOTIL_EXPORT void Startup();
