@@ -79,6 +79,11 @@ namespace Bootil
 
 	AutoBuffer::AutoBuffer( int iInitialSize )
 	{
+		m_pData		= NULL;
+		m_iSize		= 0;
+		m_iWritten	= 0;
+		m_iPos		= 0;
+
 		EnsureCapacity( iInitialSize );
 	}
 
@@ -116,7 +121,6 @@ namespace Bootil
 		if ( !m_pData )
 		{
 			m_pData = malloc( iSize );
-
 			if ( !m_pData )
 			{
 				return false;

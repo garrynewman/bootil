@@ -9,7 +9,7 @@ namespace Bootil
 		// Each node can have a key, a value and multiple children nodes
 		//
 		template <typename TString>
-		class TreeT
+		class BOOTIL_EXPORT TreeT
 		{
 			public:
 
