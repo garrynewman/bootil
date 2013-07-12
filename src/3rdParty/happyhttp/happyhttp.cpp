@@ -185,15 +185,10 @@ struct in_addr *atoaddr( const char* address)
 	if (saddr.s_addr != -1)
 		return &saddr;
 
-	printf( "gethostbyname\n" );
 	host = gethostbyname(address);
 	if( host )
-	{
-		printf( "GOT HOST\n" );
 		return (struct in_addr *) *host->h_addr_list;
-	}
 
-	printf( "NULL %i\n", WSAGetLastError() );
 	return 0;
 }
 
