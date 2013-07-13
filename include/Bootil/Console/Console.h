@@ -22,5 +22,10 @@ namespace Bootil
 		BOOTIL_EXPORT void BGColorPop();
 
 		BOOTIL_EXPORT char WaitForKey();
+
+		BOOTIL_EXPORT void Cls();
+
+		BOOTIL_EXPORT void PosPush( int x, int y );
+		BOOTIL_EXPORT void PosPop();
 	}
 }
