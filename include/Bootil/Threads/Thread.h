@@ -30,6 +30,8 @@ namespace Bootil
 
 				void Join();
 
+				virtual void OnThreadFinished(){};
+
 			protected:
 
 				static void RunInThread( void* pArg );

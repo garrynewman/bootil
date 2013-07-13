@@ -121,5 +121,60 @@ namespace Bootil
 			c = std::getchar();
 			return c;
 		}
+
+		BOOTIL_EXPORT void Cls()
+		{
+#ifdef _WIN32
+			system( "cls" );
+#else
+			std::cout <<"\033[2J\033[H";
+#endif
+		}
+
+		//
+		// Cursor Position
+		//
+
+		struct PosInfo
+		{
+			typedef std::stack<PosInfo> Stack;
+			int x;
+			int y;
+		};
+
+		static PosInfo::Stack g_PosStack;
+
+		BOOTIL_EXPORT void PosPush( int x, int y )
+		{
+			#ifdef _WIN32
+
+			CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = { 0 };
+			GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &ScreenBufferInfo );
+
+			g_PosStack.push( PosInfo() );
+				g_PosStack.top().x = ScreenBufferInfo.dwCursorPosition.X;
+				g_PosStack.top().y = ScreenBufferInfo.dwCursorPosition.Y;
+			
+			COORD Cord;
+				Cord.X = x + ScreenBufferInfo.dwMaximumWindowSize.X;
+				Cord.Y = y + ScreenBufferInfo.dwMaximumWindowSize.Y;
+
+				
+			SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), Cord );
+			#endif 
+
+		}
+
+		BOOTIL_EXPORT void PosPop()
+		{
+#ifdef _WIN32
+			COORD Cord;
+				Cord.X = g_PosStack.top().x;
+				Cord.Y = g_PosStack.top().y;
+			SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), Cord );
+
+			g_PosStack.pop();			
+#endif 
+		}
 	}
 }

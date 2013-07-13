@@ -48,9 +48,10 @@ namespace Bootil
 
 		BOOTIL_EXPORT BString CurrentDir( void )
 		{
-			BString strCurretnntDir = "AGH";
-			// TODO.
-			return strCurretnntDir;
+			char strCurrentWD[MAX_PATH];
+			_getcwd( strCurrentWD, sizeof( strCurrentWD ) );
+
+			return strCurrentWD;
 		}
 
 		BOOTIL_EXPORT BString TemporaryDir( void )

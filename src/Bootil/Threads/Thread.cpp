@@ -19,6 +19,11 @@ namespace Bootil
 			pThread->Lock();
 			pThread->m_bRunning = false;
 			pThread->Unlock();
+
+			//
+			// you can use this function to delete this;
+			//
+			pThread->OnThreadFinished();
 		}
 
 		Thread::Thread()
