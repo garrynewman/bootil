@@ -92,10 +92,6 @@ namespace Bootil
 			m_PostParams += k + "=" + v;
 		}
 
-		bool IsFinished()
-		{
-
-		}
 	}
 
 }

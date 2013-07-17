@@ -41,6 +41,10 @@ namespace Bootil
 				Bootil_FormatString( strBuilt, format );
 				BString strError = String::Format::Print( "%s\n\nModule:\t%s\nFile:\t%s\nLine:\t%i\nFunction:\t%s\n", strBuilt.c_str(), strModule, strFile, iLine, strFunction );
 				Output::Warning( "%s", strError.c_str() );
+
+#if _DEBUG 
+				PopupMessage( "%s", strError.c_str() );
+#endif 
 			}
 		}
 
