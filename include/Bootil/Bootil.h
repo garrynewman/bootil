@@ -72,6 +72,8 @@
 
 #include "Bootil/Utility/HTTP.h"
 
+#include "Bootil/Network/Socket.h"
+
 namespace Bootil
 {
 	BOOTIL_EXPORT void Startup();
