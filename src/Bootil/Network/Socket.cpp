@@ -22,16 +22,16 @@ namespace Bootil
 	{
 		Socket::Socket()
 		{
-			m_pSocket = INVALID_SOCKET;
+			m_pSocket = 0;
 		}
 
 		bool Socket::InitAsListener( unsigned int iPort )
 		{
-			BAssert( m_pSocket == INVALID_SOCKET );
+			BAssert( m_pSocket == 0 );
 
 			// create the socket
 			m_pSocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-			if ( m_pSocket == INVALID_SOCKET )
+			if ( m_pSocket == 0 )
 				return false;
 
 			// Set up some common config settings
@@ -79,10 +79,10 @@ namespace Bootil
 
 		void Socket::Close()
 		{
-			if ( m_pSocket != INVALID_SOCKET ) return;
+			if ( m_pSocket != 0 ) return;
 
 			closesocket( m_pSocket );
-			m_pSocket = INVALID_SOCKET;
+			m_pSocket = 0;
 		}
 
 		void Socket::InitializeSocket()

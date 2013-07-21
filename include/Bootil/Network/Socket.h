@@ -22,7 +22,7 @@ namespace Bootil
 
 			protected:
 
-				unsigned int		m_pSocket;
+				int		m_pSocket;
 		};
 
 	}
