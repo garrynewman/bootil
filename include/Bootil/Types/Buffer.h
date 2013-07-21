@@ -40,6 +40,9 @@ namespace Bootil
 
 			virtual bool	EnsureCapacity( unsigned int iSize );
 
+
+			void			MoveMem( unsigned int iSrcPos, unsigned int iSrcSize, unsigned int iToPos );
+
 			//
 			// Read/Write a null terminated string
 			//

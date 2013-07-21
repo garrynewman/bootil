@@ -189,4 +189,12 @@ namespace Bootil
 		return str;
 	}
 
+
+	void Buffer::MoveMem( unsigned int iSrcPos, unsigned int iSrcSize, unsigned int iToPos )
+	{
+		EnsureCapacity( iToPos + iSrcSize );
+
+		memmove( GetBase( iToPos ), GetBase( iSrcPos ), iSrcSize );
+	}
+
 }
