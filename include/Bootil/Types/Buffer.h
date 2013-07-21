@@ -40,8 +40,11 @@ namespace Bootil
 
 			virtual bool	EnsureCapacity( unsigned int iSize );
 
-
+			// Move a block of the buffer memory around inside.
 			void			MoveMem( unsigned int iSrcPos, unsigned int iSrcSize, unsigned int iToPos );
+
+			// Crop a block of memory from the front of the buffer. This translates pos and written pos too.
+			void			TrimLeft( unsigned int iTrimAmount );
 
 			//
 			// Read/Write a null terminated string

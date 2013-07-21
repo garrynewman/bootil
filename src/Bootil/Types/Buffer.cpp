@@ -193,8 +193,16 @@ namespace Bootil
 	void Buffer::MoveMem( unsigned int iSrcPos, unsigned int iSrcSize, unsigned int iToPos )
 	{
 		EnsureCapacity( iToPos + iSrcSize );
-
 		memmove( GetBase( iToPos ), GetBase( iSrcPos ), iSrcSize );
+	}
+
+	void Buffer::TrimLeft( unsigned int iTrimAmount )
+	{
+		if ( iTrimAmount == 0 ) return;
+
+		MoveMem( iTrimAmount, GetWritten() - iTrimAmount, 0 );
+		m_iPos		-= iTrimAmount;
+		m_iWritten	-= iTrimAmount;
 	}
 
 }

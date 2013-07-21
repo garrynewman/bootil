@@ -22,7 +22,8 @@ namespace Bootil
 	{
 		Socket::Socket()
 		{
-			m_pSocket = 0;
+			m_pSocket				= 0;
+			m_bAttemptingConnect	= false;
 		}
 
 		bool Socket::InitAsListener( unsigned int iPort )
@@ -59,6 +60,62 @@ namespace Bootil
 			return true;
 		}
 
+		//
+		// Regular connection mode
+		//
+		bool Socket::Connect( const Bootil::BString& strIP, unsigned int iPort )
+		{
+			BAssert( m_pSocket == 0 );
+
+			// create the socket
+			m_pSocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+			if ( m_pSocket == 0 )
+				return false;
+
+			// Set up some common config settings
+			InitializeSocket();
+
+			//
+			// Convert string to an actual IP address
+			//
+			hostent* hp = NULL;
+			if ( inet_addr( strIP.c_str() ) == INADDR_NONE )
+			{
+				hp = gethostbyname( strIP.c_str() );
+			}
+			else
+			{
+				unsigned long addr = inet_addr( strIP.c_str() );
+				hp = gethostbyaddr( (char*)&addr, sizeof(addr), AF_INET );
+			}
+
+			if ( !hp )
+			{
+				Close();
+				return false;
+			}
+
+			struct sockaddr_in saddr;
+			saddr.sin_addr.s_addr	= *((unsigned long*)hp->h_addr);
+			saddr.sin_family		= AF_INET;
+			saddr.sin_port			= htons( iPort );
+
+			int status = connect( m_pSocket, (struct sockaddr *)&saddr, sizeof(saddr) );
+			if ( status == -1 )
+			{
+				if ( !PreventedBlock() )
+				{
+					Close();
+					return false;
+				}
+
+				m_bAttemptingConnect = true;
+				return true;
+			}
+
+			return true;
+		}
+
 		Socket* Socket::Accept()
 		{
 			sockaddr saddr;
@@ -79,15 +136,22 @@ namespace Bootil
 
 		void Socket::Close()
 		{
-			if ( m_pSocket != 0 ) return;
+			if ( m_pSocket == 0 ) return;
 
 			closesocket( m_pSocket );
-			m_pSocket = 0;
+
+			m_pSocket				= 0;
+			m_bAttemptingConnect	= false;
+
+			m_SendQueue.Clear();
+			m_RecvQueue.Clear();
 		}
 
 		bool Socket::IsConnected()
 		{
 			if ( m_pSocket == 0 ) return false;
+			if ( m_bAttemptingConnect ) return false;
+
 			return true;
 		}
 
@@ -106,38 +170,34 @@ namespace Bootil
 			setsockopt( m_pSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&reusable, sizeof(reusable) );
 		}
 
-		unsigned long Socket::ReadLength()
+
+		void Socket::ReceiveToQueue()
 		{
-			unsigned long readlength = 0;
-			ioctlsocket( m_pSocket, FIONREAD, &readlength );
+			unsigned long iDataToRead = 0;
+			ioctlsocket( m_pSocket, FIONREAD, &iDataToRead );
+			if ( iDataToRead == 0 ) return;
 
-			return readlength;
-		}
+			m_RecvQueue.EnsureCapacity( m_RecvQueue.GetWritten() + iDataToRead );
 
-		unsigned long Socket::Read( void* pData, unsigned long iDataLen )
-		{
-			unsigned long iDataToRead = Bootil::Min( ReadLength(), iDataLen );
-			if ( iDataToRead == 0 ) return 0;
-
-			int ireceived = recv( m_pSocket, (char*) pData, iDataToRead, 0 );
+			int ireceived = recv( m_pSocket, (char*) m_RecvQueue.GetBase( m_RecvQueue.GetWritten() ), iDataToRead, 0 );
 
 			// Closed
 			if ( ireceived == 0 )
 			{
 				Close();
-				return 0;
+				return;
 			}
 
 			// An error
 			if ( ireceived < 0 )
 			{
-				if ( PreventedBlock() )	return 0; // It's normal, just chill
+				if ( PreventedBlock() )	return; // It's normal, just chill
 
 				Close();
-				return 0;
+				return;
 			}
 
-			return ireceived;
+			m_RecvQueue.SetWritten( m_RecvQueue.GetWritten() + ireceived );
 		}
 
 		//
@@ -158,6 +218,135 @@ namespace Bootil
 #endif
 
 			return false;
+		}
+
+		void Socket::Cycle()
+		{
+			// We purge the read data
+			m_RecvQueue.TrimLeft( m_RecvQueue.GetPos() );
+
+			// Do send and receive
+			if ( IsConnected() )
+			{
+				SendQueued();
+				ReceiveToQueue();
+			}
+
+			if ( m_bAttemptingConnect )
+			{
+				FinishConnecting();
+			}
+		}
+
+		void Socket::FinishConnecting()
+		{
+			fd_set fdset;
+
+			struct timeval tv;
+				tv.tv_usec = 1;
+				tv.tv_sec = 0;
+
+			FD_ZERO( &fdset );
+			FD_SET( static_cast<u_int>( m_pSocket ), &fdset );
+
+			int ires = select( m_pSocket + 1, NULL, &fdset, NULL, &tv );
+
+			if ( ires == 1 )
+			{
+				Output::Msg( "CONNECT SUCCESS!!\n" );
+				m_bAttemptingConnect = false;
+				return;
+			}
+
+			if ( ires < 0 )
+			{
+				if ( PreventedBlock() ) return;
+
+				Output::Msg( "FAILED TO CONNECT!\n" );
+				Close();
+			}
+
+		}
+
+		bool Socket::Write( void* pData, unsigned long iDataLen )
+		{
+			m_SendQueue.EnsureCapacity( iDataLen );
+			m_SendQueue.Write( pData, iDataLen );
+
+			return true;
+		}
+
+		void Socket::SendQueued()
+		{
+			int iWritten = 0;
+			int iMaxWritten = m_SendQueue.GetWritten();
+
+			// Nothing to send..
+			if ( iMaxWritten == 0 ) return;
+
+			//
+			// Send as much to the network as it will take
+			//
+			while ( iWritten < iMaxWritten )
+			{
+				int iDataLeft = iMaxWritten - iWritten;
+				//
+				// Send a minimal packet size
+				//
+				int iDataToSend = Bootil::Min( iDataLeft, 2 );
+				int ret = send( m_pSocket, (const char *)m_SendQueue.GetBase( iWritten ), iDataToSend, 0 );
+
+				//
+				// No error.. All good.. next packet
+				//
+				if ( ret != -1 )
+				{
+					iWritten += iDataToSend;
+					continue;
+				}
+
+				//
+				// We didn't write anything because the buffer would have blocked
+				//
+				if ( PreventedBlock() )
+					break;
+
+				//
+				// There was an error sending
+				// Assume it was disconnected
+				//
+				Close();
+				return;				
+			}
+
+			//
+			// Cleared like a fat chick's plate
+			//
+			if ( iWritten == iMaxWritten )
+			{
+				m_SendQueue.SetWritten( 0 );
+				m_SendQueue.SetPos( 0 );
+				return;
+			}
+
+			//
+			// Still shit left on the queue, so lets crop it
+			//
+			m_SendQueue.TrimLeft( iWritten );
+		}
+
+		Bootil::Buffer& Socket::Read()
+		{
+			return m_RecvQueue;
+		}
+
+		bool Socket::IsConnecting()
+		{
+			if ( !m_bAttemptingConnect ) return false;
+
+			Cycle();
+
+			return m_bAttemptingConnect;
 		}
 	}
 }
