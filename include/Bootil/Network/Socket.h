@@ -58,8 +58,10 @@ namespace Bootil
 				int					m_pSocket;
 				Bootil::AutoBuffer	m_SendQueue;
 				Bootil::AutoBuffer	m_RecvQueue;
+				
 
 				bool				m_bAttemptingConnect;
+				Time::Timer			m_ConnectionTimer;
 		};
 
 	}
