@@ -96,11 +96,12 @@ namespace Bootil
 			}
 
 			struct sockaddr_in saddr;
-			saddr.sin_addr.s_addr	= *((unsigned long*)hp->h_addr);
-			saddr.sin_family		= AF_INET;
-			saddr.sin_port			= htons( iPort );
+				saddr.sin_addr.s_addr	= *((unsigned long*)hp->h_addr);
+				saddr.sin_family		= AF_INET;
+				saddr.sin_port			= htons( iPort );
 
 			int status = connect( m_pSocket, (struct sockaddr *)&saddr, sizeof(saddr) );
+
 			if ( status == -1 )
 			{
 				if ( !PreventedBlock() )
@@ -109,6 +110,7 @@ namespace Bootil
 					return false;
 				}
 
+				m_ConnectionTimer.Reset();
 				m_bAttemptingConnect = true;
 				return true;
 			}
@@ -240,26 +242,35 @@ namespace Bootil
 
 		void Socket::FinishConnecting()
 		{
-			fd_set fdset;
-
 			struct timeval tv;
-				tv.tv_usec = 1;
-				tv.tv_sec = 0;
+				tv.tv_usec	= 1;
+				tv.tv_sec	= 0;
 
-			FD_ZERO( &fdset );
-			FD_SET( static_cast<u_int>( m_pSocket ), &fdset );
+			fd_set fdset;
+				FD_ZERO( &fdset );
+				FD_SET( static_cast<u_int>( m_pSocket ), &fdset );
 
 			int ires = select( m_pSocket + 1, NULL, &fdset, NULL, &tv );
 
+			// Connected!
 			if ( ires == 1 )
 			{
 				m_bAttemptingConnect = false;
 				return;
 			}
 
+			// Timed out
+			if ( m_ConnectionTimer.Seconds() >= 5.0f )
+			{
+				Close();
+				return;
+			}
+
+			// Error
 			if ( ires < 0 )
 			{
 				if ( PreventedBlock() ) return;
+
 				Close();
 			}
 
