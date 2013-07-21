@@ -85,6 +85,12 @@ namespace Bootil
 			m_pSocket = 0;
 		}
 
+		bool Socket::IsConnected()
+		{
+			if ( m_pSocket == 0 ) return false;
+			return true;
+		}
+
 		void Socket::InitializeSocket()
 		{
 			// Set to non blocking
@@ -98,6 +104,60 @@ namespace Bootil
 			// Reusable address
 			int reusable = 1;
 			setsockopt( m_pSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&reusable, sizeof(reusable) );
+		}
+
+		unsigned long Socket::ReadLength()
+		{
+			unsigned long readlength = 0;
+			ioctlsocket( m_pSocket, FIONREAD, &readlength );
+
+			return readlength;
+		}
+
+		unsigned long Socket::Read( void* pData, unsigned long iDataLen )
+		{
+			unsigned long iDataToRead = Bootil::Min( ReadLength(), iDataLen );
+			if ( iDataToRead == 0 ) return 0;
+
+			int ireceived = recv( m_pSocket, (char*) pData, iDataToRead, 0 );
+
+			// Closed
+			if ( ireceived == 0 )
+			{
+				Close();
+				return 0;
+			}
+
+			// An error
+			if ( ireceived < 0 )
+			{
+				if ( PreventedBlock() )	return 0; // It's normal, just chill
+
+				Close();
+				return 0;
+			}
+
+			return ireceived;
+		}
+
+		//
+		// This returns true if winsock threw an error
+		// because the socket would have blocked.. so
+		// it shouldn't br treated as a real error.
+		//
+		bool Socket::PreventedBlock()
+		{
+
+#ifdef _WIN32	 
+			if ( WSAGetLastError() == WSAEWOULDBLOCK )
+				return true;
+#else 
+			if ( errno == EAGAIN ) return true;
+			if ( errno == EINPROGRESS ) return true;
+			if ( errno == EWOULDBLOCK ) return true;
+#endif
+
+			return false;
 		}
 	}
 }
