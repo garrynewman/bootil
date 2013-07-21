@@ -46,7 +46,7 @@ namespace Bootil
 
 }
 
-#if !defined(_M_X64) && defined(_WIN32)
+#if !defined(_M_X64) && defined(_WIN32) && defined(_DEBUG)
 #define BreakInDebugger() _asm { int 3 }
 #else
 #define BreakInDebugger() // Nothing
@@ -56,4 +56,5 @@ namespace Bootil
 if ( !(bool)(_something_) )					\
 {											\
 	Bootil::Debug::Internal::DoAssert( __FILE__, __LINE__, __FUNCTION__, "","%s", #_something_ );		\
+	BreakInDebugger();\
 }
