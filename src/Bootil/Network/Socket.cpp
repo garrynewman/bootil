@@ -253,7 +253,6 @@ namespace Bootil
 
 			if ( ires == 1 )
 			{
-				Output::Msg( "CONNECT SUCCESS!!\n" );
 				m_bAttemptingConnect = false;
 				return;
 			}
@@ -261,8 +260,6 @@ namespace Bootil
 			if ( ires < 0 )
 			{
 				if ( PreventedBlock() ) return;
-
-				Output::Msg( "FAILED TO CONNECT!\n" );
 				Close();
 			}
 
