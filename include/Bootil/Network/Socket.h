@@ -9,6 +9,7 @@ namespace Bootil
 			public:
 
 				Socket();
+				~Socket();
 
 				//
 				// Listener Mode (Start as a server)
@@ -62,6 +63,7 @@ namespace Bootil
 				Bootil::AutoBuffer	m_RecvQueue;
 				
 
+				bool				m_bListener;
 				bool				m_bAttemptingConnect;
 				Time::Timer			m_ConnectionTimer;
 		};
