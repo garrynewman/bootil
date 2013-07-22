@@ -152,7 +152,6 @@ namespace Bootil
 		bool Socket::IsConnected()
 		{
 			if ( m_pSocket == 0 ) return false;
-			if ( m_bAttemptingConnect ) return false;
 
 			return true;
 		}
@@ -276,7 +275,7 @@ namespace Bootil
 
 		}
 
-		bool Socket::Write( void* pData, unsigned long iDataLen )
+		bool Socket::WriteData( void* pData, unsigned long iDataLen )
 		{
 			m_SendQueue.EnsureCapacity( iDataLen );
 			m_SendQueue.Write( pData, iDataLen );
@@ -355,6 +354,25 @@ namespace Bootil
 			Cycle();
 
 			return m_bAttemptingConnect;
+		}
+
+		Bootil::BString Socket::ToString()
+		{
+			struct sockaddr_storage my_addr;
+			socklen_t my_addr_len = sizeof(my_addr);
+
+			if ( getsockname( m_pSocket, (struct sockaddr *) &my_addr, &my_addr_len) != -1 )
+			{
+				char host[256];
+				char serv[32];
+
+				if ( getnameinfo( (const struct sockaddr *) &my_addr, sizeof( my_addr ), host, sizeof(host), serv, sizeof(serv), 0) == 0 )
+				{
+					return Bootil::String::Format::Print( "%s:%s\n", host, serv );
+				}
+			}
+
+			return "0.0.0.0:0";		
 		}
 	}
 }

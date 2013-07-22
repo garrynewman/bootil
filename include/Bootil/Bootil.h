@@ -73,6 +73,7 @@
 #include "Bootil/Utility/HTTP.h"
 
 #include "Bootil/Network/Socket.h"
+#include "Bootil/Network/Router.h"
 
 namespace Bootil
 {

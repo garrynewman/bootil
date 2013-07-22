@@ -21,11 +21,10 @@ namespace Bootil
 				//
 				bool Connect( const Bootil::BString& strIP, unsigned int iPort );
 
-				// Returns true if connection is all fine and dandy
-				bool IsConnected();
-
-				// Returns true if we're in the process of connecting
-				bool IsConnecting();
+				
+				bool IsConnected();			// Returns true if connection is all fine and dandy				
+				bool IsConnecting();		// Returns true if we're in the process of connecting
+				BString ToString();			// Returns a stringified IP
 
 				// Closes the socket, ends all connections.
 				void Close();
@@ -38,7 +37,9 @@ namespace Bootil
 				//
 				// Writing
 				//
-				bool Write( void* pData, unsigned long iDataLen );
+				bool WriteData( void* pData, unsigned long iDataLen );
+
+				template <typename T> bool Write( const T& t ){ return WriteData( (void*) &t, sizeof(t) ); }
 
 				//
 				// Returns the read buffer
