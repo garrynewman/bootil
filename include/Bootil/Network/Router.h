@@ -208,7 +208,7 @@ namespace Bootil
 				//
 				void CallNetworkMessage( Message& msg )
 				{
-					ProcessorMap::iterator it = m_Processor.find( msg.type );
+					typename ProcessorMap::iterator it = m_Processor.find( msg.type );
 					if ( it == m_Processor.end() ) return;
 
 					(((MsgHandler*)(it->second).pthis)->*(it->second).fncWithData)( msg );
@@ -221,7 +221,7 @@ namespace Bootil
 				{
 					if ( msg.replyingto == 0 ) return;
 
-					ResponderMap::iterator it = m_Responder.find( msg.replyingto );
+					typename ResponderMap::iterator it = m_Responder.find( msg.replyingto );
 					if ( it == m_Responder.end() ) return;
 
 					((MsgHandler*)((it->second).pthis)->*(it->second).fncWithData)( msg );
