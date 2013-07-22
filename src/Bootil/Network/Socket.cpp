@@ -347,7 +347,7 @@ namespace Bootil
 			m_SendQueue.TrimLeft( iWritten );
 		}
 
-		Bootil::Buffer& Socket::Read()
+		Bootil::Buffer& Socket::GetBuffer()
 		{
 			return m_RecvQueue;
 		}
