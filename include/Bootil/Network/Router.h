@@ -42,6 +42,9 @@ namespace Bootil
 
 				typedef std::map<TMessageType, FunctionCallback>	ProcessorMap;
 
+				//
+				// Processes the received data. Call this as often as possible!
+				//
 				void ParseMessages( Bootil::Network::Socket& socket )
 				{
 					if ( !socket.IsConnected() ) return;
@@ -52,6 +55,9 @@ namespace Bootil
 					while ( ProcessNetworkMessage( data ) ){}
 				}
 
+				//
+				// Bind a received message to a function call
+				//
 				template< typename TFunction >
 				void SetHandler( TMessageType type, MsgHandler* pthis, TFunction fnc )
 				{
@@ -62,6 +68,16 @@ namespace Bootil
 					cb.fncWithData = static_cast<MsgHandler::FunctionWithData>(fnc);
 
 					m_Processor[ type ] = cb;
+				}
+
+				//
+				// Writes a message in the correct format
+				//
+				bool WriteMessage( Bootil::Network::Socket& socket, TMessageType msg, Bootil::Buffer& data )
+				{
+					if ( !socket.Write( data.GetWritten() ) ) return false;
+					if ( !socket.Write( msg ) ) return false;
+					return socket.WriteData( data );
 				}
 
 			protected:
@@ -81,7 +97,7 @@ namespace Bootil
 					//
 					// Packet is larger than the amount of data we have. Wait for more.
 					//
-					if ( iPacketSize > data.GetWritten() - sizeof( TPacketSize )  ) return false;
+					if ( iPacketSize > data.GetWritten() - sizeof( TPacketSize ) - sizeof( TMessageType ) ) return false;
 
 					//
 					// Get the message type
@@ -89,14 +105,9 @@ namespace Bootil
 					TMessageType iMessageType = data.ReadType<TMessageType>();
 
 					//
-					// The data size is the packet size minus the message type
-					//
-					TPacketSize iDataSize = iPacketSize - sizeof( TMessageType );
-
-					//
 					// Put the data in its own sub-buffer to send to the handler
 					//
-					Bootil::Buffer isolated_data = Bootil::Buffer( data.GetCurrent(), iDataSize );
+					Bootil::Buffer isolated_data = Bootil::Buffer( data.GetCurrent(), iPacketSize );
 
 					//
 					// Call the actual function
@@ -106,7 +117,7 @@ namespace Bootil
 					//
 					// This message has been processed, so we can crop it off the buffer
 					//
-					data.TrimLeft( data.GetPos() + iDataSize );
+					data.TrimLeft( data.GetPos() + iPacketSize );
 					data.SetPos( 0 );
 					return true;
 				}
@@ -124,6 +135,8 @@ namespace Bootil
 
 					(((it->second).pthis)->*(it->second).fncWithData)( data );
 				}
+				
+
 
 			private:
 

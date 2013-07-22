@@ -38,6 +38,7 @@ namespace Bootil
 				// Writing
 				//
 				bool WriteData( void* pData, unsigned long iDataLen );
+				bool WriteData( Bootil::Buffer& buffer );
 
 				template <typename T> bool Write( const T& t ){ return WriteData( (void*) &t, sizeof(t) ); }
 
