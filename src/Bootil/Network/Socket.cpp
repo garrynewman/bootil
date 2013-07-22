@@ -283,6 +283,11 @@ namespace Bootil
 			return true;
 		}
 
+		bool Socket::WriteData( Bootil::Buffer& buffer )
+		{
+			return WriteData( buffer.GetBase(), buffer.GetWritten() );
+		}
+
 		void Socket::SendQueued()
 		{
 			int iWritten = 0;
