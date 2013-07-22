@@ -5,6 +5,12 @@ namespace Bootil
 	namespace Network
 	{
 		//
+		// I'm undecided on what MessageID should be. 
+		// We could probably get away with an unsigned char.
+		//
+		typedef unsigned short MessageID;
+
+		//
 		// This is the standard message that is passed from the Router
 		// to its callbacks and handlers.
 		//
@@ -19,8 +25,8 @@ namespace Bootil
 
 			Bootil::Buffer&			data;
 			unsigned int			type;
-			unsigned int			messageid;
-			unsigned int			replyingto;
+			MessageID				messageid;
+			MessageID				replyingto;
 		};
 
 		//
@@ -55,13 +61,6 @@ namespace Bootil
 		{
 			public:
 
-				//
-				// I'm undecided on what MessageID should be. 
-				// We could probably get away with an unsigned char.
-				//
-				typedef unsigned short MessageID;
-
-
 				struct FunctionCallback
 				{
 					void*							pthis;
@@ -74,17 +73,18 @@ namespace Bootil
 
 				Router()
 				{
-					m_iMessageID = 0;
+					m_iMessageID			= 0;
+					m_pSocketInternal		= NULL;
 				}
 
 				//
 				// Processes the received data. Call this as often as possible!
 				//
-				void ParseMessages( Bootil::Network::Socket& socket )
+				void ParseMessages()
 				{
-					if ( !socket.IsConnected() ) return;
+					if ( !m_pSocketInternal->IsConnected() ) return;
 
-					Bootil::Buffer& data = socket.GetBuffer();
+					Bootil::Buffer& data = m_pSocketInternal->GetBuffer();
 					data.SetPos( 0 );
 
 					while ( ProcessNetworkMessage( data ) ){}
@@ -118,18 +118,18 @@ namespace Bootil
 				//
 				// Writes a message in the correct format
 				//
-				MessageID WriteMessage( Bootil::Network::Socket& socket, TMessageType msg, Bootil::Buffer& data, MessageID iRespondingToMsg = 0 )
+				MessageID WriteMessage( TMessageType msg, Bootil::Buffer& data, MessageID iRespondingToMsg = 0 )
 				{
 					m_iMessageID++;
 
 					// We may have looped, so clear the reply handler
 					ClearReplyHandler( m_iMessageID );
 
-					socket.Write( data.GetWritten() );
-					socket.Write( m_iMessageID );
-					socket.Write( iRespondingToMsg );
-					socket.Write( msg );
-					socket.WriteData( data );
+					m_pSocketInternal->Write( data.GetWritten() );
+					m_pSocketInternal->Write( m_iMessageID );
+					m_pSocketInternal->Write( iRespondingToMsg );
+					m_pSocketInternal->Write( msg );
+					m_pSocketInternal->WriteData( data );
 
 					return m_iMessageID;
 				}
@@ -229,11 +229,17 @@ namespace Bootil
 					ClearReplyHandler( msg.replyingto );
 				}
 
+				void InitRouterSocket( Bootil::Network::Socket* rs )
+				{
+					m_pSocketInternal = rs;
+				}
+
 			private:
 
-				MessageID			m_iMessageID;
-				ResponderMap		m_Responder;
-				ProcessorMap		m_Processor;
+				MessageID					m_iMessageID;
+				ResponderMap				m_Responder;
+				ProcessorMap				m_Processor;
+				Bootil::Network::Socket*	m_pSocketInternal;
 		};
 
 	}
