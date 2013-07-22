@@ -24,6 +24,12 @@ namespace Bootil
 		{
 			m_pSocket				= 0;
 			m_bAttemptingConnect	= false;
+			m_bListener				= false;
+		}
+
+		Socket::~Socket()
+		{
+			Close();
 		}
 
 		bool Socket::InitAsListener( unsigned int iPort )
@@ -56,6 +62,8 @@ namespace Bootil
 				Close();
 				return false;
 			}
+
+			m_bListener = true;
 
 			return true;
 		}
@@ -144,6 +152,7 @@ namespace Bootil
 
 			m_pSocket				= 0;
 			m_bAttemptingConnect	= false;
+			m_bListener				= false;
 
 			m_SendQueue.Clear();
 			m_RecvQueue.Clear();
@@ -176,11 +185,11 @@ namespace Bootil
 		{
 			unsigned long iDataToRead = 0;
 			ioctlsocket( m_pSocket, FIONREAD, &iDataToRead );
-			if ( iDataToRead == 0 ) return;
 
-			m_RecvQueue.EnsureCapacity( m_RecvQueue.GetWritten() + iDataToRead );
+			if ( iDataToRead > 0 )
+				m_RecvQueue.EnsureCapacity( m_RecvQueue.GetWritten() + iDataToRead );
 
-			int ireceived = recv( m_pSocket, (char*) m_RecvQueue.GetBase( m_RecvQueue.GetWritten() ), iDataToRead, 0 );
+			int ireceived = recv( m_pSocket, (char*) m_RecvQueue.GetBase( m_RecvQueue.GetWritten() ), Bootil::Min( iDataToRead, (unsigned long) 1 ), 0 );
 
 			// Closed
 			if ( ireceived == 0 )
@@ -194,6 +203,7 @@ namespace Bootil
 			{
 				if ( PreventedBlock() )	return; // It's normal, just chill
 
+				Output::Msg( "CLOSED %i %i\n", ireceived, WSAGetLastError() );
 				Close();
 				return;
 			}
@@ -223,11 +233,14 @@ namespace Bootil
 
 		void Socket::Cycle()
 		{
+			// Listeners don't do any of this.
+			if ( m_bListener ) return;
+
 			// We purge the read data
 			m_RecvQueue.TrimLeft( m_RecvQueue.GetPos() );
 
 			// Do send and receive
-			if ( IsConnected() )
+			if ( IsConnected() && !m_bAttemptingConnect )
 			{
 				SendQueued();
 				ReceiveToQueue();
