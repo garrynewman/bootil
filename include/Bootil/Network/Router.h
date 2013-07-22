@@ -84,7 +84,7 @@ namespace Bootil
 				{
 					if ( !socket.IsConnected() ) return;
 
-					Bootil::Buffer& data = socket.Read();
+					Bootil::Buffer& data = socket.GetBuffer();
 					data.SetPos( 0 );
 
 					while ( ProcessNetworkMessage( data ) ){}

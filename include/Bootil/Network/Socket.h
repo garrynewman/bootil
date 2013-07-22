@@ -45,7 +45,7 @@ namespace Bootil
 				//
 				// Returns the read buffer
 				//
-				Bootil::Buffer& Read();
+				Bootil::Buffer& GetBuffer();
 				
 			private:
 
