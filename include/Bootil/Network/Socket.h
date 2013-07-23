@@ -21,6 +21,7 @@ namespace Bootil
 				// Regular connection mode
 				//
 				bool Connect( const Bootil::BString& strIP, unsigned int iPort );
+				bool WaitForConnection();
 
 				
 				bool IsConnected();			// Returns true if connection is all fine and dandy				
