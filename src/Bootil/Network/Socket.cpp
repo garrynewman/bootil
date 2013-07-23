@@ -146,9 +146,8 @@ namespace Bootil
 
 		void Socket::Close()
 		{
-			if ( m_pSocket == 0 ) return;
-
-			closesocket( m_pSocket );
+			if ( m_pSocket != 0 )
+				closesocket( m_pSocket );
 
 			m_pSocket				= 0;
 			m_bAttemptingConnect	= false;
@@ -186,10 +185,12 @@ namespace Bootil
 			unsigned long iDataToRead = 0;
 			ioctlsocket( m_pSocket, FIONREAD, &iDataToRead );
 
-			if ( iDataToRead > 0 )
-				m_RecvQueue.EnsureCapacity( m_RecvQueue.GetWritten() + iDataToRead );
+			if ( iDataToRead == 0 ) 
+				iDataToRead = 1;
 
-			int ireceived = recv( m_pSocket, (char*) m_RecvQueue.GetBase( m_RecvQueue.GetWritten() ), Bootil::Min( iDataToRead, (unsigned long) 1 ), 0 );
+			m_RecvQueue.EnsureCapacity( m_RecvQueue.GetWritten() + iDataToRead );				
+
+			int ireceived = recv( m_pSocket, (char*) m_RecvQueue.GetBase( m_RecvQueue.GetWritten() ), iDataToRead, 0 );
 
 			// Closed
 			if ( ireceived == 0 )
@@ -201,9 +202,11 @@ namespace Bootil
 			// An error
 			if ( ireceived < 0 )
 			{
-				if ( PreventedBlock() )	return; // It's normal, just chill
+				if ( PreventedBlock() )
+				{
+					return; // It's normal, just chill
+				}
 
-				Output::Msg( "CLOSED %i %i\n", ireceived, WSAGetLastError() );
 				Close();
 				return;
 			}
@@ -220,7 +223,8 @@ namespace Bootil
 		{
 
 #ifdef _WIN32	 
-			if ( WSAGetLastError() == WSAEWOULDBLOCK )
+			int errnum = WSAGetLastError();
+			if ( errnum == WSAEWOULDBLOCK )
 				return true;
 #else 
 			if ( errno == EAGAIN ) return true;
@@ -236,7 +240,7 @@ namespace Bootil
 			// Listeners don't do any of this.
 			if ( m_bListener ) return;
 
-			// We purge the read data
+			// Purge the read data
 			m_RecvQueue.TrimLeft( m_RecvQueue.GetPos() );
 
 			// Do send and receive
@@ -290,7 +294,7 @@ namespace Bootil
 
 		bool Socket::WriteData( void* pData, unsigned long iDataLen )
 		{
-			m_SendQueue.EnsureCapacity( iDataLen );
+			if ( !m_SendQueue.EnsureCapacity( iDataLen ) ) return false;
 			m_SendQueue.Write( pData, iDataLen );
 
 			return true;
@@ -318,7 +322,7 @@ namespace Bootil
 				//
 				// Send a minimal packet size
 				//
-				int iDataToSend = Bootil::Min( iDataLeft, 2 );
+				int iDataToSend = Bootil::Max( iDataLeft, 1 );
 				int ret = send( m_pSocket, (const char *)m_SendQueue.GetBase( iWritten ), iDataToSend, 0 );
 
 				//
@@ -326,7 +330,7 @@ namespace Bootil
 				//
 				if ( ret != -1 )
 				{
-					iWritten += iDataToSend;
+					iWritten += ret;
 					continue;
 				}
 
@@ -334,7 +338,9 @@ namespace Bootil
 				// We didn't write anything because the buffer would have blocked
 				//
 				if ( PreventedBlock() )
+				{
 					break;
+				}
 
 				//
 				// There was an error sending

@@ -85,9 +85,13 @@ namespace Bootil
 					if ( !m_pSocketInternal->IsConnected() ) return;
 
 					Bootil::Buffer& data = m_pSocketInternal->GetBuffer();
-					data.SetPos( 0 );
 
-					while ( ProcessNetworkMessage( data ) ){}
+					data.SetPos( 0 );
+					while ( ProcessNetworkMessage( data ) )
+					{
+
+					}
+					data.SetPos( 0 );
 				}
 
 				//
@@ -198,7 +202,7 @@ namespace Bootil
 					//
 					// This message has been processed, so we can crop it off the buffer
 					//
-					data.TrimLeft( data.GetPos() + iPacketSize );
+					data.TrimLeft( iHeaderSize + iPacketSize );
 					data.SetPos( 0 );
 					return true;
 				}
