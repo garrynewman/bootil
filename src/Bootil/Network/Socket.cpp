@@ -87,7 +87,7 @@ namespace Bootil
 			//
 			// Convert string to an actual IP address
 			//
-			hostent* hp = NULL;
+			struct hostent* hp = NULL;
 			if ( inet_addr( strIP.c_str() ) == INADDR_NONE )
 			{
 				hp = gethostbyname( strIP.c_str() );
