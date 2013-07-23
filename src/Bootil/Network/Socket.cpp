@@ -26,11 +26,12 @@ namespace Bootil
 			m_pSocket				= 0;
 			m_bAttemptingConnect	= false;
 			m_bListener				= false;
+			m_LastError				= 0;
 		}
 
 		Socket::~Socket()
 		{
-			Close();
+			Close( "socket deleted" );
 		}
 
 		bool Socket::InitAsListener( unsigned int iPort )
@@ -53,14 +54,14 @@ namespace Bootil
 			
 			if ( bind( m_pSocket, (struct sockaddr *) &addr, sizeof(addr) ) == -1 )
 			{
-				Close();
+				Close( "couldn't bind address" );
 				return false;
 			}
 
 			// start listening
 			if ( listen( m_pSocket, 64 ) == -1 )
 			{
-				Close();
+				Close( "couldn't start listening" );
 				return false;
 			}
 
@@ -100,7 +101,7 @@ namespace Bootil
 
 			if ( !hp )
 			{
-				Close();
+				Close( "couldn't connect" );
 				return false;
 			}
 
@@ -110,12 +111,13 @@ namespace Bootil
 				saddr.sin_port			= htons( iPort );
 
 			int status = connect( m_pSocket, (struct sockaddr *)&saddr, sizeof(saddr) );
+			StoreLastError();
 
 			if ( status == -1 )
 			{
 				if ( !PreventedBlock() )
 				{
-					Close();
+					Close( "connect error" );
 					return false;
 				}
 
@@ -156,7 +158,7 @@ namespace Bootil
 			return socket;
 		}
 
-		void Socket::Close()
+		void Socket::Close( const char* strReason )
 		{
 			if ( m_pSocket != 0 )
 				closesocket( m_pSocket );
@@ -167,6 +169,8 @@ namespace Bootil
 
 			m_SendQueue.Clear();
 			m_RecvQueue.Clear();
+
+			// Output::Msg( "Close: %i %s\n", m_LastError, strReason );
 		}
 
 		bool Socket::IsConnected()
@@ -203,11 +207,12 @@ namespace Bootil
 			m_RecvQueue.EnsureCapacity( m_RecvQueue.GetWritten() + iDataToRead );				
 
 			int ireceived = recv( m_pSocket, (char*) m_RecvQueue.GetBase( m_RecvQueue.GetWritten() ), iDataToRead, 0 );
+			StoreLastError();
 
 			// Closed
 			if ( ireceived == 0 )
 			{
-				Close();
+				Close( "recv 0" );
 				return;
 			}
 
@@ -219,7 +224,7 @@ namespace Bootil
 					return; // It's normal, just chill
 				}
 
-				Close();
+				Close( "recv error" );
 				return;
 			}
 
@@ -233,18 +238,25 @@ namespace Bootil
 		//
 		bool Socket::PreventedBlock()
 		{
-
 #ifdef _WIN32	 
-			int errnum = WSAGetLastError();
-			if ( errnum == WSAEWOULDBLOCK )
+			if ( m_LastError == WSAEWOULDBLOCK )
 				return true;
 #else 
-			if ( errno == EAGAIN ) return true;
-			if ( errno == EINPROGRESS ) return true;
-			if ( errno == EWOULDBLOCK ) return true;
+			if ( m_LastError == EAGAIN ) return true;
+			if ( m_LastError == EINPROGRESS ) return true;
+			if ( m_LastError == EWOULDBLOCK ) return true;
 #endif
 
 			return false;
+		}
+
+		void Socket::StoreLastError()
+		{
+#ifdef _WIN32	 
+			m_LastError = WSAGetLastError();
+#else 
+			m_LastError errno;
+#endif
 		}
 
 		void Socket::Cycle()
@@ -279,6 +291,7 @@ namespace Bootil
 				FD_SET( static_cast<u_int>( m_pSocket ), &fdset );
 
 			int ires = select( m_pSocket + 1, NULL, &fdset, NULL, &tv );
+			StoreLastError();
 
 			// Connected!
 			if ( ires == 1 )
@@ -290,7 +303,7 @@ namespace Bootil
 			// Timed out
 			if ( m_ConnectionTimer.Seconds() >= 2.0f )
 			{
-				Close();
+				Close( "timed out" );
 				return;
 			}
 
@@ -299,7 +312,7 @@ namespace Bootil
 			{
 				if ( PreventedBlock() ) return;
 
-				Close();
+				Close( "finish connect error" );
 			}
 
 		}
@@ -336,6 +349,7 @@ namespace Bootil
 				//
 				int iDataToSend = Bootil::Max( iDataLeft, 1 );
 				int ret = send( m_pSocket, (const char *)m_SendQueue.GetBase( iWritten ), iDataToSend, 0 );
+				StoreLastError();
 
 				//
 				// No error.. All good.. next packet
@@ -358,7 +372,7 @@ namespace Bootil
 				// There was an error sending
 				// Assume it was disconnected
 				//
-				Close();
+				Close( "send error" );
 				return;				
 			}
 
