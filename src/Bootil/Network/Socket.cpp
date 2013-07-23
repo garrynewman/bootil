@@ -127,6 +127,17 @@ namespace Bootil
 			return true;
 		}
 
+		bool Socket::WaitForConnection()
+		{
+			while ( IsConnecting() )
+			{
+				Cycle();
+				Bootil::Platform::Sleep( 10 );				
+			}
+
+			return IsConnected();
+		}
+
 		Socket* Socket::Accept()
 		{
 			sockaddr saddr;
@@ -277,7 +288,7 @@ namespace Bootil
 			}
 
 			// Timed out
-			if ( m_ConnectionTimer.Seconds() >= 5.0f )
+			if ( m_ConnectionTimer.Seconds() >= 2.0f )
 			{
 				Close();
 				return;
