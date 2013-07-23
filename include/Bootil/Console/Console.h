@@ -27,5 +27,19 @@ namespace Bootil
 
 		BOOTIL_EXPORT void PosPush( int x, int y );
 		BOOTIL_EXPORT void PosPop();
+
+		template < ConsoleColor colA, ConsoleColor colB >
+		void Msg( const char* str, ... )
+		{
+			FGColorPush( colA );
+			BGColorPush( colB );
+
+			BString strBuilt;
+			Bootil_FormatString( strBuilt, str );
+			Bootil::Output::Msg( "%s", strBuilt.c_str() );
+
+			FGColorPop();
+			BGColorPop();
+		}
 	}
 }
