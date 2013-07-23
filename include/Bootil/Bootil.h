@@ -70,10 +70,10 @@
 
 #include "Bootil/Console/Console.h"
 
-#include "Bootil/Utility/HTTP.h"
-
+#include "Bootil/Network/Network.h"
 #include "Bootil/Network/Socket.h"
 #include "Bootil/Network/Router.h"
+#include "Bootil/Network/HTTP.h"
 
 namespace Bootil
 {
