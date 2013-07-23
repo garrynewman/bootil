@@ -29,7 +29,7 @@ namespace Bootil
 				BString ToString();			// Returns a stringified IP
 
 				// Closes the socket, ends all connections.
-				void Close();
+				void Close( const char* strReason );
 
 				//
 				// Cycle - sends and received - call every frame!
@@ -56,6 +56,7 @@ namespace Bootil
 				void SendQueued();
 				void ReceiveToQueue();
 				void FinishConnecting();
+				void StoreLastError();
 
 			protected:
 
@@ -67,6 +68,8 @@ namespace Bootil
 				bool				m_bListener;
 				bool				m_bAttemptingConnect;
 				Time::Timer			m_ConnectionTimer;
+				
+				int					m_LastError;
 		};
 
 	}
