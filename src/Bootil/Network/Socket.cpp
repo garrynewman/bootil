@@ -11,6 +11,7 @@
 	#include <netinet/tcp.h>
 	#include <errno.h>
 	#include <sys/ioctl.h>
+	#include <arpa/inet.h>
 	#define ioctlsocket ioctl
 	#define closesocket close
 	#define WSAGetLastError() errno
