@@ -53,6 +53,7 @@
 #include "Bootil/Utility/CommandLine.h"
 #include "Bootil/Utility/Compression.h"
 #include "Bootil/Utility/Time.h"
+#include "Bootil/Utility/Processes.h"
 
 #include "Bootil/Threads/Mutex.h"
 #include "Bootil/Threads/Utility.h"
