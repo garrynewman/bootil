@@ -12,6 +12,7 @@
 	#include <errno.h>
 	#include <sys/ioctl.h>
 	#include <arpa/inet.h>
+	#include <netdb.h>
 	#define ioctlsocket ioctl
 	#define closesocket close
 	#define WSAGetLastError() errno
