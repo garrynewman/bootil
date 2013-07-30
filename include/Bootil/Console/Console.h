@@ -26,6 +26,7 @@ namespace Bootil
 		BOOTIL_EXPORT void Cls();
 
 		BOOTIL_EXPORT void PosPush( int x, int y );
+		BOOTIL_EXPORT void PosPushRelative( int x, int y );
 		BOOTIL_EXPORT void PosPop();
 
 		template < ConsoleColor colA, ConsoleColor colB >
