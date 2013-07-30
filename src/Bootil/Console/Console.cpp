@@ -156,8 +156,8 @@ namespace Bootil
 				g_PosStack.top().y = ScreenBufferInfo.dwCursorPosition.Y;
 			
 			COORD Cord;
-				Cord.X = x + ScreenBufferInfo.dwMaximumWindowSize.X;
-				Cord.Y = y + ScreenBufferInfo.dwMaximumWindowSize.Y;
+				Cord.X = x;
+				Cord.Y = y;
 
 				
 			SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), Cord );

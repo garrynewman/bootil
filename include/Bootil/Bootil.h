@@ -70,6 +70,7 @@
 #include "Bootil/Image/JPEG.h"
 
 #include "Bootil/Console/Console.h"
+#include "Bootil/Console/ConsoleInput.h"
 
 #include "Bootil/Network/Network.h"
 #include "Bootil/Network/Socket.h"

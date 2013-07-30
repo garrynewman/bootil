@@ -32,6 +32,9 @@ namespace Bootil
 
 				virtual void OnThreadFinished(){};
 
+				bool WantsToClose();
+				void SetClosing( bool b );
+
 			protected:
 
 				static void RunInThread( void* pArg );
@@ -39,6 +42,7 @@ namespace Bootil
 				tthread::thread*		m_pThread;
 				Threads::Mutex			m_Mutex;
 				bool					m_bRunning;
+				bool					m_bClosing;
 		};
 	}
 }
