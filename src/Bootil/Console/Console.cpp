@@ -146,23 +146,42 @@ namespace Bootil
 
 		BOOTIL_EXPORT void PosPush( int x, int y )
 		{
-			#ifdef _WIN32
+#ifdef _WIN32
 
 			CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = { 0 };
 			GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &ScreenBufferInfo );
 
 			g_PosStack.push( PosInfo() );
-				g_PosStack.top().x = ScreenBufferInfo.dwCursorPosition.X;
-				g_PosStack.top().y = ScreenBufferInfo.dwCursorPosition.Y;
-			
+			g_PosStack.top().x = ScreenBufferInfo.dwCursorPosition.X;
+			g_PosStack.top().y = ScreenBufferInfo.dwCursorPosition.Y;
+
 			COORD Cord;
-				Cord.X = x;
-				Cord.Y = y;
+			Cord.X = x;
+			Cord.Y = y;
 
-				
+
 			SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), Cord );
-			#endif 
+#endif 
+		}
 
+		BOOTIL_EXPORT void PosPushRelative( int x, int y )
+		{
+#ifdef _WIN32
+
+			CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = { 0 };
+			GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &ScreenBufferInfo );
+
+			g_PosStack.push( PosInfo() );
+			g_PosStack.top().x = ScreenBufferInfo.dwCursorPosition.X;
+			g_PosStack.top().y = ScreenBufferInfo.dwCursorPosition.Y;
+
+			COORD Cord;
+			Cord.X = x + ScreenBufferInfo.dwCursorPosition.X;
+			Cord.Y = y + ScreenBufferInfo.dwCursorPosition.Y;
+
+
+			SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), Cord );
+#endif 
 		}
 
 		BOOTIL_EXPORT void PosPop()

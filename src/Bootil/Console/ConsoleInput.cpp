@@ -1,24 +1,43 @@
 #include "Bootil/Bootil.h"
 #include <conio.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif 
+
 namespace Bootil
 {
 	namespace Console
 	{
-		void Input::Run()
+		void Input::Update()
 		{
-			while ( !WantsToClose() )
+#ifdef _WIN32
+			HANDLE stdIn = GetStdHandle( STD_INPUT_HANDLE );
+
+			DWORD eventnum = 0;
+			GetNumberOfConsoleInputEvents( stdIn, &eventnum );
+			if ( eventnum <= 0 ) return;
+
+			INPUT_RECORD input[ 128 ];
+			ReadConsoleInput( stdIn, input, 128, &eventnum );
+			if ( eventnum <= 0 ) return;
+
+			for ( int i=0; i<eventnum; i++ )
 			{
-				//
-				// This blocks until it has a character
-				//
-				int c = getch();
+				if ( input[i].EventType != KEY_EVENT )
+					continue;
 
-				Lock();
+				if ( !input[i].Event.KeyEvent.bKeyDown )
+					continue;
 
-				if ( IsEndOfLine(c) )
+				char c = input[i].Event.KeyEvent.uChar.AsciiChar;
+
+				if ( IsEndOfLine( c ) )
 				{
 					LineFinished();
+
+					if ( m_bOutputInput )
+						Output::Msg( "\n" );
 				}
 				else if ( IsCancel( c ) )
 				{
@@ -27,10 +46,18 @@ namespace Bootil
 				else
 				{
 					m_strLine += c;
+
+					if ( m_bOutputInput )
+						Output::Msg( "%c", c );
 				}
 
-				Unlock();
 			}
+
+			// Recurse.
+			Update();
+#else 
+
+#endif 
 		}
 
 		bool Input::IsEndOfLine( int c )
@@ -51,28 +78,24 @@ namespace Bootil
 
 		BString Input::GetLine()
 		{
+			Update();
+
 			BString str = "";
 
-			Lock();
 			if ( m_Lines.size() > 0 )
 			{
 				str = m_Lines.front();
 				m_Lines.pop();
 			}
-			Unlock();	
 
 			return str;
 		}
 
 		BString Input::GetLineInProgress()
 		{
-			BString str = "";
+			Update();
 
-			Lock();
-			str = m_strLine;
-			Unlock();	
-
-			return str;
+			return m_strLine;
 		}
 
 		void Input::LineFinished()
@@ -80,6 +103,12 @@ namespace Bootil
 			m_Lines.push( m_strLine );
 			m_strLine = "";
 		}
+
+		void Input::SetOutputInput( bool b )
+		{
+			m_bOutputInput = b;
+		}
+
 
 	}
 }
