@@ -256,7 +256,7 @@ namespace Bootil
 #ifdef _WIN32	 
 			m_LastError = WSAGetLastError();
 #else 
-			m_LastError errno;
+			m_LastError = errno;
 #endif
 		}
 
