@@ -30,26 +30,38 @@ namespace Bootil
 				if ( !input[i].Event.KeyEvent.bKeyDown )
 					continue;
 
-				char c = input[i].Event.KeyEvent.uChar.AsciiChar;
+				// Backspace
+				if ( input[i].Event.KeyEvent.wVirtualKeyCode == VK_BACK )
+				{
+					if ( m_strLine.length() > 0 ) m_strLine.pop_back();
+					continue;
+				}
 
-				if ( IsEndOfLine( c ) )
+				// Return/Enter
+				if ( IsEndOfLine( input[i].Event.KeyEvent.wVirtualKeyCode ) )
 				{
 					LineFinished();
 
 					if ( m_bOutputInput )
 						Output::Msg( "\n" );
+
+					continue;
 				}
-				else if ( IsCancel( c ) )
+
+				// Escape
+				if ( IsCancel( input[i].Event.KeyEvent.wVirtualKeyCode ) )
 				{
 					m_strLine = "";
 				}
-				else
-				{
-					m_strLine += c;
 
-					if ( m_bOutputInput )
-						Output::Msg( "%c", c );
-				}
+				char c = input[i].Event.KeyEvent.uChar.AsciiChar;
+				if ( c == 0 )
+					continue;
+	
+				m_strLine.push_back( c );
+
+				if ( m_bOutputInput )
+					Output::Msg( "%c", c );
 
 			}
 
@@ -62,16 +74,18 @@ namespace Bootil
 
 		bool Input::IsEndOfLine( int c )
 		{
-			if ( c <= 0 ) return true;
-			if ( c == '\n' ) return true;
-			if ( c == '\r' ) return true;
+#ifdef _WIN32
+			if ( c == VK_RETURN ) return true;
+#endif 
 
 			return false;
 		}
 
 		bool Input::IsCancel( int c )
 		{
-			if ( c == 27 ) return true;
+#ifdef _WIN32
+			if ( c == VK_ESCAPE ) return true;
+#endif
 
 			return false;
 		}

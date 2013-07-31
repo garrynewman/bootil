@@ -20,8 +20,8 @@ namespace Bootil
 				bool IsCancel( int c );
 				void LineFinished();
 
-				Bootil::BString m_strLine;
-				std::queue<Bootil::BString>	m_Lines;
+				Bootil::BString					m_strLine;
+				std::queue<Bootil::BString>		m_Lines;
 
 				bool	m_bOutputInput;
 		};
