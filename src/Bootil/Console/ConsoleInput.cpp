@@ -39,12 +39,15 @@ namespace Bootil
 
 			void DrawLine()
 			{
+				Console::FGColorPush( ConsoleColor::White );
+				Console::BGColorPush( ConsoleColor::Black );
+
 				ClearLine();
 
 				Console::PosPushRelative( 0, 0 );
-				Console::FGColorPush( ConsoleColor::White );
+
 				printf( "\n> " );
-				Console::FGColorPop();
+				
 
 				if ( m_strLine.length() > 76 )
 				{
@@ -75,6 +78,8 @@ namespace Bootil
 				
 
 				Console::PosPop();
+				Console::BGColorPop();
+				Console::FGColorPop();
 			}
 
 			void OnReturn()
