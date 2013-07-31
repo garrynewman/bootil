@@ -195,5 +195,16 @@ namespace Bootil
 			g_PosStack.pop();			
 #endif 
 		}
+
+		BOOTIL_EXPORT void SetCursorVisible( bool Visible )
+		{
+#ifdef _WIN32 
+			HANDLE consoleHandle = GetStdHandle( STD_OUTPUT_HANDLE );
+			CONSOLE_CURSOR_INFO info;
+			info.dwSize = 1;
+			info.bVisible = Visible;
+			SetConsoleCursorInfo(consoleHandle, &info);
+#endif
+		}
 	}
 }
