@@ -132,10 +132,14 @@ namespace Bootil
 		//-----------------------------------------------------------------------------
 		BOOTIL_EXPORT void Msg( const char* str, ... )
 		{
+			Bootil::Console::Input::PreOutput();
+
 			BString strBuilt;
 			Bootil_FormatString( strBuilt, str );
 			printf( "%s", strBuilt.c_str() );
 			Platform::DebuggerOutput( strBuilt );
+
+			Bootil::Console::Input::PostOutput();
 
 			if ( Bootil::IsShuttingDown() )
 			{ return; }

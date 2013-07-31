@@ -110,4 +110,12 @@ namespace Bootil
 		return a > b ? a : b;
 	}
 
+	template <typename T> T Clamp( T val, T min, T max )
+	{
+		if ( val < min ) return min;
+		if ( val > max ) return max;
+		return val;
+	}
+	
+
 }

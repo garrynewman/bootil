@@ -29,6 +29,8 @@ namespace Bootil
 		BOOTIL_EXPORT void PosPushRelative( int x, int y );
 		BOOTIL_EXPORT void PosPop();
 
+		BOOTIL_EXPORT void SetCursorVisible( bool Visible );
+
 		template < ConsoleColor colA, ConsoleColor colB >
 		void Msg( const char* str, ... )
 		{

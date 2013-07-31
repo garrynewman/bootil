@@ -4,26 +4,16 @@ namespace Bootil
 {
 	namespace Console
 	{
-		class BOOTIL_EXPORT Input
+		namespace Input
 		{
-			public:
+			BString GetLine();
+			BString GetLineInProgress();
 
-				BString GetLine();
-				BString GetLineInProgress();
-				void SetOutputInput( bool b );
+			// Flush all input etc
+			void Flush();
 
-			protected:
-
-				void Update();
-
-				bool IsEndOfLine( int c );
-				bool IsCancel( int c );
-				void LineFinished();
-
-				Bootil::BString					m_strLine;
-				std::queue<Bootil::BString>		m_Lines;
-
-				bool	m_bOutputInput;
+			void PreOutput();
+			void PostOutput();
 		};
 	}
 }
