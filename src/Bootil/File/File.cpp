@@ -63,7 +63,7 @@ namespace Bootil
 			return true;
 		}
 
-		BOOTIL_EXPORT bool	Read( const BString & strFileName, BString & strOut )
+		BOOTIL_EXPORT bool Read( const BString & strFileName, BString & strOut )
 		{
 			std::ifstream f( strFileName.c_str(), std::ios_base::in );
 
@@ -88,6 +88,16 @@ namespace Bootil
 		{
 			std::ofstream f( strFileName.c_str(), std::ios_base::out );
 
+			if ( !f.is_open() ) { return false; }
+
+			f.write( strOut.c_str(), strOut.length() );
+			f.close();
+			return true;
+		}
+
+		BOOTIL_EXPORT bool Append( const BString & strFileName, const BString & strOut )
+		{
+			std::ofstream f( strFileName.c_str(), std::ios_base::out | std::ios_base::app );
 			if ( !f.is_open() ) { return false; }
 
 			f.write( strOut.c_str(), strOut.length() );
