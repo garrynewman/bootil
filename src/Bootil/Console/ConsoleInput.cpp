@@ -39,8 +39,8 @@ namespace Bootil
 
 			void DrawLine()
 			{
-				Console::FGColorPush( ConsoleColor::White );
-				Console::BGColorPush( ConsoleColor::Black );
+				Console::FGColorPush( Console::White );
+				Console::BGColorPush( Console::Black );
 
 				ClearLine();
 
@@ -69,8 +69,8 @@ namespace Bootil
 
 					char caret = m_strLine[m_CaretPos];
 
-					Console::FGColorPush( ConsoleColor::Black );
-					Console::BGColorPush( ConsoleColor::Green );
+					Console::FGColorPush( Console::Black );
+					Console::BGColorPush( Console::Green );
 						printf( "%c", caret );
 					Console::BGColorPop();
 					Console::FGColorPop();
