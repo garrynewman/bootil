@@ -1,8 +1,8 @@
 #include "Bootil/Bootil.h"
-#include <conio.h>
 
 #ifdef _WIN32
 #include <windows.h>
+#include <conio.h>
 #endif 
 
 namespace Bootil
