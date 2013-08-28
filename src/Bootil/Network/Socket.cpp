@@ -419,7 +419,7 @@ namespace Bootil
 
 				if ( getnameinfo( (const struct sockaddr *) &my_addr, sizeof( my_addr ), host, sizeof(host), serv, sizeof(serv), 0) == 0 )
 				{
-					return Bootil::String::Format::Print( "%s:%s\n", host, serv );
+					return Bootil::String::Format::Print( "%s:%s", host, serv );
 				}
 			}
 
