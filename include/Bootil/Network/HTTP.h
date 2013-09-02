@@ -33,6 +33,7 @@ namespace Bootil
 					void Run();
 
 					Bootil::Buffer& GetResponse(){ return m_Response; }
+					Bootil::BString GetResponseString();
 
 				protected:
 

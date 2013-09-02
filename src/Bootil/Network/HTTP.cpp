@@ -70,6 +70,17 @@ namespace Bootil
 				m_PostParams += k + "=" + v;
 			}
 
+			Bootil::BString Query::GetResponseString()
+			{
+				if ( m_Response.GetWritten() == 0 ) return "";
+
+				BString strOut;
+
+				strOut.append( (char*)m_Response.GetBase(), m_Response.GetWritten() );
+
+				return strOut;
+			}
+
 		}
 	}
 }
