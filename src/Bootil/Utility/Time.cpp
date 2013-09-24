@@ -19,7 +19,7 @@ namespace Bootil
 		BOOTIL_EXPORT float Seconds()
 		{
 			clock_t t = clock();
-			return ( (float) t) / CLOCKS_PER_SEC;
+			return ( (double) t) / CLOCKS_PER_SEC;
 		}
 
 		BOOTIL_EXPORT float MilliSeconds()
