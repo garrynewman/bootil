@@ -29,6 +29,9 @@ namespace Bootil
 			{
 				m_Response.Clear();
 
+				Time::Timer timer;
+				unsigned int iLastData = 0;
+
 				try
 				{
 					Lock();
@@ -53,6 +56,21 @@ namespace Bootil
 					while( conn.outstanding() )
 					{
 						conn.pump();
+						Bootil::Platform::Sleep( 10 );
+
+						//
+						// Time out connection after x seconds of no activity
+						//
+						if ( timer.Seconds() > 5 ) break;
+
+						//
+						// Don't time out if we got data this frame
+						//
+						if ( GetResponse().GetWritten() != iLastData )
+						{
+							timer.Reset();
+							iLastData = GetResponse().GetWritten();
+						}
 					}
 				}
 				catch ( happyhttp::Wobbly& e )
