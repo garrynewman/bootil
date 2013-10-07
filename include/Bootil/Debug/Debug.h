@@ -33,6 +33,15 @@ namespace Bootil
 			BOOTIL_EXPORT void DoAssert( const char* strFile, unsigned int iLine, const char* strFunction, const char* strModule, const char* format, ... );
 		}
 
+		namespace Crash
+		{
+			typedef void (*MiniDumpFunction)( unsigned int nExceptionCode, void *pException );
+
+			BOOTIL_EXPORT void SetMinidumpFunction( MiniDumpFunction func );
+			BOOTIL_EXPORT void SetupCallback();
+
+		}
+
 	}
 
 	namespace Output
