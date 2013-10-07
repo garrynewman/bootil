@@ -65,6 +65,28 @@ namespace Bootil
 			}
 		}
 
+		namespace Crash
+		{
+			static MiniDumpFunction g_MinidumpFunction = NULL;
+
+			BOOTIL_EXPORT void SetMinidumpFunction( MiniDumpFunction func )
+			{
+				g_MinidumpFunction = func;
+			}
+
+			void FunctionCalledOnCrash( unsigned int nExceptionCode, void *pException )
+			{
+				if ( g_MinidumpFunction ) g_MinidumpFunction( nExceptionCode, pException );
+			}
+
+			BOOTIL_EXPORT void SetupCallback()
+			{
+#ifdef _WIN32 
+				_set_se_translator( (_se_translator_function) FunctionCalledOnCrash );
+#endif 
+			}
+		}
+
 	}
 
 	struct StoredMessage
@@ -149,6 +171,7 @@ namespace Bootil
 				( *i )->Msg( strBuilt.c_str() );
 			}
 		}
+
 	}
 
 }

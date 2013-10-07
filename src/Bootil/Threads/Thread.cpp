@@ -11,20 +11,29 @@ namespace Bootil
 	{
 		void Thread::RunInThread( void* aArg )
 		{
-			Thread* pThread = ( Thread* ) aArg;
-			pThread->Lock();
-			pThread->m_bClosing = false;
-			pThread->m_bRunning = true;
-			pThread->Unlock();
-			pThread->Run();
-			pThread->Lock();
-			pThread->m_bRunning = false;
-			pThread->Unlock();
+			Bootil::Debug::Crash::SetupCallback();
 
-			//
-			// you can use this function to delete this;
-			//
-			pThread->OnThreadFinished();
+			try 
+			{
+				Thread* pThread = ( Thread* ) aArg;
+				pThread->Lock();
+				pThread->m_bClosing = false;
+				pThread->m_bRunning = true;
+				pThread->Unlock();
+				pThread->Run();
+				pThread->Lock();
+				pThread->m_bRunning = false;
+				pThread->Unlock();
+
+				//
+				// you can use this function to delete this;
+				//
+				pThread->OnThreadFinished();
+			}
+			catch ( ... )
+			{
+
+			}
 		}
 
 		Thread::Thread()
