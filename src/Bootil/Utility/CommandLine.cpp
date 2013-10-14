@@ -49,6 +49,17 @@ namespace Bootil
 			}
 			return strDefault;
 		}
+
+		BOOTIL_EXPORT bool HasSwitch( const BString & strName )
+		{
+			BOOTIL_FOREACH_CONST( arg, g_ArgList, String::List )
+			{
+				if ( *arg == strName )
+					return true;
+			}
+
+			return false;
+		}
 	}
 
 }

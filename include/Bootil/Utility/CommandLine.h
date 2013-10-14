@@ -12,6 +12,8 @@ namespace Bootil
 		BOOTIL_EXPORT BString GetArg( int iNum, const BString & strDefault = "" );
 		BOOTIL_EXPORT BString GetSwitch( const BString & strArgName, const BString & strDefault = "" );
 
+		BOOTIL_EXPORT bool HasSwitch( const BString & strArgName );
+
 	}
 
 }
