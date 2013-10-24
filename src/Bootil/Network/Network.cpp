@@ -36,7 +36,7 @@ namespace Bootil
 			BOOTIL_EXPORT BString IpToString( unsigned long IP )
 			{
 				struct in_addr addr;
-				addr.S_un.S_addr = IP;
+				addr.s_addr = IP;
 
 				const char* strResult = inet_ntoa( addr );
 				if ( !strResult ) return "";
