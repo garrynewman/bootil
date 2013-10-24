@@ -3,7 +3,12 @@
 
 #ifdef _WIN32 
 	#include <winsock2.h>
+#else 
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
 #endif 
+
 
 namespace Bootil
 {
@@ -24,6 +29,25 @@ namespace Bootil
 			WSACleanup();
 			
 			#endif 
+		}
+
+		namespace Util 
+		{
+			BOOTIL_EXPORT BString IpToString( unsigned long IP )
+			{
+				struct in_addr addr;
+				addr.S_un.S_addr = IP;
+
+				const char* strResult = inet_ntoa( addr );
+				if ( !strResult ) return "";
+
+				return strResult;
+			}
+
+			BOOTIL_EXPORT unsigned long StringToIp( const BString& strIP )
+			{
+				return inet_addr( strIP.c_str() );
+			}
 		}
 	}
 }
