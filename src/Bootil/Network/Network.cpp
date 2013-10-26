@@ -46,7 +46,7 @@ namespace Bootil
 
 			BOOTIL_EXPORT unsigned long StringToIp( const BString& strIP )
 			{
-				return inet_addr( strIP.c_str() );
+				return htonl( inet_addr( strIP.c_str() ) );
 			}
 		}
 	}
