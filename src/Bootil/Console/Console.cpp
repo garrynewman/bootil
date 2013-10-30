@@ -206,5 +206,18 @@ namespace Bootil
 			SetConsoleCursorInfo(consoleHandle, &info);
 #endif
 		}
+
+		void Msg( ConsoleColor colA, ConsoleColor colB, const char* str, ... )
+		{
+			FGColorPush( colA );
+			BGColorPush( colB );
+
+			BString strBuilt;
+			Bootil_FormatString( strBuilt, str );
+			Bootil::Output::Msg( "%s", strBuilt.c_str() );
+
+			FGColorPop();
+			BGColorPop();
+		}
 	}
 }
