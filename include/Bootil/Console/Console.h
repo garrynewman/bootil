@@ -31,8 +31,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT void SetCursorVisible( bool Visible );
 
-		template < ConsoleColor colA, ConsoleColor colB >
-		void Msg( const char* str, ... )
+		void Msg( ConsoleColor colA, ConsoleColor colB, const char* str, ... )
 		{
 			FGColorPush( colA );
 			BGColorPush( colB );
