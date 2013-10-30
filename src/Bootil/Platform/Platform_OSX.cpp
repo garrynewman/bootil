@@ -32,7 +32,7 @@ namespace Bootil
 		BOOTIL_EXPORT BString CurrentUserName( void )
 		{
 			// todo.
-			return "unknown"
+			return "unknown";
 		}
 
 		BOOTIL_EXPORT void SetupAssociation( BString ext )
