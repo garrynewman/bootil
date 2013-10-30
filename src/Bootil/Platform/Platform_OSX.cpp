@@ -4,6 +4,8 @@
 #include "Bootil/Bootil.h"
 
 #include <stdio.h>
+#include <unistd.h>
+
 
 namespace Bootil
 {
@@ -90,6 +92,14 @@ namespace Bootil
 		BOOTIL_EXPORT void Sleep( unsigned int ms )
 		{
 			::usleep( ms * 1000 );
+		}
+
+		BOOTIL_EXPORT BString CurrentDir( void )
+		{
+			char strCurrentWD[4096];
+			getcwd( strCurrentWD, sizeof( strCurrentWD ) );
+
+			return strCurrentWD;
 		}
 	}
 }

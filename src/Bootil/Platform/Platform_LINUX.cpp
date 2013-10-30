@@ -239,6 +239,14 @@ namespace Bootil
 		{
 			::usleep( ms * 1000 );
 		}
+
+		BOOTIL_EXPORT BString CurrentDir( void )
+		{
+			char strCurrentWD[4096];
+			getcwd( strCurrentWD, sizeof( strCurrentWD ) );
+
+			return strCurrentWD;
+		}
 	}
 }
 
