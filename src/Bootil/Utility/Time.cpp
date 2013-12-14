@@ -32,26 +32,26 @@ namespace Bootil
 		{
 			time_t rawtime;
 			struct tm * timeinfo;
-			char buffer[512];
+			static char buffer[512];
 
 			time( &rawtime );
 			timeinfo = localtime( &rawtime );
 
-			strftime( buffer, 80, "%R", timeinfo );
+			strftime( buffer, 512, "%H:%M", timeinfo );
 
 			return buffer;
 		}
 
-		BOOTIL_EXPORT Bootil::BString		TimeAndDateStamp()
+		BOOTIL_EXPORT Bootil::BString TimeAndDateStamp()
 		{
 			time_t rawtime;
 			struct tm * timeinfo;
-			char buffer[512];
+			static char buffer[512];
 
 			time( &rawtime );
 			timeinfo = localtime( &rawtime );
 
-			strftime( buffer, 80, "%F %R", timeinfo );
+			strftime( buffer, 512, "%Y-%m-%d %H:%M", timeinfo );
 
 			return buffer;
 		}
