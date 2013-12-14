@@ -27,6 +27,34 @@ namespace Bootil
 			clock_t t = clock();
 			return ( (double) t) / ( CLOCKS_PER_SEC * 1000.0 );
 		}
+
+		BOOTIL_EXPORT Bootil::BString TimeStamp()
+		{
+			time_t rawtime;
+			struct tm * timeinfo;
+			char buffer[512];
+
+			time( &rawtime );
+			timeinfo = localtime( &rawtime );
+
+			strftime( buffer, 80, "%R", timeinfo );
+
+			return buffer;
+		}
+
+		BOOTIL_EXPORT Bootil::BString		TimeAndDateStamp()
+		{
+			time_t rawtime;
+			struct tm * timeinfo;
+			char buffer[512];
+
+			time( &rawtime );
+			timeinfo = localtime( &rawtime );
+
+			strftime( buffer, 80, "%F %R", timeinfo );
+
+			return buffer;
+		}
 	}
 
 }
