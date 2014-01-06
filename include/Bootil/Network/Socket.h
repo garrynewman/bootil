@@ -48,6 +48,11 @@ namespace Bootil
 				// Returns the read buffer
 				//
 				Bootil::Buffer& GetBuffer();
+
+				//
+				// Connection Info
+				//
+				Bootil::BString GetIP();
 				
 			private:
 

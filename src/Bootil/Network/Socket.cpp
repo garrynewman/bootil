@@ -417,13 +417,32 @@ namespace Bootil
 				char host[256];
 				char serv[32];
 
-				if ( getnameinfo( (const struct sockaddr *) &my_addr, sizeof( my_addr ), host, sizeof(host), serv, sizeof(serv), 0) == 0 )
+				if ( getnameinfo( (const struct sockaddr *) &my_addr, sizeof( my_addr ), host, sizeof(host), serv, sizeof(serv), 0) == 0, NI_NUMERICHOST | NI_NUMERICSERV )
 				{
 					return Bootil::String::Format::Print( "%s:%s", host, serv );
 				}
 			}
 
 			return "0.0.0.0:0";		
+		}
+
+		Bootil::BString Socket::GetIP()
+		{
+			struct sockaddr_storage my_addr;
+			socklen_t my_addr_len = sizeof(my_addr);
+
+			if ( getsockname( m_pSocket, (struct sockaddr *) &my_addr, &my_addr_len) != -1 )
+			{
+				char host[256];
+				char serv[32];
+
+				if ( getnameinfo( (const struct sockaddr *) &my_addr, sizeof( my_addr ), host, sizeof(host), serv, sizeof(serv), 0) == 0, NI_NUMERICHOST | NI_NUMERICSERV )
+				{
+					return Bootil::String::Format::Print( "%s", host );
+				}
+			}
+
+			return "0.0.0.0";
 		}
 	}
 }
