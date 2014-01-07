@@ -53,12 +53,16 @@ namespace Bootil
 				// Connection Info
 				//
 				Bootil::BString GetIP();
+
+				//
+				// This is called automatically - but you can manually flush this out if the mood strikes you.
+				//
+				void SendQueued();
 				
 			private:
 
 				void InitializeSocket();
 				bool PreventedBlock();
-				void SendQueued();
 				void ReceiveToQueue();
 				void FinishConnecting();
 				void StoreLastError();
