@@ -58,6 +58,7 @@ namespace Bootil
 			inline BString GetTrimAfter( BString str, const Bootil::BString & strFind, bool bIncluding = false ) { TrimAfter( str, strFind, bIncluding ); return str; }
 
 			BOOTIL_EXPORT void Split( const BString & str, const BString & seperator, String::List & outbits );
+			BOOTIL_EXPORT void SplitLength( const BString & str, int iLength, String::List & outbits );
 			BOOTIL_EXPORT void FindAndReplace( BString & strIn, const BString & strFind, const BString & strReplace );
 			BOOTIL_EXPORT int Count( const BString & str, char chrFind );
 		}
