@@ -85,9 +85,22 @@ namespace Bootil
 				if ( i == std::string::npos ) { return; }
 
 				if ( bIncluding )
-				{ str = str.substr( i + strFind.length() ); }
+				{ 
+					str = str.substr( i + strFind.length() ); 
+				}
 				else
-				{ str = str.substr( i + 1 ); }
+				{ 
+					str = str.substr( i + 1 ); 
+				}
+			}
+
+			BOOTIL_EXPORT void SplitLength( const BString & str, int iLength, String::List & outbits )
+			{
+				for (int i=0; i < str.length(); i += iLength )
+				{
+					BString strPart = str.substr( i, Bootil::Min<int>( i + iLength, str.length() ) - i );
+					outbits.push_back( strPart );
+				}
 			}
 		}
 	}
