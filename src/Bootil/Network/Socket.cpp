@@ -1,4 +1,3 @@
-
 #include "Bootil/Bootil.h"
 
 #ifdef _WIN32 
@@ -14,7 +13,7 @@
 	#include <arpa/inet.h>
 	#include <netdb.h>
 	#define ioctlsocket ioctl
-	#define closesocket close
+	#define closesocket Close
 	#define WSAGetLastError() errno
 #endif 
 
