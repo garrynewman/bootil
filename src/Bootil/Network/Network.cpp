@@ -33,15 +33,17 @@ namespace Bootil
 
 		namespace Util 
 		{
-			BOOTIL_EXPORT BString IpToString( unsigned long IP )
+			BOOTIL_EXPORT BString IpToString( unsigned long IP, bool bBigEnd )
 			{
-				struct in_addr addr;
-				addr.s_addr = IP;
+				BString strOut;
+				unsigned char *ipByte = (unsigned char *)&IP;
+				
+				if ( bBigEnd )
+					strOut = Bootil::String::Format::Print( "%u.%u.%u.%u", (int)(ipByte[0]), (int)(ipByte[1]), (int)(ipByte[2]), (int)(ipByte[3]) );
+				else 
+					strOut = Bootil::String::Format::Print( "%u.%u.%u.%u", (int)(ipByte[3]), (int)(ipByte[2]), (int)(ipByte[1]), (int)(ipByte[0]) );
 
-				const char* strResult = inet_ntoa( addr );
-				if ( !strResult ) return "";
-
-				return strResult;
+				return strOut;
 			}
 
 			BOOTIL_EXPORT unsigned long StringToIp( const BString& strIP )

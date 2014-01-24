@@ -9,7 +9,7 @@ namespace Bootil
 
 		namespace Util 
 		{
-			BOOTIL_EXPORT BString IpToString( unsigned long IP );
+			BOOTIL_EXPORT BString IpToString( unsigned long IP, bool bBigEnd = false );
 			BOOTIL_EXPORT unsigned long StringToIp( const BString& strIP );
 		}
 
