@@ -180,6 +180,10 @@ namespace Bootil
 			::Sleep( ms );
 		}
 
+		BOOTIL_EXPORT BString PlatformName()
+		{
+			return "windows";
+		}
 	}
 }
 
