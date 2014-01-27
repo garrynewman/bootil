@@ -247,6 +247,11 @@ namespace Bootil
 
 			return strCurrentWD;
 		}
+
+		BOOTIL_EXPORT BString PlatformName()
+		{
+			return "linux";
+		}
 	}
 }
 

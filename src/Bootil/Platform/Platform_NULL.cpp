@@ -77,6 +77,11 @@ namespace Bootil
 		BOOTIL_EXPORT void Sleep( unsigned int ms )
 		{
 		}
+
+		BOOTIL_EXPORT BString PlatformName()
+		{
+			return "unknown";
+		}
 	}
 }
 
