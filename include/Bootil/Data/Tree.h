@@ -83,6 +83,11 @@ namespace Bootil
 				template <typename TValue> unsigned char VarID() const;
 				bool IsBranch() const { return m_Info == 0; }
 
+				//
+				// Clean up
+				//
+				void Clear() { m_Children.clear(); }
+
 			protected:
 
 				TString			m_Name;
