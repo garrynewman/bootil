@@ -35,6 +35,8 @@ namespace Bootil
 				bool WantsToClose();
 				void SetClosing( bool b );
 
+				void DeleteSelfOnFinish();
+
 			protected:
 
 				static void RunInThread( void* pArg );
@@ -43,6 +45,7 @@ namespace Bootil
 				Threads::Mutex			m_Mutex;
 				bool					m_bRunning;
 				bool					m_bClosing;
+				bool					m_bDeleteSelf;
 		};
 	}
 }
