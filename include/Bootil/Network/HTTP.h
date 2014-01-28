@@ -29,22 +29,32 @@ namespace Bootil
 					void SetURL( const Bootil::BString& strHostname, const Bootil::BString& strRequest, unsigned int iPort = 80 ){ m_strHost = strHostname; m_strRequest = strRequest; m_iPort = iPort; }
 					void SetMethod( const Bootil::BString& strMethod ){ m_strMethod = strMethod; }
 					void SetPostVar( const Bootil::BString& k, const Bootil::BString& v );
+					void SetPostFile( const Bootil::BString& title, const Bootil::BString& filename, const Bootil::Buffer& filedata );
 
 					void Run();
 
 					Bootil::Buffer& GetResponse(){ return m_Response; }
 					Bootil::BString GetResponseString();
 
+					bool IsErrored(){return m_bError; }
+					Bootil::BString GetErrorString(){ return m_strError; }
+
 				protected:
 
 					void DoRun();
+					void SetupBoundary();
+
+					bool				m_bError;
+					Bootil::BString		m_strError;
 
 					Bootil::BString		m_strHost;
 					Bootil::BString		m_strMethod;
 					unsigned int		m_iPort;
 					Bootil::BString		m_strRequest;
 					Bootil::AutoBuffer	m_Response;
-					Bootil::BString		m_PostParams;
+
+					Bootil::AutoBuffer	m_PostBody;
+					Bootil::BString		m_strBoundary;
 
 			};
 

@@ -27,6 +27,9 @@ namespace Bootil
 
 			void Query::Run()
 			{
+				m_bError = false;
+				m_strError = "";
+
 				m_Response.Clear();
 
 				Time::Timer timer;
@@ -42,15 +45,30 @@ namespace Bootil
 						conn.putheader( "Accept", "*/*" );
 						conn.putheader( "User-Agent", "Agent:Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36" );
 
-						if ( !m_PostParams.empty() )
+						if ( m_PostBody.GetWritten() > 0 )
 						{
-							conn.putheader( "Content-Length", m_PostParams.length() );
-							conn.putheader( "Content-type", "application/x-www-form-urlencoded" );
+							// Finish off the post body
+							m_PostBody.WriteString( "\r\n--" + m_strBoundary + "--\r\n\r\n", false );
+
+							// Add headers
+							conn.putheader( "Content-Type", ("multipart/form-data; boundary=" + m_strBoundary).c_str() );
+							conn.putheader( "Content-Length", m_PostBody.GetWritten() );
+							conn.putheader( "Connection", "Close" );
+							conn.putheader( "Cache-Control", "no-cache" );
 						}
 
 					conn.endheaders();
 
-					conn.send( (const unsigned char*) m_PostParams.c_str(), m_PostParams.length() );
+					if ( m_PostBody.GetWritten() > 0 )
+					{
+						conn.send( (const unsigned char*) m_PostBody.GetBase(), m_PostBody.GetWritten() );
+					}
+					else
+					{
+						BString strEmpty;
+						conn.send( (const unsigned char*) strEmpty.c_str(), strEmpty.length() );
+					}
+
 					Unlock();
 
 					while( conn.outstanding() )
@@ -75,17 +93,20 @@ namespace Bootil
 				}
 				catch ( happyhttp::Wobbly& e )
 				{
-					// Failed for some reason.
+					m_bError = true;
+					m_strError = e.what();
 				}
 			}
 
 
 			void Query::SetPostVar( const Bootil::BString& k, const Bootil::BString& v )
 			{
-				if ( !m_PostParams.empty() ) m_PostParams += "&";
+				if ( m_strBoundary.empty() )
+					SetupBoundary();
 
-				// URLENCODE
-				m_PostParams += k + "=" + v;
+				m_PostBody.WriteString( "\r\n--" + m_strBoundary + "\r\n", false );
+				m_PostBody.WriteString( "Content-Disposition: form-data; name=\""+k+"\"\r\n\r\n", false );
+				m_PostBody.WriteString( v, false );
 			}
 
 			Bootil::BString Query::GetResponseString()
@@ -97,6 +118,29 @@ namespace Bootil
 				strOut.append( (char*)m_Response.GetBase(), m_Response.GetWritten() );
 
 				return strOut;
+			}
+
+			void Query::SetPostFile( const Bootil::BString& strTitle, const Bootil::BString& strFileName, const Bootil::Buffer& data )
+			{
+				if ( m_strBoundary.empty() )
+					SetupBoundary();
+
+				m_PostBody.WriteString( "\r\n", false );
+				m_PostBody.WriteString( "--" + m_strBoundary + "\r\n", false );
+				m_PostBody.WriteString( "Content-Disposition: file; name=\""+strTitle+"\"; filename=\""+strFileName+"\"\r\n", false );
+				m_PostBody.WriteString( "Content-Type: application/octet-stream\r\n", false );
+				m_PostBody.WriteString( "Content-Transfer-Encoding: binary\r\n", false );
+				m_PostBody.WriteString( "\r\n", false );
+
+				m_PostBody.WriteBuffer( data );
+			}
+
+			void Query::SetupBoundary()
+			{
+				float fSeconds = Time::MilliSeconds();
+				int iRandom = Bootil::Math::Random::Int( 0, INT_MAX );
+
+				m_strBoundary = Hasher::MD5::String( String::Format::Print( "boundary_ %f %i _end", fSeconds, iRandom ) );
 			}
 
 		}

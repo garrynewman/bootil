@@ -49,7 +49,7 @@ namespace Bootil
 			//
 			// Read/Write a null terminated string
 			//
-			int WriteString( const Bootil::BString & str );
+			int WriteString( const Bootil::BString & str, bool addNull = true );
 			Bootil::BString ReadString();
 
 			template <typename T>
