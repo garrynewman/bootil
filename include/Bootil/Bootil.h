@@ -23,6 +23,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <limits.h>
 
 // STL
 #include <string>
