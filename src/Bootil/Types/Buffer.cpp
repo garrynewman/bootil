@@ -155,7 +155,7 @@ namespace Bootil
 		return true;
 	}
 
-	int Buffer::WriteString( const Bootil::BString & str )
+	int Buffer::WriteString( const Bootil::BString & str, bool addNull )
 	{
 		int iWritten = 0;
 
@@ -165,8 +165,12 @@ namespace Bootil
 			iWritten++;
 		}
 
-		WriteType<char>( 0 );
-		iWritten++;
+		if ( addNull )
+		{
+			WriteType<char>( 0 );
+			iWritten++;
+		}
+
 		return iWritten;
 	}
 
