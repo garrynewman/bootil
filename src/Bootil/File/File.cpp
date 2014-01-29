@@ -106,7 +106,7 @@ namespace Bootil
 		}
 
 
-		BOOTIL_EXPORT unsigned long long CRC( const BString & strFileName )
+		BOOTIL_EXPORT unsigned long CRC( const BString & strFileName )
 		{
 			Bootil::AutoBuffer buffer;
 

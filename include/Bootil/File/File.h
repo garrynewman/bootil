@@ -11,7 +11,7 @@ namespace Bootil
 		BOOTIL_EXPORT int GetFilesInFolder( const BString & strFolder, String::List & files, bool Recursive );
 
 		BOOTIL_EXPORT int					Exists( const BString & strFileName );
-		BOOTIL_EXPORT unsigned long long	CRC( const BString & strFileName );
+		BOOTIL_EXPORT unsigned long			CRC( const BString & strFileName );
 		BOOTIL_EXPORT int					Size( const BString & strFileName );
 		BOOTIL_EXPORT bool					Read( const BString & strFileName, Bootil::Buffer & bufferOut );
 		BOOTIL_EXPORT bool					Read( const BString & strFileName, BString & strOut );
