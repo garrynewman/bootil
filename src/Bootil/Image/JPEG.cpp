@@ -32,7 +32,7 @@ namespace Bootil
 
 			BOOTIL_EXPORT bool Save( Bootil::Image::Format & input, Bootil::Buffer & output, int iQuality )
 			{
-				output.EnsureCapacity( input.height * input.width * 4 );
+				output.EnsureCapacity( input.height * input.width * 3 );
 
 				int buffer_size = output.GetSize();
 
