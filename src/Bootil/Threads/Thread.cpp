@@ -36,6 +36,7 @@ namespace Bootil
 				if ( pThread->m_bDeleteSelf )
 				{
 					delete pThread;
+					return;
 				}
 			}
 			catch ( ... )
@@ -61,10 +62,11 @@ namespace Bootil
 
 		bool Thread::StartInThread()
 		{
-			if ( m_pThread ) { return false; }
+			if ( m_pThread ) { Join(); }
 
 			m_bRunning = true;
 			m_bClosing = false;
+
 			m_pThread = new tthread::thread( RunInThread, this );
 			return true;
 		}
