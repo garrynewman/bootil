@@ -69,6 +69,7 @@
 
 #include "Bootil/Image/Image.h"
 #include "Bootil/Image/JPEG.h"
+#include "Bootil/Image/PNG.h"
 
 #include "Bootil/Console/Console.h"
 #include "Bootil/Console/ConsoleInput.h"
