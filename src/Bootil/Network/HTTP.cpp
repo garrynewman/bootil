@@ -32,7 +32,6 @@ namespace Bootil
 
 				m_Response.Clear();
 
-				Time::Timer timer;
 				unsigned int iLastData = 0;
 
 				try
@@ -70,6 +69,8 @@ namespace Bootil
 					}
 
 					Unlock();
+					
+					Time::Timer timer;
 
 					while( conn.outstanding() )
 					{
