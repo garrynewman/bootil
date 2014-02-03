@@ -79,7 +79,7 @@ namespace Bootil
 						//
 						// Time out connection after x seconds of no activity
 						//
-						if ( timer.Seconds() > 5 ) break;
+						if ( timer.Seconds() > (60 * 3) ) break;
 
 						//
 						// Don't time out if we got data this frame
