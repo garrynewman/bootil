@@ -37,10 +37,11 @@ namespace Bootil
 				try
 				{
 					Lock();
-					happyhttp::Connection conn( m_strHost.c_str(), m_iPort );
-					conn.setcallbacks( NULL, OnData, NULL, (void*) this );
 
-					conn.putrequest( m_strMethod.c_str(), m_strRequest.c_str() );
+						happyhttp::Connection conn( m_strHost.c_str(), m_iPort );
+						conn.setcallbacks( NULL, OnData, NULL, (void*) this );
+
+						conn.putrequest( m_strMethod.c_str(), m_strRequest.c_str() );
 						conn.putheader( "Accept", "*/*" );
 						conn.putheader( "User-Agent", "Agent:Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36" );
 
@@ -56,18 +57,18 @@ namespace Bootil
 							conn.putheader( "Cache-Control", "no-cache" );
 						}
 
-					conn.endheaders();
+						conn.endheaders();
 
-					if ( m_PostBody.GetWritten() > 0 )
-					{
-						conn.send( (const unsigned char*) m_PostBody.GetBase(), m_PostBody.GetWritten() );
-					}
-					else
-					{
-						BString strEmpty;
-						conn.send( (const unsigned char*) strEmpty.c_str(), strEmpty.length() );
-					}
-
+						if ( m_PostBody.GetWritten() > 0 )
+						{
+							conn.send( (const unsigned char*) m_PostBody.GetBase(), m_PostBody.GetWritten() );
+						}
+						else
+						{
+							BString strEmpty;
+							conn.send( (const unsigned char*) strEmpty.c_str(), strEmpty.length() );
+						}
+			
 					Unlock();
 					
 					Time::Timer timer;
@@ -75,12 +76,6 @@ namespace Bootil
 					while( conn.outstanding() )
 					{
 						conn.pump();
-						Bootil::Platform::Sleep( 10 );
-
-						//
-						// Time out connection after x seconds of no activity
-						//
-						if ( timer.Seconds() > (60 * 3) ) break;
 
 						//
 						// Don't time out if we got data this frame
@@ -90,6 +85,16 @@ namespace Bootil
 							timer.Reset();
 							iLastData = GetResponse().GetWritten();
 						}
+
+						//
+						// Time out connection after x seconds of no activity
+						//
+						if ( timer.Seconds() > (60 * 3) ) break;
+
+						//
+						// Breathe
+						//
+						Bootil::Platform::Sleep( 10 );
 					}
 				}
 				catch ( happyhttp::Wobbly& e )
