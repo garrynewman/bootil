@@ -18,7 +18,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT float Seconds()
 		{
-			return MilliSeconds() * 1000.0f;
+			return MilliSeconds() / 1000.0f;
 		}
 
 		BOOTIL_EXPORT float MilliSeconds()
