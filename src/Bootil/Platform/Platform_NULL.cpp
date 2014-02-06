@@ -82,6 +82,15 @@ namespace Bootil
 		{
 			return "unknown";
 		}
+
+		BOOTIL_EXPORT long long GetMilliseconds()
+		{
+			//
+			// Note, this isn't very good or accurate, because clock() counts CPU time!
+			//
+			clock_t t = clock();
+			return ( (double) t) / ( CLOCKS_PER_SEC * 1000.0 );
+		}
 	}
 }
 

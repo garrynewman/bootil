@@ -184,6 +184,31 @@ namespace Bootil
 		{
 			return "windows";
 		}
+
+		BOOTIL_EXPORT long long GetMilliseconds()
+		{
+			static bool bInitialized = false;
+			static LARGE_INTEGER s_frequency;
+			static LARGE_INTEGER s_startvalue;
+			static BOOL s_use_qpc = QueryPerformanceFrequency( &s_frequency );
+
+			if ( !bInitialized )
+			{
+				bInitialized = true;
+				s_use_qpc = QueryPerformanceFrequency( &s_frequency );
+				QueryPerformanceCounter( &s_startvalue );
+			}
+
+			if ( s_use_qpc ) 
+			{
+				LARGE_INTEGER now;
+				QueryPerformanceCounter( &now );
+
+				return (1000LL * (now.QuadPart - s_startvalue.QuadPart)) / s_frequency.QuadPart;
+			}
+			
+			return GetTickCount();
+		}
 	}
 }
 
