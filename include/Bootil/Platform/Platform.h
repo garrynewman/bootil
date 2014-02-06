@@ -33,5 +33,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT BString PlatformName();
 
+		BOOTIL_EXPORT long long GetMilliseconds();
+
 	}
 }

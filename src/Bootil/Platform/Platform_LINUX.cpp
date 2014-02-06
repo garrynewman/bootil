@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/time.h>
 
 #ifdef X11_GRAPHICAL
 #include <X11/Xlib.h>
@@ -251,6 +252,22 @@ namespace Bootil
 		BOOTIL_EXPORT BString PlatformName()
 		{
 			return "linux";
+		}
+
+		BOOTIL_EXPORT long long GetMilliseconds()
+		{
+			static int      startSeconds = 0;
+
+			struct timeval  timecurrent;
+			gettimeofday( &timecurrent, NULL );
+
+			if ( !startSeconds )
+			{
+				startSeconds = timecurrent.tv_sec;
+				return ( timecurrent.tv_usec / 1000.0 );
+			}
+
+			return (long long)((( timecurrent.tv_sec - startSeconds ) * 1000.0) + (timecurrent.tv_usec / 1000.0) );
 		}
 	}
 }

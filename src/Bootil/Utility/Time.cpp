@@ -18,14 +18,12 @@ namespace Bootil
 
 		BOOTIL_EXPORT float Seconds()
 		{
-			clock_t t = clock();
-			return ( (double) t) / CLOCKS_PER_SEC;
+			return MilliSeconds() * 1000.0f;
 		}
 
 		BOOTIL_EXPORT float MilliSeconds()
 		{
-			clock_t t = clock();
-			return ( (double) t) / ( CLOCKS_PER_SEC * 1000.0 );
+			return (float) Platform::GetMilliseconds();
 		}
 
 		BOOTIL_EXPORT Bootil::BString TimeStamp()
