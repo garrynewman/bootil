@@ -13,35 +13,38 @@ namespace Bootil
 		{
 			Bootil::Debug::Crash::SetupCallback();
 
+			Thread* pThread = ( Thread* ) aArg;
+
+			pThread->Lock();
+			pThread->m_bClosing = false;
+			pThread->m_bRunning = true;
+			pThread->Unlock();
+
 			try 
 			{
-				Thread* pThread = ( Thread* ) aArg;
-				pThread->Lock();
-				pThread->m_bClosing = false;
-				pThread->m_bRunning = true;
-				pThread->Unlock();
 				pThread->Run();
-				pThread->Lock();
-				pThread->m_bRunning = false;
-				pThread->Unlock();
-
-				//
-				// you can use this function to delete this;
-				//
-				pThread->OnThreadFinished();
-
-				//
-				// if we're set up to delete ourself, then do it.
-				//
-				if ( pThread->m_bDeleteSelf )
-				{
-					delete pThread;
-					return;
-				}
 			}
 			catch ( ... )
 			{
 
+			}
+
+			pThread->Lock();
+			pThread->m_bRunning = false;
+			pThread->Unlock();
+
+			//
+			// you can use this function to delete this;
+			//
+			pThread->OnThreadFinished();
+
+			//
+			// if we're set up to delete ourself, then do it.
+			//
+			if ( pThread->m_bDeleteSelf )
+			{
+				delete pThread;
+				return;
 			}
 
 
