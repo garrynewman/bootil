@@ -43,11 +43,9 @@ namespace Bootil
 			//
 			if ( pThread->m_bDeleteSelf )
 			{
+				pThread->Detach();
 				delete pThread;
-				return;
 			}
-
-
 		}
 
 		Thread::Thread()
@@ -86,9 +84,29 @@ namespace Bootil
 
 		void Thread::Join()
 		{
-			if ( !m_pThread ) { return; }
+			if ( !m_pThread )
+				return;
 
-			m_pThread->join();
+			if ( tthread::this_thread::get_id() == m_pThread->get_id() )
+			{
+				Detach();
+			}
+			else 
+			{
+				m_pThread->join();
+			}
+			
+			delete m_pThread;
+			m_pThread = NULL;
+		}
+
+		void Thread::Detach()
+		{
+			if ( !m_pThread )
+				return;
+
+			m_pThread->detach();
+
 			delete m_pThread;
 			m_pThread = NULL;
 		}

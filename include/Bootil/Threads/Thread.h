@@ -29,6 +29,7 @@ namespace Bootil
 				void TryLock();
 
 				void Join();
+				void Detach();
 
 				virtual void OnThreadFinished(){};
 
