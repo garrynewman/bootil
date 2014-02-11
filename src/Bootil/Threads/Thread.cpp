@@ -37,22 +37,12 @@ namespace Bootil
 			// you can use this function to delete this;
 			//
 			pThread->OnThreadFinished();
-
-			//
-			// if we're set up to delete ourself, then do it.
-			//
-			if ( pThread->m_bDeleteSelf )
-			{
-				pThread->Detach();
-				delete pThread;
-			}
 		}
 
 		Thread::Thread()
 		{
 			m_pThread = NULL;
 			m_bRunning = false;
-			m_bDeleteSelf = false;
 		}
 
 		Thread::~Thread()
@@ -79,8 +69,6 @@ namespace Bootil
 
 		bool Thread::WantsToClose() { Threads::Guard m( &m_Mutex ); return m_bClosing; }
 		void Thread::SetClosing( bool b ) { Threads::Guard m( &m_Mutex ); m_bClosing = b; }
-
-		void Thread::DeleteSelfOnFinish(){ m_bDeleteSelf = true; }
 
 		void Thread::Join()
 		{
