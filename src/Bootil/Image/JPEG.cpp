@@ -22,6 +22,8 @@ namespace Bootil
 
 				int x, y, comp;
 				unsigned char* pData = stbi_jpeg_load( &s, &x, &y, &comp, 3 );
+				if ( !pData ) return false;
+
 				imageout.width	= x;
 				imageout.height = y;
 				imageout.alpha	= false;
@@ -61,11 +63,14 @@ namespace Bootil
 
 				int x, y, comp;
 				unsigned char* pData = stbi_png_load( &s, &x, &y, &comp, 3 );
+				if ( !pData) return false;
+
 				imageout.width	= x;
 				imageout.height = y;
 				imageout.alpha	= false;
 				imageout.data.Write( pData, x * y * 3 );
 				stbi_image_free( pData );
+
 				return true;
 			}
 		}
