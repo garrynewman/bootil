@@ -3,7 +3,12 @@
 #include "tinythreadpp/tinythread.h"
 #include "tinythreadpp/fast_mutex.h"
 
-
+#if defined(_TTHREAD_POSIX_)
+#include <unistd.h>
+#include <map>
+#elif defined(_TTHREAD_WIN32_)
+#include <process.h>
+#endif
 
 namespace Bootil
 {
@@ -93,19 +98,41 @@ namespace Bootil
 			m_bRunning = false;
 		}
 
-		void RunFunctionThenDestroyThread( void* aArg )
+#ifdef _WIN32 
+		unsigned int WINAPI RunFunctionThenDestroyThread( void* aArg )
 		{
 			Thread* pThread = (Thread*) aArg;
 			pThread->Run();
 			delete pThread;
+			return 0;
 		}
 
 		BOOTIL_EXPORT void Thread::StartInThreadAndDestroy()
 		{
-			tthread::thread* t = new tthread::thread( RunFunctionThenDestroyThread, this );
-			t->detach();
-			delete t;
+			HANDLE mHandle = (HANDLE) _beginthreadex( 0, 0, RunFunctionThenDestroyThread, (void *) this, 0, 0 );
+			CloseHandle( mHandle );
 		}
+#else 
+		void* RunFunctionThenDestroyThread( void* aArg )
+		{
+			Thread* pThread = (Thread*) aArg;
+			pThread->Run();
+			delete pThread;
+			return 0;
+		}
+
+		BOOTIL_EXPORT void Thread::StartInThreadAndDestroy()
+		{
+			pthread_t mHandle = 0;
+
+			if ( pthread_create( &mHandle, NULL, RunFunctionThenDestroyThread, (void *) ti) )
+			{
+				pthread_detach( mHandle );
+			}
+		}
+#endif 
+
+
 
 	}
 }
