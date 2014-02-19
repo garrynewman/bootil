@@ -1,5 +1,9 @@
 #include "Bootil/Bootil.h"
 
+#ifdef _WIN32 
+#include <excpt.h>
+#endif 
+
 namespace Bootil
 {
 	namespace Debug
@@ -84,6 +88,33 @@ namespace Bootil
 #ifdef _WIN32 
 				_set_se_translator( (_se_translator_function) FunctionCalledOnCrash );
 #endif 
+			}
+
+#if _WIN32 
+			int ForcedCrash( unsigned int nExceptionCode, void *pException )
+			{
+				FunctionCalledOnCrash( nExceptionCode, pException );
+				return EXCEPTION_EXECUTE_HANDLER;
+			}
+#endif 
+
+			BOOTIL_EXPORT void DoCrash()
+			{
+				//
+				// Not sure of the portability of this
+				//
+				#ifdef _WIN32
+				__try 
+				{
+					* (int *) 0 = 0;
+				} 
+				__except( ForcedCrash( GetExceptionCode(), GetExceptionInformation() ) )
+				{
+					// Nothing Here.				
+				}
+				#endif
+
+				exit( -1 );
 			}
 		}
 
