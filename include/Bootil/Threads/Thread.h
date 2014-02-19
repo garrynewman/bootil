@@ -23,13 +23,13 @@ namespace Bootil
 				bool Running();
 
 				bool StartInThread();
+				void StartInThreadAndDestroy();
 
 				void Lock();
 				void Unlock();
 				void TryLock();
 
 				void Join();
-				void Detach();
 
 				virtual void OnThreadFinished(){};
 
@@ -45,6 +45,8 @@ namespace Bootil
 				bool					m_bRunning;
 				bool					m_bClosing;
 		};
+
+		BOOTIL_EXPORT void RunInThreadAndDestroy( Thread* pThread );
 	}
 }
 

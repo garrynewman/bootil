@@ -34,11 +34,6 @@ namespace Bootil
 			pThread->Unlock();
 
 			//
-			// We done, detach us
-			//
-			pThread->Detach();
-
-			//
 			// you can use this function to delete this; probably.
 			//
 			pThread->OnThreadFinished();
@@ -81,9 +76,11 @@ namespace Bootil
 			if ( !m_pThread )
 				return;
 
+			SetClosing( true );
+
 			if ( tthread::this_thread::get_id() == m_pThread->get_id() )
 			{
-				Detach();
+				m_pThread->detach();
 			}
 			else 
 			{
@@ -96,19 +93,18 @@ namespace Bootil
 			m_bRunning = false;
 		}
 
-		void Thread::Detach()
+		void RunFunctionThenDestroyThread( void* aArg )
 		{
-			if ( !m_pThread )
-				return;
+			Thread* pThread = (Thread*) aArg;
+			pThread->Run();
+			delete pThread;
+		}
 
-			SetClosing( true );
-
-			m_pThread->detach();
-
-			delete m_pThread;
-			m_pThread = NULL;
-
-			m_bRunning = false;
+		BOOTIL_EXPORT void Thread::StartInThreadAndDestroy()
+		{
+			tthread::thread* t = new tthread::thread( RunFunctionThenDestroyThread, this );
+			t->detach();
+			delete t;
 		}
 
 	}
