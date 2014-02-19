@@ -40,6 +40,8 @@ namespace Bootil
 			BOOTIL_EXPORT void SetMinidumpFunction( MiniDumpFunction func );
 			BOOTIL_EXPORT void SetupCallback();
 
+			BOOTIL_EXPORT void DoCrash();
+
 		}
 
 	}
