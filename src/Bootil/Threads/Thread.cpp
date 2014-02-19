@@ -125,7 +125,7 @@ namespace Bootil
 		{
 			pthread_t mHandle = 0;
 
-			if ( pthread_create( &mHandle, NULL, RunFunctionThenDestroyThread, (void *) ti) )
+			if ( pthread_create( &mHandle, NULL, RunFunctionThenDestroyThread, (void *) this) )
 			{
 				pthread_detach( mHandle );
 			}
