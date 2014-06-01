@@ -156,7 +156,7 @@ namespace Bootil
 						if ( it->IsNumber() )
 						{
 							Bootil::Data::Tree & child = tree.AddChild();
-							child.Var<float>( it->GetDouble() );
+							child.Var<double>( it->GetDouble() );
 						}
 
 						++it;
@@ -189,7 +189,7 @@ namespace Bootil
 						}
 						else if ( it->value.IsNumber() )
 						{
-							tree.SetChildVar<float>( it->name.GetString(), it->value.GetDouble() );
+							tree.SetChildVar<double>( it->name.GetString(), it->value.GetDouble() );
 						}
 
 						++it;
