@@ -23,6 +23,11 @@ namespace Bootil
 				Util::FindAndReplace( str, "\"", "" );
 				Util::FindAndReplace( str, "'", "" );
 				Util::FindAndReplace( str, ":", "" );
+				Util::FindAndReplace( str, "<", "" );
+				Util::FindAndReplace( str, ">", "" );
+				Util::FindAndReplace( str, "*", "" );
+				Util::FindAndReplace( str, "?", "" );
+				Util::FindAndReplace( str, "|", "" );
 				Util::FindAndReplace( str, "@", "" );
 				Util::FindAndReplace( str, " ", "_" );
 				Util::FindAndReplace( str, ",", "_" );
