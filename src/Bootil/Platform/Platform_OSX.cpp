@@ -60,7 +60,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT void DebuggerOutput( const BString & strText )
 		{
-			printf( "%s", strText.c_str() );
+			// printf( "%s", strText.c_str() );
 		}
 
 		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString & strFind, bool bUpUpFolders )

@@ -163,3 +163,4 @@ namespace Bootil
 	strOutput = Bootil::String::Format::VarArgs( format, arglist ); \
 	va_end(arglist); \
 }
+
