@@ -178,7 +178,7 @@ namespace Bootil
 #ifdef _WIN32
 			return 0 == mkdir( strFixed.c_str() );
 #else
-			return mkdir( strFixed.c_str(), S_IRWXU | S_IRWXG | S_IRWXO );
+			return 0 == mkdir( strFixed.c_str(), S_IRWXU | S_IRWXG | S_IRWXO );
 #endif
 		}
 
