@@ -134,29 +134,25 @@ namespace Bootil
 							Bootil::Data::Tree & child = tree.AddChild();
 							DoImport( child, *it );
 						}
-
-						if ( it->IsString() )
+						else if ( it->IsString() )
 						{
 							Bootil::Data::Tree & child = tree.AddChild();
 							child.Value( it->GetString() );
 						}
-
-						if ( it->IsBool() )
+						else if ( it->IsBool() )
 						{
 							Bootil::Data::Tree & child = tree.AddChild();
 							child.Var<bool>( it->GetBool() );
 						}
-
-						if ( it->IsInt() )
-						{
-							Bootil::Data::Tree & child = tree.AddChild();
-							child.Var<int>( it->GetInt() );
-						}
-
-						if ( it->IsNumber() )
+						else if ( it->IsNumber() )
 						{
 							Bootil::Data::Tree & child = tree.AddChild();
 							child.Var<double>( it->GetDouble() );
+						}
+						else if ( it->IsInt() )
+						{
+							Bootil::Data::Tree & child = tree.AddChild();
+							child.Var<int>( it->GetInt() );
 						}
 
 						++it;
@@ -174,8 +170,7 @@ namespace Bootil
 							Bootil::Data::Tree & child = tree.AddChild( it->name.GetString() );
 							DoImport( child, it->value );
 						}
-
-						if ( it->value.IsString() )
+						else if ( it->value.IsString() )
 						{
 							tree.SetChild( it->name.GetString(), it->value.GetString() );
 						}
@@ -183,13 +178,13 @@ namespace Bootil
 						{
 							tree.SetChildVar<bool>( it->name.GetString(), it->value.GetBool() );
 						}
-						else if ( it->value.IsInt() )
-						{
-							tree.SetChildVar<int>( it->name.GetString(), it->value.GetInt() );
-						}
 						else if ( it->value.IsNumber() )
 						{
 							tree.SetChildVar<double>( it->name.GetString(), it->value.GetDouble() );
+						}
+						else if ( it->value.IsInt() )
+						{
+							tree.SetChildVar<int>( it->name.GetString(), it->value.GetInt() );
 						}
 
 						++it;
