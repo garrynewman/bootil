@@ -4,9 +4,60 @@
 #include "Bootil/Bootil.h"
 
 #include <stdio.h>
+#include <libgen.h>
+#include <dirent.h>
+#include <errno.h>
+#include <pwd.h>
 #include <unistd.h>
 #include <sys/time.h>
 
+int wildcmp( const char* wild, const char* string )
+{
+	// Written by Jack Handy - jakkhandy@hotmail.com
+	const char* cp = NULL, *mp = NULL;
+
+	while ( ( *string ) && ( *wild != '*' ) )
+	{
+		if ( ( *wild != *string ) && ( *wild != '?' ) )
+		{
+			return 0;
+		}
+
+		wild++;
+		string++;
+	}
+
+	while ( *string )
+	{
+		if ( *wild == '*' )
+		{
+			if ( !*++wild )
+			{
+				return 1;
+			}
+
+			mp = wild;
+			cp = string + 1;
+		}
+		else if ( ( *wild == *string ) || ( *wild == '?' ) )
+		{
+			wild++;
+			string++;
+		}
+		else
+		{
+			wild = mp;
+			string = cp++;
+		}
+	}
+
+	while ( *wild == '*' )
+	{
+		wild++;
+	}
+
+	return !*wild;
+}
 
 namespace Bootil
 {
@@ -14,7 +65,7 @@ namespace Bootil
 	{
 		BOOTIL_EXPORT BString LastError()
 		{
-			return "todo";
+			return strerror( errno );
 		}
 
 		BOOTIL_EXPORT BString FullProgramName( void )
@@ -34,8 +85,17 @@ namespace Bootil
 
 		BOOTIL_EXPORT BString CurrentUserName( void )
 		{
-			// todo.
-			return "unknown";
+			passwd* pw;
+			uid_t uid;
+			uid = geteuid();
+			pw = getpwuid( uid );
+
+			if ( pw )
+			{
+				return pw->pw_name;
+			}
+			else
+			{ return "<UNKNOWN>"; }
 		}
 
 		BOOTIL_EXPORT void SetupAssociation( BString ext )
@@ -66,8 +126,42 @@ namespace Bootil
 
 		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString & strFind, bool bUpUpFolders )
 		{
-			// todo.
-			return 0;
+			BString dirName = strdup( strFind.c_str() );
+			dirName = dirname( ( char* )dirName.c_str() );
+			BString findName = strdup( strFind.c_str() );
+			findName = basename( ( char* )findName.c_str() );
+			DIR* dp;
+			dirent* dirp;
+			int iFiles = 0;
+
+			if ( ( dp = opendir( dirName.c_str() ) ) == NULL )
+			{ return 0; }
+
+			while ( ( dirp = readdir( dp ) ) != NULL )
+			{
+				BString name( dirp->d_name );
+				BString fullName = dirName + "/" + name;
+
+				if ( wildcmp( findName.c_str(), name.c_str() ) )
+				{
+					if ( Bootil::File::IsFolder( fullName ) && folders )
+					{
+						if ( bUpUpFolders || ( name != "." && name != ".." ) )
+						{
+							folders->push_back( name );
+							iFiles++;
+						}
+					}
+					else if ( files )
+					{
+						files->push_back( name );
+						iFiles++;
+					}
+				}
+			}
+
+			closedir( dp );
+			return iFiles;
 		}
 
 		BOOTIL_EXPORT void OpenWebpage( const BString & strURL )
@@ -111,7 +205,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT long long GetMilliseconds()
 		{
-			static int      startSeconds = 0;
+			static time_t   startSeconds = 0;
 
 			struct timeval  timecurrent;
 			gettimeofday( &timecurrent, NULL );
