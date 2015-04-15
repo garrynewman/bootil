@@ -1,3 +1,4 @@
+
 #include "Bootil/Bootil.h"
 #ifdef _WIN32
 #define _WIN32_WINNT 0x0502
@@ -13,7 +14,7 @@ namespace
 {
 #ifdef _WIN32
 	const char separator = '\\';
-#elif __linux__
+#else
 	const char separator = '/';
 #endif
 	
@@ -268,7 +269,8 @@ namespace Bootil
 				{
 					inotify_event* event = ( inotify_event* )&buffer[i];
 					std::vector<WatcherData>& watches = *( std::vector<WatcherData>* ) m_dirHandles;
-					WatcherFind find = { .handle = event->wd };
+					WatcherFind find = {};
+					find.handle = event->wd;
 					std::vector<WatcherData>::const_iterator it = std::find_if(watches.begin(), watches.end(), find);
 
 					if ( event->len > 0 && it != watches.end() )
