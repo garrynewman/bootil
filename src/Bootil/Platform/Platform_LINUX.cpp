@@ -178,13 +178,13 @@ namespace Bootil
 					{
 						if ( bUpUpFolders || ( name != "." && name != ".." ) )
 						{
-							folders->push_back( fullName );
+							folders->push_back( name );
 							iFiles++;
 						}
 					}
 					else if ( files )
 					{
-						files->push_back( fullName );
+						files->push_back( name );
 						iFiles++;
 					}
 				}
@@ -257,7 +257,7 @@ namespace Bootil
 
 		BOOTIL_EXPORT long long GetMilliseconds()
 		{
-			static int      startSeconds = 0;
+			static time_t   startSeconds = 0;
 
 			struct timeval  timecurrent;
 			gettimeofday( &timecurrent, NULL );
