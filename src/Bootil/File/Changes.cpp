@@ -4,7 +4,13 @@
 #define _WIN32_WINNT 0x0502
 
 #include <windows.h>
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+#include <sys/param.h>
+#include <sys/event.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <libgen.h>
+#elif defined( __linux__ )
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/inotify.h>
@@ -17,7 +23,7 @@ namespace
 #else
 	const char separator = '/';
 #endif
-	
+
 	struct WatcherData
 	{
 		Bootil::BString directory;
@@ -27,12 +33,16 @@ namespace
 		OVERLAPPED overlapped;
 
 		char buffer[1024];
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+		struct kevent event;
+
+		int handle;
+#elif defined( __linux__ )
 		int handle;
 #endif
 	};
 
-#ifdef __linux__
+#if ( defined( __APPLE__ ) && defined( __MACH__ ) ) || defined( __linux__ )
 	struct WatcherFind
 	{
 		int handle;
@@ -62,7 +72,16 @@ namespace Bootil
 		ChangeMonitor::ChangeMonitor()
 		{
 			m_dirHandles = NULL;
-#ifdef __linux__
+#if defined( __APPLE__ ) && defined( __MACH__ )
+			m_inotify = kqueue();
+
+			struct rlimit rl;
+			if ( !getrlimit( RLIMIT_NOFILE, &rl ) )
+			{
+				rl.rlim_cur = MIN( rl.rlim_max, OPEN_MAX );
+				setrlimit( RLIMIT_NOFILE, &rl );
+			}
+#elif defined( __linux__ )
 			m_inotify = inotify_init();
 #endif
 		}
@@ -70,8 +89,8 @@ namespace Bootil
 		ChangeMonitor::~ChangeMonitor()
 		{
 			Stop();
-#ifdef __linux__
-			close(m_inotify);
+#if ( defined( __APPLE__ ) && defined( __MACH__ ) ) || defined( __linux__ )
+			close( m_inotify );
 #endif
 		}
 
@@ -80,6 +99,9 @@ namespace Bootil
 			Stop();
 
 			m_strFolderName = strFolder;
+			Bootil::String::Util::TrimRight( m_strFolderName, &separator );
+			Bootil::String::Util::FindAndReplace( m_strFolderName, BString( &separator ).append( &separator ), &separator );
+
 			m_bWatchSubtree = bWatchSubtree;
 
 			m_dirHandles = new std::vector<WatcherData>;
@@ -88,7 +110,7 @@ namespace Bootil
 
 			WatcherData watcherData;
 
-			watcherData.directory = strFolder;
+			watcherData.directory = m_strFolderName;
 #ifdef _WIN32
 			watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
@@ -96,7 +118,36 @@ namespace Bootil
 			watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
 
 			std::fill( watcherData.buffer, watcherData.buffer + 1024, 0 );
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+			if ( m_inotify == -1 )
+			{ return false; }
+
+			struct timespec timeout = { 0, 0 };
+
+			watcherData.handle = open( watcherData.directory.c_str(), O_EVTONLY );
+			if ( watcherData.handle == -1 )
+			{ return false; }
+
+			EV_SET( &watcherData.event, watcherData.handle, EVFILT_VNODE, EV_ADD | EV_ENABLE | EV_CLEAR, NOTE_DELETE | NOTE_EXTEND | NOTE_WRITE | NOTE_RENAME | NOTE_ATTRIB, 0, NULL );
+			kevent( m_inotify, &watcherData.event, 1, NULL, 0, &timeout );
+
+			Bootil::String::List files;
+			Find( &files, &files, watcherData.directory + separator + "*", false );
+			BOOTIL_FOREACH_CONST( file, files, Bootil::String::List )
+			{
+				WatcherData watcherData;
+
+				watcherData.directory = m_strFolderName + separator + *file;
+				watcherData.handle = open( watcherData.directory.c_str(), O_EVTONLY );
+				if ( watcherData.handle == -1 )
+				{ return false; }
+
+				EV_SET( &watcherData.event, watcherData.handle, EVFILT_VNODE, EV_ADD | EV_ENABLE | EV_CLEAR, NOTE_DELETE | NOTE_EXTEND | NOTE_WRITE | NOTE_RENAME | NOTE_ATTRIB, 0, NULL );
+				kevent( m_inotify, &watcherData.event, 1, NULL, 0, &timeout );
+
+				( ( std::vector<WatcherData>* ) m_dirHandles )->push_back( watcherData );
+			}
+#elif defined( __linux__ )
 			int flags = IN_ATTRIB | IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO;
 			watcherData.handle = inotify_add_watch( m_inotify, watcherData.directory.c_str(), flags );
 
@@ -111,7 +162,7 @@ namespace Bootil
 			if ( m_bWatchSubtree )
 			{
 				Bootil::String::List directories;
-				RecurseDirectories( directories, strFolder );
+				RecurseDirectories( directories, m_strFolderName );
 				BOOTIL_FOREACH_CONST( directory, directories, Bootil::String::List )
 				{
 					WatcherData watcherData;
@@ -131,7 +182,31 @@ namespace Bootil
 					watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
 
 					std::fill( watcherData.buffer, watcherData.buffer + 1024, 0 );
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+					watcherData.handle = open( watcherData.directory.c_str(), O_EVTONLY );
+					if ( watcherData.handle == -1 )
+					{ return false; }
+
+					EV_SET( &watcherData.event, watcherData.handle, EVFILT_VNODE, EV_ADD | EV_ENABLE | EV_CLEAR, NOTE_DELETE | NOTE_EXTEND | NOTE_WRITE | NOTE_RENAME | NOTE_ATTRIB, 0, NULL );
+					kevent( m_inotify, &watcherData.event, 1, NULL, 0, &timeout );
+
+					Bootil::String::List files;
+					Find( &files, &files, watcherData.directory + separator + "*", false );
+					BOOTIL_FOREACH_CONST( file, files, Bootil::String::List )
+					{
+						WatcherData watcherData;
+
+						watcherData.directory = *directory + separator + *file;
+						watcherData.handle = open( watcherData.directory.c_str(), O_EVTONLY );
+						if ( watcherData.handle == -1 )
+						{ return false; }
+
+						EV_SET( &watcherData.event, watcherData.handle, EVFILT_VNODE, EV_ADD | EV_ENABLE | EV_CLEAR, NOTE_DELETE | NOTE_EXTEND | NOTE_WRITE | NOTE_RENAME | NOTE_ATTRIB, 0, NULL );
+						kevent( m_inotify, &watcherData.event, 1, NULL, 0, &timeout );
+
+						( ( std::vector<WatcherData>* ) m_dirHandles )->push_back( watcherData );
+					}
+#elif defined( __linux__ )
 					watcherData.handle = inotify_add_watch( m_inotify, watcherData.directory.c_str(), flags );
 
 					if ( watcherData.handle < 0 )
@@ -159,13 +234,14 @@ namespace Bootil
 		void ChangeMonitor::Stop()
 		{
 			if ( !m_dirHandles ) { return; }
-
-			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+			BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
 #ifdef _WIN32
 				CloseHandle( watcherData->directoryHandle );
 				watcherData->directoryHandle = NULL;
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+				close( watcherData->handle );
+#elif defined( __linux__ )
 				inotify_rm_watch( m_inotify, watcherData->handle );
 #endif
 			}
@@ -193,7 +269,7 @@ namespace Bootil
 			if ( !m_dirHandles ) { return; }
 
 #ifdef _WIN32
-			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+			BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
 				DWORD dwNumberBytes = 0;
 
@@ -208,7 +284,7 @@ namespace Bootil
 					{
 						FILE_NOTIFY_INFORMATION* pNotify = ( FILE_NOTIFY_INFORMATION* ) &watcherData->buffer[iOffset];
 						iOffset += pNotify->NextEntryOffset;
-						
+
 						if ( pNotify->FileNameLength > 0 )
 						{
 							// Found a changed file. Get the relative path to it.
@@ -221,7 +297,7 @@ namespace Bootil
 							}
 							else
 							{
-								path = watcherData->directory.substr( m_strFolderName.size() + 1 ) + separator;	
+								path = watcherData->directory.substr( m_strFolderName.size() + 1 ) + separator;
 							}
 
 							path += Bootil::String::Convert::FromWide( WString( pNotify->FileName, pNotify->FileNameLength / sizeof( wchar_t ) ) );
@@ -246,14 +322,104 @@ namespace Bootil
 					ReadDirectoryChangesW( watcherData->directoryHandle, &watcherData->buffer, sizeof( watcherData->buffer ), m_bWatchSubtree, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE, NULL, &watcherData->overlapped, NULL );
 				}
 			}
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+			std::vector<WatcherData>& watches = *( std::vector<WatcherData>* ) m_dirHandles;
+
+			struct timespec timeout = { 0, 5000 }; // Should be enough to catch simulataneous events
+			struct kevent received;
+			while ( true )
+			{
+				if ( kevent( m_inotify, NULL, 0, &received, 1, &timeout ) <= 0 )
+				{
+					break;
+				}
+
+				WatcherFind find = {};
+				find.handle = (int)received.ident;
+				std::vector<WatcherData>::const_iterator it = std::find_if( watches.begin(), watches.end(), find );
+				if ( it != watches.end() )
+				{
+					BString path = it->directory;
+					if ( !Exists( path ) )
+					{
+						close( it->handle );
+						( ( std::vector<WatcherData>* ) m_dirHandles )->erase( it );
+						NoteFileChanged( path );
+					}
+					else if ( IsFolder( path ) )
+					{
+						std::set<BString> dirHandles;
+						BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+						{
+							std::vector<char> tmp( watcherData->directory.c_str(), watcherData->directory.c_str() + watcherData->directory.size() + 1 );
+							BString directory( dirname( &tmp[0] ) );
+							if ( directory == path )
+							{
+								dirHandles.insert( watcherData->directory );
+							}
+						}
+						Bootil::String::List fileList;
+						Find( &fileList, &fileList, path + separator + "*", false );
+						BOOTIL_FOREACH( file, fileList, Bootil::String::List)
+						{
+							*file = path + separator + *file;
+						}
+
+						std::set<BString> files( fileList.begin(), fileList.end() );
+						std::set<BString> changedFiles;
+						std::set_symmetric_difference( files.begin(), files.end(), dirHandles.begin(), dirHandles.end(), std::inserter( changedFiles, changedFiles.begin() ) );
+
+						struct timespec timeout2 = { 0, 0 };
+
+						BOOTIL_FOREACH_CONST( file, changedFiles, std::set<BString> )
+						{
+							if ( Exists( *file ) )
+							{
+								WatcherData watcherData;
+
+								watcherData.directory = *file;
+
+								watcherData.handle = open( file->c_str(), O_EVTONLY );
+								if ( watcherData.handle != -1 )
+								{
+									EV_SET( &watcherData.event, watcherData.handle, EVFILT_VNODE, EV_ADD | EV_ENABLE | EV_CLEAR, NOTE_DELETE | NOTE_EXTEND | NOTE_WRITE | NOTE_RENAME | NOTE_ATTRIB, 0, NULL );
+									kevent( m_inotify, &watcherData.event, 1, NULL, 0, &timeout2 );
+
+									( ( std::vector<WatcherData>* ) m_dirHandles )->push_back( watcherData );
+
+									NoteFileChanged( *file );
+								}
+							}
+							else
+							{
+								BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+								{
+									if ( watcherData->directory == *file )
+									{
+										close( watcherData->handle );
+										( ( std::vector<WatcherData>* ) m_dirHandles )->erase( it );
+
+										NoteFileChanged( *file );
+										break;
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						NoteFileChanged( path );
+					}
+				}
+			}
+#elif defined( __linux__ )
 			timeval tv;
 			tv.tv_sec = tv.tv_usec = 0;
 
 			fd_set fds;
 			FD_ZERO( &fds );
 			FD_SET( m_inotify, &fds );
-			
+
 			select( m_inotify + 1, &fds, NULL, NULL, &tv );
 
 			if ( FD_ISSET( m_inotify, &fds ) )
@@ -271,7 +437,7 @@ namespace Bootil
 					std::vector<WatcherData>& watches = *( std::vector<WatcherData>* ) m_dirHandles;
 					WatcherFind find = {};
 					find.handle = event->wd;
-					std::vector<WatcherData>::const_iterator it = std::find_if(watches.begin(), watches.end(), find);
+					std::vector<WatcherData>::const_iterator it = std::find_if( watches.begin(), watches.end(), find );
 
 					if ( event->len > 0 && it != watches.end() )
 					{
@@ -287,7 +453,7 @@ namespace Bootil
 		void ChangeMonitor::StartWatch()
 		{
 #ifdef _WIN32
-			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+			BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
 				std::fill( watcherData->buffer, watcherData->buffer + 1024, 0 );
 
@@ -299,4 +465,3 @@ namespace Bootil
 		}
 	}
 }
-

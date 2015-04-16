@@ -50,8 +50,8 @@ namespace Bootil
 				void CheckForChanges();
 				void StartWatch();
 
-#ifdef __linux__
-				int                 m_inotify;
+#if ( defined( __APPLE__ ) && defined( __MACH__ ) ) || defined(__linux__)
+				int					m_inotify;
 #endif
 				void* 				m_dirHandles;
 				BString				m_strFolderName;
