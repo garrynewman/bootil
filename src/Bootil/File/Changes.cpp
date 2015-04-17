@@ -336,7 +336,7 @@ namespace Bootil
 
 				WatcherFind find = {};
 				find.handle = (int)received.ident;
-				std::vector<WatcherData>::const_iterator it = std::find_if( watches.begin(), watches.end(), find );
+				std::vector<WatcherData>::iterator it = std::find_if( watches.begin(), watches.end(), find );
 				if ( it != watches.end() )
 				{
 					BString path = it->directory;
