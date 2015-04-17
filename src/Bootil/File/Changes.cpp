@@ -233,6 +233,7 @@ namespace Bootil
 
 						if ( pNotify->NextEntryOffset == 0 )
 						{
+							StartWatch();
 							break;
 						}
 					}
