@@ -2,6 +2,11 @@
 
 #include "Bootil/Bootil.h"
 
+#if defined( __APPLE__ ) && defined( __MACH__ )
+#include <MacTypes.h>
+struct __FSEventStream; // Forward declaration
+#endif
+
 namespace Bootil
 {
 	namespace File
@@ -50,7 +55,11 @@ namespace Bootil
 				void CheckForChanges();
 				void StartWatch();
 
-#if ( defined( __APPLE__ ) && defined( __MACH__ ) ) || defined(__linux__)
+#if defined( __APPLE__ ) && defined( __MACH__ )
+				static void HandleFSEvent( const __FSEventStream *stream, void *ctx, size_t numEvents, void *eventPaths, const UInt32 evFlags[], const UInt64 evIds[] );
+			
+				__FSEventStream*	m_fsStreamRef;
+#elif defined(__linux__)
 				int					m_inotify;
 #endif
 				void* 				m_dirHandles;
