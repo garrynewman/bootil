@@ -118,14 +118,14 @@ namespace Bootil
 
 					watcherData.directory = *directory;
 #ifdef _WIN32
-					watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
-
 					// Windows automatically watches all the subfolders except for symbolic links. We need to watch them manually. So watch this one only if it's a symbolic link.
 
 					if ( !( GetFileAttributes( watcherData.directory.c_str() ) & FILE_ATTRIBUTE_REPARSE_POINT ) )
 					{
 						continue;
 					}
+
+					watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
 					memset( &watcherData.overlapped, 0, sizeof( watcherData.overlapped ) );
 					watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
