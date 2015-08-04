@@ -99,6 +99,22 @@ namespace Bootil
 				{
 					continue;
 				}
+
+				// Found a changed file. Get the relative path to it.
+
+				BString strPath( path );
+
+				if ( strPath == monitor->m_strFolderName )
+				{
+					strPath = "";
+				}
+				else
+				{
+					strPath = strPath.substr( monitor->m_strFolderName.size() + 1 );
+				}
+
+				// Add it to the change list.
+
 				monitor->NoteFileChanged( path );
 			}
 		}
