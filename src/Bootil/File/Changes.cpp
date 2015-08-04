@@ -17,7 +17,7 @@ namespace
 #else
 	const char separator = '/';
 #endif
-	
+
 	struct WatcherData
 	{
 		Bootil::BString directory;
@@ -208,7 +208,7 @@ namespace Bootil
 					{
 						FILE_NOTIFY_INFORMATION* pNotify = ( FILE_NOTIFY_INFORMATION* ) &watcherData->buffer[iOffset];
 						iOffset += pNotify->NextEntryOffset;
-						
+
 						if ( pNotify->FileNameLength > 0 )
 						{
 							// Found a changed file. Get the relative path to it.
@@ -221,7 +221,7 @@ namespace Bootil
 							}
 							else
 							{
-								path = watcherData->directory.substr( m_strFolderName.size() + 1 ) + separator;	
+								path = watcherData->directory.substr( m_strFolderName.size() + 1 ) + separator;
 							}
 
 							path += Bootil::String::Convert::FromWide( WString( pNotify->FileName, pNotify->FileNameLength / sizeof( wchar_t ) ) );
@@ -254,7 +254,7 @@ namespace Bootil
 			fd_set fds;
 			FD_ZERO( &fds );
 			FD_SET( m_inotify, &fds );
-			
+
 			select( m_inotify + 1, &fds, NULL, NULL, &tv );
 
 			if ( FD_ISSET( m_inotify, &fds ) )
@@ -276,7 +276,22 @@ namespace Bootil
 
 					if ( event->len > 0 && it != watches.end() )
 					{
-						NoteFileChanged( it->directory + separator + event->name );
+						// Found a changed file. Get the relative path to it.
+
+						BString path;
+
+						if ( it->directory == m_strFolderName )
+						{
+							path = "";
+						}
+						else
+						{
+							path = it->directory.substr( m_strFolderName.size() + 1 ) + separator;
+						}
+
+						path += event->name;
+
+						NoteFileChanged( path );
 					}
 
 					i += sizeof( inotify_event ) + event->len;
@@ -300,4 +315,3 @@ namespace Bootil
 		}
 	}
 }
-
