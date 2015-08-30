@@ -25,6 +25,7 @@ namespace Bootil
 
 			void			SetWritten( unsigned int iSize );
 			unsigned int	GetWritten() const;
+			unsigned int	GetRemaining() const { return GetWritten() - GetPos(); }
 
 			void*			GetBase( unsigned int iOffset = 0 ) const;
 

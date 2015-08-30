@@ -46,9 +46,7 @@
 /*
  * Use inlined functions for supported systems.
  */
-#if defined(__GNUC__) || defined(__DMC__) || defined(__POCC__) || defined(__WATCOMC__) || defined(__SUNPRO_C)
-#define FASTLZ_INLINE inline
-#elif defined(__BORLANDC__) || defined(_MSC_VER) || defined(__LCC__)
+#if defined(__BORLANDC__) || defined(_MSC_VER) || defined(__LCC__)
 #define FASTLZ_INLINE __inline
 #else 
 #define FASTLZ_INLINE
@@ -464,7 +462,7 @@ static FASTLZ_INLINE int FASTLZ_DECOMPRESSOR(const void* input, int length, void
       
 #ifdef FASTLZ_SAFE
       if (FASTLZ_UNEXPECT_CONDITIONAL(op + len + 3 > op_limit))
-        return -1; // Changed from 0 for bootil
+        return -1; /* Changed from 0 for bootil */
 
       if (FASTLZ_UNEXPECT_CONDITIONAL(ref-1 < (flzuint8 *)output))
         return 0;
@@ -529,7 +527,7 @@ static FASTLZ_INLINE int FASTLZ_DECOMPRESSOR(const void* input, int length, void
       ctrl++;
 #ifdef FASTLZ_SAFE
       if (FASTLZ_UNEXPECT_CONDITIONAL(op + ctrl > op_limit))
-        return -1; // Changed from 0 for bootil
+        return -1; /* Changed from 0 for bootil */
       if (FASTLZ_UNEXPECT_CONDITIONAL(ip + ctrl > ip_limit))
         return 0;
 #endif

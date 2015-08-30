@@ -1,7 +1,7 @@
 /* LzmaEnc.c -- LZMA Encoder
 2010-04-16 : Igor Pavlov : Public domain */
 
-// garry: force to always be single threaded
+/* garry: force to always be single threaded*/
 #define _7ZIP_ST
 
 #include <string.h>
