@@ -91,6 +91,22 @@ namespace Bootil
 			clock_t t = clock();
 			return ( (double) t) / ( CLOCKS_PER_SEC * 1000.0 );
 		}
+
+        BOOTIL_EXPORT void* LibraryLoad( const BString& name )
+        {
+            return NULL;
+        }
+
+        BOOTIL_EXPORT void* GetFunctionAddress( void* library, const BString& name )
+        {
+            return NULL;
+        }
+
+        BOOTIL_EXPORT void LibraryClose( void* library )
+        {
+
+        }
+
 	}
 }
 

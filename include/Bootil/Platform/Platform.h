@@ -33,7 +33,16 @@ namespace Bootil
 
 		BOOTIL_EXPORT BString PlatformName();
 
-		BOOTIL_EXPORT long long GetMilliseconds();
+        BOOTIL_EXPORT long long GetMilliseconds();
+
+        BOOTIL_EXPORT void* LibraryLoad( const BString& name );
+        BOOTIL_EXPORT void* GetFunctionAddress( void* library, const BString& name );
+        BOOTIL_EXPORT void LibraryClose( void* library );
+
+        template<typename T> T GetFunctionAddress( void* library, const BString& name )
+        {
+            return ( T )GetFunctionAddress( library, name );
+        }
 
 	}
 }

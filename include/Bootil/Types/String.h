@@ -59,8 +59,10 @@ namespace Bootil
 
 			BOOTIL_EXPORT void Split( const BString & str, const BString & seperator, String::List & outbits );
 			BOOTIL_EXPORT void SplitLength( const BString & str, int iLength, String::List & outbits );
-			BOOTIL_EXPORT void FindAndReplace( BString & strIn, const BString & strFind, const BString & strReplace );
 			BOOTIL_EXPORT int Count( const BString & str, char chrFind );
+
+            BOOTIL_EXPORT void FindAndReplace( BString & strIn, const BString & strFind, const BString & strReplace );
+            inline BString GetFindAndReplace( const BString & strIn, const BString & strFind, const BString & strReplace ) { BString strOut = strIn; FindAndReplace( strOut, strFind, strReplace ); return strOut; }
 		}
 
 		namespace Test

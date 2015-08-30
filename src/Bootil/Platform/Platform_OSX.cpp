@@ -218,6 +218,21 @@ namespace Bootil
 
 			return (long long)((( timecurrent.tv_sec - startSeconds ) * 1000.0) + (timecurrent.tv_usec / 1000.0) );
 		}
+
+        BOOTIL_EXPORT void* LibraryLoad( const BString& name )
+        {
+            return NULL;
+        }
+
+        BOOTIL_EXPORT void* GetFunctionAddress( void* library, const BString& name )
+        {
+            return NULL;
+        }
+
+        BOOTIL_EXPORT void LibraryClose( void* library )
+        {
+
+        }
 	}
 }
 

@@ -209,6 +209,21 @@ namespace Bootil
 			
 			return GetTickCount();
 		}
+
+        BOOTIL_EXPORT void* LibraryLoad( const BString& name )
+        {
+            return ::LoadLibraryA( name.c_str() );
+        }
+
+        BOOTIL_EXPORT void* GetFunctionAddress( void* library, const BString& name )
+        {
+            return ::GetProcAddress( (HMODULE)library, name.c_str() );
+        }
+
+        BOOTIL_EXPORT void LibraryClose( void* library )
+        {
+            ::FreeLibrary( ( HMODULE )library );
+        }
 	}
 }
 
