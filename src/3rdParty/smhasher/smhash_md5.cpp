@@ -1,5 +1,5 @@
 #include <memory.h>
-#include "Types.h"
+//#include "Types.h"
 
 // "Derived from the RSA Data Security, Inc. MD5 Message Digest Algorithm"
 
@@ -372,11 +372,11 @@ unsigned int md5hash ( const void * input, int len, unsigned int /*seed*/ )
   return hash[0];
 }	
 
-void md5_32            ( const void * key, int len, uint32_t /*seed*/, void * out )
+void md5_32            ( const void * key, int len, unsigned int /*seed*/, void * out )
 {
   unsigned int hash[4];
 
   md5((unsigned char*)key,len,(unsigned char*)hash);
 
-  *(uint32_t*)out = hash[0];
+  *( unsigned int*)out = hash[0];
 }
