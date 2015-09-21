@@ -56,6 +56,7 @@ namespace Bootil
 				TreeT<TString> & AddChild();
 				TreeT<TString> & AddChild( TString name );
 				TreeT<TString> & SetChild( TString strKey, TString strValue );
+                TreeT<TString> & SetChild( TString strValue ) { return SetChild( "", strValue ); }
 				TreeT<TString> & GetChild( const TString & name );
 				bool			HasChild( const TString & name ) const;
 				TreeT<TString> & GetChildNum( int iNum );
