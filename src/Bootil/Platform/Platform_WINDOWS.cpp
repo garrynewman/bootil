@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <direct.h>
 #include <process.h>
+#include <Psapi.h>
 
 namespace Bootil
 {
@@ -223,6 +224,13 @@ namespace Bootil
         BOOTIL_EXPORT void LibraryClose( void* library )
         {
             ::FreeLibrary( ( HMODULE )library );
+        }
+		
+		BOOTIL_EXPORT unsigned long GetMemoryPrivateMB()
+        {
+            PROCESS_MEMORY_COUNTERS_EX pmc;
+            GetProcessMemoryInfo( GetCurrentProcess(), ( PROCESS_MEMORY_COUNTERS* )&pmc, sizeof( pmc ) );
+            return pmc.PrivateUsage;
         }
 	}
 }

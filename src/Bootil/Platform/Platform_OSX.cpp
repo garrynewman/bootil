@@ -233,6 +233,11 @@ namespace Bootil
         {
 
         }
+		
+        BOOTIL_EXPORT unsigned long GetMemoryUsedPrivate()
+        {
+            return 0;
+        }
 	}
 }
 
