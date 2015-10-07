@@ -226,7 +226,7 @@ namespace Bootil
             ::FreeLibrary( ( HMODULE )library );
         }
 		
-		BOOTIL_EXPORT unsigned long GetMemoryPrivateMB()
+		BOOTIL_EXPORT unsigned long GetMemoryUsedPrivate()
         {
             PROCESS_MEMORY_COUNTERS_EX pmc;
             GetProcessMemoryInfo( GetCurrentProcess(), ( PROCESS_MEMORY_COUNTERS* )&pmc, sizeof( pmc ) );
