@@ -286,7 +286,12 @@ namespace Bootil
 
         }
 		
-		BOOTIL_EXPORT unsigned long GetMemoryUsedPrivate()
+		BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate()
+        {
+            return 0;
+        }
+
+        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet()
         {
             return 0;
         }

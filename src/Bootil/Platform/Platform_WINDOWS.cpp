@@ -226,11 +226,18 @@ namespace Bootil
             ::FreeLibrary( ( HMODULE )library );
         }
 		
-		BOOTIL_EXPORT unsigned long GetMemoryUsedPrivate()
+		BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate()
         {
             PROCESS_MEMORY_COUNTERS_EX pmc;
             GetProcessMemoryInfo( GetCurrentProcess(), ( PROCESS_MEMORY_COUNTERS* )&pmc, sizeof( pmc ) );
             return pmc.PrivateUsage;
+        }
+
+        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet()
+        {
+            PROCESS_MEMORY_COUNTERS_EX pmc;
+            GetProcessMemoryInfo( GetCurrentProcess(), ( PROCESS_MEMORY_COUNTERS* )&pmc, sizeof( pmc ) );
+            return pmc.WorkingSetSize;
         }
 	}
 }

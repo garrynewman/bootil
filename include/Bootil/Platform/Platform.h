@@ -35,7 +35,8 @@ namespace Bootil
 
         BOOTIL_EXPORT long long GetMilliseconds();
 		
-		BOOTIL_EXPORT unsigned long GetMemoryUsedPrivate();
+		BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate();
+        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet();
 
         BOOTIL_EXPORT void* LibraryLoad( const BString& name );
         BOOTIL_EXPORT void* GetFunctionAddress( void* library, const BString& name );
