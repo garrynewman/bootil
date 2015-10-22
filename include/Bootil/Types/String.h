@@ -33,6 +33,8 @@ namespace Bootil
 			return os.str();
 		}
 
+        BOOTIL_EXPORT void ToCharBuffer( const BString & str, char* pBuffer, int len );
+
 		BOOTIL_EXPORT BString Random( int iSize, bool bLetters = true, bool bCapitals = false, bool bNumbers = false, bool Specials = false );
 
 		BOOTIL_EXPORT void SortList( String::List & list, bool bReverse );

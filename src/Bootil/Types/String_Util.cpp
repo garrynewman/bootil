@@ -103,5 +103,11 @@ namespace Bootil
 				}
 			}
 		}
-	}
+
+        BOOTIL_EXPORT void ToCharBuffer( const BString & str, char* pBuffer, int len )
+        {
+            BAssert( len > str.length()+1 );
+            memcpy( pBuffer, str.c_str(), str.length()+1 );
+        }
+    }
 }
