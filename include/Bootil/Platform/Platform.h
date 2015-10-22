@@ -6,6 +6,8 @@ namespace Bootil
 	namespace Platform
 	{
 		BOOTIL_EXPORT BString LastError();
+        BOOTIL_EXPORT BString FormatSystemError( unsigned long errorid );
+
 		BOOTIL_EXPORT BString FullProgramName( void );
 		BOOTIL_EXPORT BString ProgramName( void );
 		BOOTIL_EXPORT BString ProgramFolder( void );
@@ -31,12 +33,11 @@ namespace Bootil
 
 		BOOTIL_EXPORT void Sleep( unsigned int ms );
 
-		BOOTIL_EXPORT BString PlatformName();
+		BOOTIL_EXPORT BString PlatformName(); // windows/linux/osx
+        BOOTIL_EXPORT BString PlatformNameShort(); // WIN/LIN/OSX
+        BOOTIL_EXPORT BString Architecture(); // 32/64
 
         BOOTIL_EXPORT long long GetMilliseconds();
-		
-		BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate();
-        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet();
 
         BOOTIL_EXPORT void* LibraryLoad( const BString& name );
         BOOTIL_EXPORT void* GetFunctionAddress( void* library, const BString& name );
@@ -46,6 +47,11 @@ namespace Bootil
         {
             return ( T )GetFunctionAddress( library, name );
         }
+
+        BOOTIL_EXPORT BString GetAbsolutePath( const BString& path );
+
+        BOOTIL_EXPORT bool IsKeyPressed();
+        BOOTIL_EXPORT char GetKeyChar();
 
 	}
 }

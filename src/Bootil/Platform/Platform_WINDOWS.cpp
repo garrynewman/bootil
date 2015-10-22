@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <direct.h>
 #include <process.h>
-#include <Psapi.h>
+#include <conio.h>
 
 namespace Bootil
 {
@@ -15,13 +15,19 @@ namespace Bootil
 	{
 		BOOTIL_EXPORT BString LastError()
 		{
-			char strMessageBuffer[1024];
-			FormatMessageA( FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID( LANG_ENGLISH, SUBLANG_ENGLISH_US ), strMessageBuffer, 1024, NULL );
-			BString strMessage = strMessageBuffer;
-			String::Util::Trim( strMessage, "\n" );
-			String::Util::Trim( strMessage, "\r" );
-			return strMessage;
+            return FormatSystemError( GetLastError() );
 		}
+
+        BOOTIL_EXPORT BString FormatSystemError( unsigned long errorid )
+        {
+            char strMessageBuffer[1024];
+            memset( strMessageBuffer, 0, sizeof( strMessageBuffer ) );
+            FormatMessageA( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorid, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), strMessageBuffer, 1024, NULL );
+            BString strMessage = Bootil::String::Format::Print( "0x%x (%s)", errorid, strMessageBuffer );
+            String::Util::Trim( strMessage, "\n" );
+            String::Util::Trim( strMessage, "\r" );
+            return strMessage;
+        }
 
 		BString FullProgramName( void )
 		{
@@ -186,6 +192,20 @@ namespace Bootil
 			return "windows";
 		}
 
+        BOOTIL_EXPORT BString PlatformNameShort()
+        {
+            return "WIN";
+        }
+
+        BOOTIL_EXPORT BString Architecture()
+        {
+            #if _WIN64
+            return "64";
+            #else 
+            return "32";
+            #endif
+        }
+
 		BOOTIL_EXPORT long long GetMilliseconds()
 		{
 			static bool bInitialized = false;
@@ -225,19 +245,21 @@ namespace Bootil
         {
             ::FreeLibrary( ( HMODULE )library );
         }
-		
-		BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate()
+
+        BOOTIL_EXPORT BString GetAbsolutePath( const BString& path )
         {
-            PROCESS_MEMORY_COUNTERS_EX pmc;
-            GetProcessMemoryInfo( GetCurrentProcess(), ( PROCESS_MEMORY_COUNTERS* )&pmc, sizeof( pmc ) );
-            return pmc.PrivateUsage;
+            char buffer[1024];
+            return _fullpath( buffer, path.c_str(), sizeof( buffer ) );
         }
 
-        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet()
+        BOOTIL_EXPORT bool IsKeyPressed()
         {
-            PROCESS_MEMORY_COUNTERS_EX pmc;
-            GetProcessMemoryInfo( GetCurrentProcess(), ( PROCESS_MEMORY_COUNTERS* )&pmc, sizeof( pmc ) );
-            return pmc.WorkingSetSize;
+            return kbhit() != 0;
+        }
+
+        BOOTIL_EXPORT char GetKeyChar()
+        {
+            return _getch();
         }
 	}
 }

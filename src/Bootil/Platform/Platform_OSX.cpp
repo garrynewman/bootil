@@ -10,6 +10,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <sys/select.h>
 
 int wildcmp( const char* wild, const char* string )
 {
@@ -67,6 +68,11 @@ namespace Bootil
 		{
 			return strerror( errno );
 		}
+
+        BOOTIL_EXPORT BString FormatSystemError( unsigned long errorid )
+        {
+            return strerror( (int) errorid );
+        }
 
 		BOOTIL_EXPORT BString FullProgramName( void )
 		{
@@ -203,6 +209,20 @@ namespace Bootil
 			return "osx";
 		}
 
+        BOOTIL_EXPORT BString PlatformNameShort()
+        {
+            return "OSX";
+        }
+
+        BOOTIL_EXPORT BString Architecture()
+        {
+            #if __x86_64__ || __ppc64__
+            return "64";
+            #else 
+            return "32";
+            #endif
+        }
+
 		BOOTIL_EXPORT long long GetMilliseconds()
 		{
 			static time_t   startSeconds = 0;
@@ -233,15 +253,34 @@ namespace Bootil
         {
 
         }
-		
-        BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate()
+
+        BOOTIL_EXPORT BString GetAbsolutePath( const BString& path )
         {
-            return 0;
+            return path;
         }
 
-        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet()
+        BOOTIL_EXPORT bool IsKeyPressed()
         {
-            return 0;
+            struct timeval tv;
+            fd_set read_fd;
+
+            tv.tv_sec = 0;
+            tv.tv_usec = 0;
+            FD_ZERO( &read_fd );
+            FD_SET( 0, &read_fd );
+
+            if ( select( 1, &read_fd, NULL, NULL, &tv ) == -1 )
+                return false;
+
+            if ( FD_ISSET( 0, &read_fd ) )
+                return true;
+
+            return false;
+        }
+
+        BOOTIL_EXPORT char GetKeyChar()
+        {
+            return getchar();
         }
 	}
 }

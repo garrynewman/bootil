@@ -14,6 +14,11 @@ namespace Bootil
 			return "<UNKNOWN>";
 		}
 
+        BOOTIL_EXPORT BString FormatSystemError( unsigned long errorid )
+        {
+            return "<UNKNOWN>";
+        }
+
 		BString FullProgramName( void )
 		{
 			return "<UNKNOWN>";
@@ -83,6 +88,16 @@ namespace Bootil
 			return "unknown";
 		}
 
+        BOOTIL_EXPORT BString PlatformNameShort()
+        {
+            return "UNK";
+        }
+
+        BOOTIL_EXPORT BString Architecture()
+        {
+            return "32";
+        }
+
 		BOOTIL_EXPORT long long GetMilliseconds()
 		{
 			//
@@ -106,13 +121,18 @@ namespace Bootil
         {
 
         }
-		
-        BOOTIL_EXPORT unsigned long long GetMemoryUsedPrivate()
+
+        BOOTIL_EXPORT BString GetAbsolutePath( const BString& path )
         {
-            return 0;
+            return path;
         }
 
-        BOOTIL_EXPORT unsigned long long GetMemoryUsedWorkingSet()
+        BOOTIL_EXPORT bool IsKeyPressed()
+        {
+            return false;
+        }
+
+        BOOTIL_EXPORT char GetKeyChar()
         {
             return 0;
         }
