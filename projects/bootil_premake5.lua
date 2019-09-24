@@ -12,4 +12,7 @@ project "bootil_static"
 		buildoptions { "-fPIC" }
 	end
 	
+	if os.is( "windows" ) then
+		characterset "MBCS"
+	end
 
