@@ -5,13 +5,19 @@ project "bootil_static"
 	files { "../src/**.cpp", "../include/**.h", "../src/**.c", "../src/**.cc", "premake4.lua" }
 	kind "StaticLib"
 	targetname( "bootil_static" )
-	flags { "Symbols", "NoEditAndContinue", "NoPCH", "StaticRuntime", "EnableSSE", "SEH" }
+	flags { "NoPCH" }
 	includedirs { "../include/", "../src/3rdParty/" }
-	
+
+	exceptionhandling "SEH"
+	symbols "On"
+	vectorextensions "SSE"
+	staticruntime "On"
+	editandcontinue "Off"
+
 	if os.is( "linux" ) or os.is( "macosx" ) then
 		buildoptions { "-fPIC" }
 	end
-	
+
 	if os.is( "windows" ) then
 		characterset "MBCS"
 	end
