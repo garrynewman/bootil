@@ -132,10 +132,11 @@ namespace Bootil
 
 		BOOTIL_EXPORT int FindFiles( String::List* files, String::List* folders, const BString & strFind, bool bUpUpFolders )
 		{
-			BString dirName = strdup( strFind.c_str() );
-			dirName = dirname( ( char* )dirName.c_str() );
-			BString findName = strdup( strFind.c_str() );
-			findName = basename( ( char* )findName.c_str() );
+			std::vector<char> tmp( strFind.c_str(), strFind.c_str() + strFind.size() + 1 );
+			BString dirName( dirname( &tmp[0] ) );
+			tmp = std::vector<char>( strFind.c_str(), strFind.c_str() + strFind.size() + 1 );
+			BString findName( basename( &tmp[0] ) );
+
 			DIR* dp;
 			dirent* dirp;
 			int iFiles = 0;

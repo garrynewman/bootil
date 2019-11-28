@@ -4,7 +4,13 @@
 #define _WIN32_WINNT 0x0502
 
 #include <windows.h>
-#elif __linux__
+#elif defined( __APPLE__ ) && defined( __MACH__ )
+#include <CoreServices/CoreServices.h>
+#include <libgen.h>
+#if MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_7
+#define kFSEventStreamCreateFlagFileEvents 0x00000010
+#endif
+#elif defined( __linux__ )
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/inotify.h>
@@ -27,12 +33,12 @@ namespace
 		OVERLAPPED overlapped;
 
 		char buffer[1024];
-#elif __linux__
+#elif defined( __linux__ )
 		int handle;
 #endif
 	};
 
-#ifdef __linux__
+#if defined( __linux__ )
 	struct WatcherFind
 	{
 		int handle;
@@ -41,6 +47,7 @@ namespace
 	};
 #endif
 
+#if !defined( __APPLE__ ) || !defined( __MACH__ ) // if not OS X
 	void RecurseDirectories( Bootil::String::List & directories, const Bootil::BString & path )
 	{
 		Bootil::String::List currentDirectory;
@@ -53,6 +60,7 @@ namespace
 			RecurseDirectories( directories, directoryPath );
 		}
 	}
+#endif
 }
 
 namespace Bootil
@@ -62,7 +70,9 @@ namespace Bootil
 		ChangeMonitor::ChangeMonitor()
 		{
 			m_dirHandles = NULL;
-#ifdef __linux__
+#if defined( __APPLE__ ) && defined( __MACH__ )
+			m_fsStreamRef = NULL;
+#elif defined( __linux__ )
 			m_inotify = inotify_init();
 #endif
 		}
@@ -70,17 +80,73 @@ namespace Bootil
 		ChangeMonitor::~ChangeMonitor()
 		{
 			Stop();
-#ifdef __linux__
-			close(m_inotify);
+#if defined( __linux__ )
+			close( m_inotify );
 #endif
 		}
+
+#if defined( __APPLE__ ) && defined( __MACH__ )
+		void ChangeMonitor::HandleFSEvent( const __FSEventStream *stream, void *ctx, size_t numEvents, void *eventPaths, const UInt32 evFlags[], const UInt64 evIds[] )
+		{
+			char **paths = ( char ** )eventPaths;
+			for ( size_t i = 0; i < numEvents; i++ )
+			{
+				ChangeMonitor *monitor = ( ChangeMonitor * )ctx;
+				char *path = paths[i];
+				if ( strcmp ( dirname( path ), monitor->m_strFolderName.c_str() ) != 0
+					&& strcmp ( path, monitor->m_strFolderName.c_str() ) != 0
+					&& !monitor->m_bWatchSubtree )
+				{
+					continue;
+				}
+
+				// Found a changed file. Get the relative path to it.
+
+				BString strPath( path );
+
+				if ( strPath == monitor->m_strFolderName )
+				{
+					strPath = "";
+				}
+				else
+				{
+					strPath = strPath.substr( monitor->m_strFolderName.size() + 1 );
+				}
+
+				// Add it to the change list.
+
+				monitor->NoteFileChanged( path );
+			}
+		}
+#endif
 
 		bool ChangeMonitor::WatchFolder( const BString & strFolder, bool bWatchSubtree )
 		{
 			Stop();
 
 			m_strFolderName = strFolder;
+			Bootil::String::Util::TrimRight( m_strFolderName, &separator );
+			Bootil::String::Util::FindAndReplace( m_strFolderName, BString( &separator ).append( &separator ), &separator );
+
 			m_bWatchSubtree = bWatchSubtree;
+
+#if defined( __APPLE__ ) && defined( __MACH__ )
+			if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber10_7)
+			{
+				Output::Msg("ChangeMonitor requires OS X 10.7 or later.\n");
+				return false;
+			}
+
+			CFStringRef dir = CFStringCreateWithCString( NULL, m_strFolderName.c_str(), kCFStringEncodingUTF8 );
+			CFArrayRef paths = CFArrayCreate( NULL, ( const void** )&dir, 1, NULL );
+			FSEventStreamContext ctx = { 0, this, NULL, NULL, NULL };
+			m_fsStreamRef = FSEventStreamCreate( NULL, &ChangeMonitor::HandleFSEvent, &ctx, paths, kFSEventStreamEventIdSinceNow, 0.1, kFSEventStreamCreateFlagFileEvents );
+			FSEventStreamScheduleWithRunLoop( m_fsStreamRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode );
+			FSEventStreamStart( m_fsStreamRef );
+
+			CFRelease( paths );
+			CFRelease( dir );
+#else
 
 			m_dirHandles = new std::vector<WatcherData>;
 
@@ -88,7 +154,7 @@ namespace Bootil
 
 			WatcherData watcherData;
 
-			watcherData.directory = strFolder;
+			watcherData.directory = m_strFolderName;
 #ifdef _WIN32
 			watcherData.directoryHandle = CreateFileA( watcherData.directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL );
 
@@ -96,7 +162,7 @@ namespace Bootil
 			watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
 
 			std::fill( watcherData.buffer, watcherData.buffer + 1024, 0 );
-#elif __linux__
+#elif defined( __linux__ )
 			int flags = IN_ATTRIB | IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO;
 			watcherData.handle = inotify_add_watch( m_inotify, watcherData.directory.c_str(), flags );
 
@@ -111,7 +177,7 @@ namespace Bootil
 			if ( m_bWatchSubtree )
 			{
 				Bootil::String::List directories;
-				RecurseDirectories( directories, strFolder );
+				RecurseDirectories( directories, m_strFolderName );
 				BOOTIL_FOREACH_CONST( directory, directories, Bootil::String::List )
 				{
 					WatcherData watcherData;
@@ -130,7 +196,7 @@ namespace Bootil
 					watcherData.overlapped.hEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
 
 					std::fill( watcherData.buffer, watcherData.buffer + 1024, 0 );
-#elif __linux__
+#elif defined( __linux__ )
 					watcherData.handle = inotify_add_watch( m_inotify, watcherData.directory.c_str(), flags );
 
 					if ( watcherData.handle < 0 )
@@ -140,7 +206,7 @@ namespace Bootil
 					( ( std::vector<WatcherData>* ) m_dirHandles )->push_back( watcherData );
 				}
 			}
-
+#endif
 			StartWatch();
 
 			return true;
@@ -157,19 +223,28 @@ namespace Bootil
 
 		void ChangeMonitor::Stop()
 		{
+#if defined( __APPLE__ ) && defined( __MACH__ )
+			if ( m_fsStreamRef )
+			{
+				FSEventStreamStop( m_fsStreamRef );
+				FSEventStreamInvalidate( m_fsStreamRef );
+				FSEventStreamRelease( m_fsStreamRef );
+				m_fsStreamRef = NULL;
+			}
+#else
 			if ( !m_dirHandles ) { return; }
-
-			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+			BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
 #ifdef _WIN32
 				CloseHandle( watcherData->directoryHandle );
 				watcherData->directoryHandle = NULL;
-#elif __linux__
+#elif defined( __linux__ )
 				inotify_rm_watch( m_inotify, watcherData->handle );
 #endif
 			}
 
 			delete ( std::vector<WatcherData>* ) m_dirHandles;
+#endif
 		}
 
 		bool ChangeMonitor::HasChanges()
@@ -189,10 +264,13 @@ namespace Bootil
 
 		void ChangeMonitor::CheckForChanges()
 		{
+#if defined( __APPLE__ ) && defined( __MACH__ )
+			CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0.01, true );
+#else
 			if ( !m_dirHandles ) { return; }
 
 #ifdef _WIN32
-			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+			BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
 				DWORD dwNumberBytes = 0;
 
@@ -246,7 +324,7 @@ namespace Bootil
 					ReadDirectoryChangesW( watcherData->directoryHandle, &watcherData->buffer, sizeof( watcherData->buffer ), m_bWatchSubtree, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_LAST_WRITE, NULL, &watcherData->overlapped, NULL );
 				}
 			}
-#elif __linux__
+#elif defined( __linux__ )
 			timeval tv;
 			tv.tv_sec = tv.tv_usec = 0;
 
@@ -271,7 +349,7 @@ namespace Bootil
 					std::vector<WatcherData>& watches = *( std::vector<WatcherData>* ) m_dirHandles;
 					WatcherFind find = {};
 					find.handle = event->wd;
-					std::vector<WatcherData>::const_iterator it = std::find_if(watches.begin(), watches.end(), find);
+					std::vector<WatcherData>::const_iterator it = std::find_if( watches.begin(), watches.end(), find );
 
 					if ( event->len > 0 && it != watches.end() )
 					{
@@ -297,12 +375,13 @@ namespace Bootil
 				}
 			}
 #endif
+#endif
 		}
 
 		void ChangeMonitor::StartWatch()
 		{
 #ifdef _WIN32
-			BOOTIL_FOREACH ( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
+			BOOTIL_FOREACH( watcherData, ( *( std::vector<WatcherData>* ) m_dirHandles ), std::vector<WatcherData> )
 			{
 				std::fill( watcherData->buffer, watcherData->buffer + 1024, 0 );
 
