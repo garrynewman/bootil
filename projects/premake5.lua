@@ -2,6 +2,7 @@ workspace "Bootil"
 	configurations { "Debug", "Release" }
 	platforms { "x32", "x64" }
 	targetdir ( "%{cfg.shortname}_%{cfg.system}" )
+	location ( os.host() .. "/" .. _ACTION )	
 	
 	filter "platforms:x32"
 		architecture "x32"
