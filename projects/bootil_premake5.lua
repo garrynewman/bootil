@@ -14,11 +14,11 @@ project "bootil_static"
 	staticruntime "On"
 	editandcontinue "Off"
 
-	if os.is( "linux" ) or os.is( "macosx" ) then
+	if os.istarget( "linux" ) or os.istarget( "macosx" ) then
 		buildoptions { "-fPIC" }
 	end
 
-	if os.is( "windows" ) then
+	if os.istarget( "windows" ) then
 		characterset "MBCS"
 	end
 
