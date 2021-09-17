@@ -2,6 +2,11 @@
 
 namespace Bootil
 {
+	namespace Threads 
+	{
+		class Thread;
+	}
+
 	namespace Compression
 	{
 		class BOOTIL_EXPORT Job
@@ -15,6 +20,12 @@ namespace Bootil
 				virtual float GetProgress() = 0;
 		};
 
+		class BOOTIL_EXPORT ThreadedJob : public Job
+		{
+		public:
+			virtual void JoinThread() = 0;
+		};
+
 		//
 		// You can use this class to get progress when extracting.
 		// Return false in OnProgress to cancel the process
@@ -24,6 +35,13 @@ namespace Bootil
 			public:
 
 				virtual bool OnProgress( float fPercent, unsigned int iDataSize, unsigned int iDataProcessed ) = 0;
+		};
+
+		class BOOTIL_EXPORT OutputFile
+		{
+		public:
+			virtual int Write(const void* pData, unsigned int iLenght) = 0;
+			virtual void End(bool success) = 0;
 		};
 
 		namespace FastLZ
@@ -43,6 +61,18 @@ namespace Bootil
 
 			// This sucks but I'm in a rush. TODO: Clean Up.
 			BOOTIL_EXPORT Job* ExtractInThread( const void* pData, unsigned int iLength, const Bootil::BString & strOutputFile );
+		}
+
+		namespace BZIP2
+		{
+			BOOTIL_EXPORT bool Compress(void* pData, unsigned int iLength, Bootil::Buffer& output, int iLevel = 8, int iWorkFactor = 30, ProgressCallback* pProgress = NULL);
+			BOOTIL_EXPORT bool Compress(void* pData, unsigned int iLength, OutputFile* output, int iLevel = 8, int iWorkFactor = 30, ProgressCallback* pProgress = NULL);
+
+			BOOTIL_EXPORT bool Extract(void* pData, unsigned int iLength, Bootil::Buffer& output, bool small = false, ProgressCallback* pProgress = NULL);
+			BOOTIL_EXPORT bool Extract(void* pData, unsigned int iLength, OutputFile* output, bool small = false, ProgressCallback* pProgress = NULL);
+
+			BOOTIL_EXPORT ThreadedJob* CompressInThread(void* pData, unsigned int iLength, OutputFile* output, int iLevel = 8, int iWorkFactor = 30);
+			BOOTIL_EXPORT ThreadedJob* ExtractInThread(void* pData, unsigned int iLength, OutputFile* output, bool small = false);
 		}
 
 		namespace GZip
