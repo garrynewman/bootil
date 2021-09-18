@@ -334,8 +334,6 @@ namespace Bootil
 					m_bFinished = true;
 					m_bSuccess = true;
 					Unlock();
-
-					printf("finished\n");
 				}
 			};
 
