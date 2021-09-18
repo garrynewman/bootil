@@ -259,9 +259,9 @@ namespace Bootil
 					return m_fProgress;
 				}
 
-				virtual void JoinThread()
+				virtual void Join()
 				{
-					Join();
+					Thread::Join();
 				}
 
 				virtual bool OnProgress(float fPercent, unsigned int iDataSize, unsigned int iDataProcessed)

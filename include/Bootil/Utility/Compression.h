@@ -23,7 +23,7 @@ namespace Bootil
 		class BOOTIL_EXPORT ThreadedJob : public Job
 		{
 		public:
-			virtual void JoinThread() = 0;
+			virtual void Join() = 0;
 		};
 
 		//
