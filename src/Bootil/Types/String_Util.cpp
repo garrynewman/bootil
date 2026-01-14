@@ -35,11 +35,10 @@ namespace Bootil
 
 			BOOTIL_EXPORT void Split( const BString & str, const BString & seperator, String::List & outbits )
 			{
-				BString strBit;
-				int iOffset = 0;
-				int iLength = str.length();
-				int iSepLen = seperator.length();
-				int i = str.find( seperator, 0 );
+				size_t iOffset = 0;
+				size_t iLength = str.length();
+				size_t iSepLen = seperator.length();
+				size_t i = str.find( seperator, 0 );
 
 				while ( i != std::string::npos )
 				{
@@ -96,18 +95,20 @@ namespace Bootil
 
 			BOOTIL_EXPORT void SplitLength( const BString & str, int iLength, String::List & outbits )
 			{
-				for (int i=0; i < str.length(); i += iLength )
+				for ( size_t i = 0; i < str.length(); i += iLength )
 				{
-					BString strPart = str.substr( i, Bootil::Min<int>( i + iLength, str.length() ) - i );
+					BString strPart = str.substr( i, Bootil::Min<size_t>( i + iLength, str.length() ) - i );
 					outbits.push_back( strPart );
 				}
 			}
 		}
 
-        BOOTIL_EXPORT void ToCharBuffer( const BString & str, char* pBuffer, int len )
+        BOOTIL_EXPORT void ToCharBuffer( const BString & str, char* pBuffer, size_t len )
         {
-            BAssert( len > str.length()+1 );
-            memcpy( pBuffer, str.c_str(), str.length()+1 );
+            if ( len < str.length() + 1 )
+                Bootil::Output::Error( "ToCharBuffer overflow!" );
+
+            memcpy( pBuffer, str.c_str(), str.length() + 1 );
         }
     }
 }

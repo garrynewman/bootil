@@ -37,9 +37,9 @@ namespace Bootil
 
 			bool Compress( const void* pData, unsigned int iLength, Bootil::Buffer & output )
 			{
-				int iStartPos = output.GetPos();
+				unsigned int iStartPos = output.GetPos();
 
-				if ( !output.EnsureCapacity( iStartPos + iLength * 1.5 ) )
+				if ( !output.EnsureCapacity( (unsigned int)(iStartPos + iLength * 1.5) ) )
 				{ return false; }
 
 				int iSize = fastlz_compress_level( 2, pData, iLength, output.GetCurrent() );
@@ -51,8 +51,13 @@ namespace Bootil
 				return true;
 			}
 
-			bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output )
+			bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, size_t maxOutLen )
 			{
+				if ( maxOutLen > 0 && iLength > maxOutLen )
+				{
+					return false;
+				}
+
 				if ( !output.EnsureCapacity( iLength ) )
 				{ return false; }
 
@@ -69,7 +74,14 @@ namespace Bootil
 					//
 					if ( ret == -1 )
 					{
-						if ( !output.EnsureCapacity( output.GetSize() * 1.20f ) )
+						unsigned int newSize = (unsigned int)( output.GetSize() * 1.2 );
+
+						if ( maxOutLen > 0 && newSize > maxOutLen )
+						{
+							return false;
+						}
+
+						if ( !output.EnsureCapacity( newSize ) )
 						{ return false; }
 
 						continue;

@@ -64,7 +64,7 @@ namespace Bootil
 				//
 				// Set the buffer pointers
 				//
-				unsigned int iEndPos = iStartPos + iDestSize + LZMA_PROPS_SIZE + 8;
+				size_t iEndPos = iStartPos + iDestSize + LZMA_PROPS_SIZE + 8;
 				output.SetWritten( iEndPos );
 				output.SetPos( iEndPos );
 				return true;
@@ -82,7 +82,7 @@ namespace Bootil
 				return true;
 			}
 
-			bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, ProgressCallback* pProgress )
+			bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, ProgressCallback* pProgress, size_t maxOutLen )
 			{
 				const unsigned char* pPropsBuf = ( unsigned char* ) pData;
 				const unsigned char* pSizeBuf = pPropsBuf + LZMA_PROPS_SIZE;
@@ -100,6 +100,11 @@ namespace Bootil
 				//
 				size_t iDestLen = pSizeBuf[0] | ( pSizeBuf[1] << 8 ) | ( pSizeBuf[2] << 16 ) | ( pSizeBuf[3] << 24 );
 				size_t iRealDestLen = iDestLen;
+
+				if ( maxOutLen > 0 && iDestLen > maxOutLen )
+				{
+					return false;
+				}
 
 				//
 				// TODO: Santity check?
@@ -162,12 +167,16 @@ namespace Bootil
 				{
 					OutputFile.open( output.c_str(), std::ios::binary | std::ios::out );
 
-					if ( !OutputFile.is_open() ) { return false; }
+					if ( !OutputFile.is_open() )
+					{
+						LzmaDec_Free( &state, &SzAllocForLzma );
+						return false;
+					}
 				}
 				unsigned int		iChunkSize		= 1024 * 256;
 				bool				bReturnStatus	= false;
-				unsigned int		iOutPos			= 0;
-				unsigned			inPos			= 0;
+				SizeT				iOutPos			= 0;
+				SizeT				inPos			= 0;
 				unsigned char*		pDestBuffer		= new unsigned char[ iChunkSize ];
 
 				while ( true )
@@ -208,7 +217,7 @@ namespace Bootil
 
 					if ( pProgress )
 					{
-						pProgress->OnProgress( (float)iOutPos / (float)iDestLen,  iDestLen, iOutPos );
+						pProgress->OnProgress( (float)iOutPos / (float)iDestLen, iDestLen, iOutPos );
 					}
 
 					inPos += iInputSize;
@@ -222,6 +231,7 @@ namespace Bootil
 				// Clean up
 				delete[] pDestBuffer;
 				LzmaDec_Free( &state, &SzAllocForLzma );
+
 				// Close the file. We're all done!
 				{
 					OutputFile.close();
@@ -248,6 +258,11 @@ namespace Bootil
 						m_bSuccess = false;
 						m_fProgress = 0.0f;
 						StartInThread();
+					}
+					
+					~ExtractionThread()
+					{
+						m_Buffer.Clear();
 					}
 
 					virtual void Run()

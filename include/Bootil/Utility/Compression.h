@@ -30,7 +30,7 @@ namespace Bootil
 		{
 			BOOTIL_EXPORT bool Is( const void* pData, unsigned int iLength );
 			BOOTIL_EXPORT bool Compress( const void* pData, unsigned int iLength, Bootil::Buffer & output );
-			BOOTIL_EXPORT bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output );
+			BOOTIL_EXPORT bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, size_t maxOutLen = 0 );
 
 			// This sucks but I'm in a rush. TODO: Clean Up.
 			BOOTIL_EXPORT Job* ExtractInThread( const void* pData, unsigned int iLength, unsigned int iTargetSize, const Bootil::BString & strOutputFile );
@@ -39,7 +39,7 @@ namespace Bootil
 		namespace LZMA
 		{
 			BOOTIL_EXPORT bool Compress( const void* pData, unsigned int iLength, Bootil::Buffer & output, int iLevel = 5, int iDictSize = 65536 );
-			BOOTIL_EXPORT bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, ProgressCallback* pProgress = NULL );
+			BOOTIL_EXPORT bool Extract( const void* pData, unsigned int iLength, Bootil::Buffer & output, ProgressCallback* pProgress = NULL, size_t maxOutLen = 0 );
 
 			// This sucks but I'm in a rush. TODO: Clean Up.
 			BOOTIL_EXPORT Job* ExtractInThread( const void* pData, unsigned int iLength, const Bootil::BString & strOutputFile );

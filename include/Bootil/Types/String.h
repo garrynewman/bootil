@@ -33,7 +33,7 @@ namespace Bootil
 			return os.str();
 		}
 
-        BOOTIL_EXPORT void ToCharBuffer( const BString & str, char* pBuffer, int len );
+        BOOTIL_EXPORT void ToCharBuffer( const BString & str, char* pBuffer, size_t len );
 
 		BOOTIL_EXPORT BString Random( int iSize, bool bLetters = true, bool bCapitals = false, bool bNumbers = false, bool Specials = false );
 
@@ -74,7 +74,7 @@ namespace Bootil
 			BOOTIL_EXPORT bool ContainsOnly( const BString & str, const BString & strContents );
 			BOOTIL_EXPORT bool ContainsAny( const BString & str, const BString & strContents );
 			BOOTIL_EXPORT bool Contains( const BString & strHaystack, const BString & strNeedle, bool IgnoreCaps = false );
-			BOOTIL_EXPORT bool Wildcard( BString strWildcard, BString strHaystack );
+			BOOTIL_EXPORT bool Wildcard( const BString & strWildcard, const BString & strHaystack );
 			BOOTIL_EXPORT bool ContainsChar( const BString & strHaystack, char c );
 			BOOTIL_EXPORT bool ICompare( const BString & strA, const BString & strB );
 			BOOTIL_EXPORT bool IsNumber( const BString & strA );
@@ -109,15 +109,15 @@ namespace Bootil
 			BOOTIL_EXPORT BString VarArgs( const char* s, va_list l );
 			BOOTIL_EXPORT BString Print( const char* fmt, ... );
 			BOOTIL_EXPORT WString Print( const wchar_t* fmt, ... );
-			BOOTIL_EXPORT BString Memory( int iBytes );
-			BOOTIL_EXPORT BString MemoryPerSecond( int iBytes );
+			BOOTIL_EXPORT BString Memory( unsigned long long iBytes );
+			BOOTIL_EXPORT BString MemoryPerSecond( unsigned long long iBytes );
 			BOOTIL_EXPORT BString YesNo( bool b );
 			BOOTIL_EXPORT BString CommaSeperatedInt( int i );
 			BOOTIL_EXPORT BString Time( const BString & strFormat = "%y-%m-%d %H-%M-%S", unsigned int iTime = 0 );
 			BOOTIL_EXPORT BString NiceFloat( float f );
 			BOOTIL_EXPORT BString NiceDouble( double f );
 			BOOTIL_EXPORT BString BinaryToHex( const void* pData, unsigned int iLength );
-			BOOTIL_EXPORT BString UInt64( unsigned long long iBytes );
+			BOOTIL_EXPORT BString UInt64( uint64_t iBytes );
 			BOOTIL_EXPORT BString Int( int iBytes );
 		}
 
@@ -128,7 +128,7 @@ namespace Bootil
 			BOOTIL_EXPORT double Double( const BString & str );
 			BOOTIL_EXPORT bool Floats( const BString & str, float* f, int iCount );
 			BOOTIL_EXPORT bool Bool( const BString & str ); // Converts true, false, yes, no, 0, 1
-			BOOTIL_EXPORT unsigned long long UInt64( const BString & str );
+			BOOTIL_EXPORT uint64_t UInt64( const BString & str );
 		}
 
 		namespace URL

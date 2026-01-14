@@ -1,4 +1,8 @@
+#define __STDC_FORMAT_MACROS
+
 #include "Bootil/Bootil.h"
+
+#include <inttypes.h>
 
 namespace Bootil
 {
@@ -40,23 +44,23 @@ namespace Bootil
 				return strOut;
 			}
 
-			BOOTIL_EXPORT BString Memory( int iBytes )
+			BOOTIL_EXPORT BString Memory( unsigned long long iBytes )
 			{
-				float gb = iBytes / 1024.0f / 1024.0f / 1024.0f;
+				double gb = iBytes / 1024.0f / 1024.0f / 1024.0f;
 
 				if ( gb >= 1.0 )
 				{
 					return Print( "%.1f GB", gb );
 				}
 
-				float mb = iBytes / 1024.0f / 1024.0f;
+				double mb = iBytes / 1024.0f / 1024.0f;
 
 				if ( mb >= 1.0 )
 				{
 					return Print( "%.1f MB", mb );
 				}
 
-				float kb = iBytes / 1024.0f;
+				double kb = iBytes / 1024.0f;
 
 				if ( kb >= 1.0 )
 				{
@@ -64,10 +68,10 @@ namespace Bootil
 				}
 
 				// return as bytes
-				return Print( "%i B", iBytes );
+				return Print( "%llu B", iBytes );
 			}
 
-			BOOTIL_EXPORT BString MemoryPerSecond( int iBytes )
+			BOOTIL_EXPORT BString MemoryPerSecond( unsigned long long iBytes )
 			{
 				return Memory( iBytes ) + "/s";
 			}
@@ -134,9 +138,9 @@ namespace Bootil
 				return str;
 			}
 
-			BOOTIL_EXPORT BString UInt64( unsigned long long iBytes )
+			BOOTIL_EXPORT BString UInt64( uint64_t iBytes )
 			{
-				return Print( "%llu", iBytes );
+				return Print( "%" SCNu64, iBytes );
 			}
 
 			BOOTIL_EXPORT BString Int( int iBytes )

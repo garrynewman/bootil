@@ -78,7 +78,7 @@ namespace Bootil
 				return false;
 			}
 
-			BOOTIL_EXPORT bool Wildcard( BString strWildcard, BString strHaystack )
+			BOOTIL_EXPORT bool Wildcard( const BString & strWildcard, const BString & strHaystack )
 			{
 				return globber( strWildcard.c_str(), strHaystack.c_str() );
 			}

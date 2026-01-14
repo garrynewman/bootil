@@ -16,8 +16,6 @@ namespace Bootil
 				typedef TreeT<TString>						ThisClass;
 				typedef typename std::list< ThisClass >		List;
 
-			public:
-
 				TreeT()
 				{
 					m_Info = 0;
@@ -206,6 +204,7 @@ namespace Bootil
 			while ( iNum > 0 )
 			{
 				AddChild();
+				iNum--;
 			}
 
 			return AddChild();

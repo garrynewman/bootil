@@ -38,7 +38,7 @@ namespace Bootil
 			{
 				BString strOut;
 
-				for ( int i = 0; i < strIn.length(); i++ )
+				for ( size_t i = 0; i < strIn.length(); i++ )
 				{
 					if ( ( 48 <= strIn[i] && strIn[i] <= 57 ) || ( 65 <= strIn[i] && strIn[i] <= 90 ) || ( 97 <= strIn[i] && strIn[i] <= 122 ) || ( strIn[i] == '~' || strIn[i] == '-' || strIn[i] == '_' || strIn[i] == '.' ) )
 					{

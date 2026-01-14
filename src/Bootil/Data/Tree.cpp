@@ -9,7 +9,7 @@ namespace Bootil
 
 		// Float
 		template<> template<> unsigned char Tree::VarID<float>() const						{ return 2; }
-		template<> template<> Bootil::BString Tree::VarToString( float var ) const			{ return Bootil::String::Format::NiceFloat( var );}
+		template<> template<> Bootil::BString Tree::VarToString( float var ) const			{ return Bootil::String::Format::NiceFloat( var ); }
 		template<> template<> float Tree::StringToVar( const Bootil::BString & var ) const	{ return Bootil::String::To::Float( var ); }
 
 		// int

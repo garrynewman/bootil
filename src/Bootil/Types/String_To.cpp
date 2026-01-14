@@ -1,4 +1,8 @@
+#define __STDC_FORMAT_MACROS
+
 #include "Bootil/Bootil.h"
+
+#include <inttypes.h>
 
 namespace Bootil
 {
@@ -13,10 +17,10 @@ namespace Bootil
 				return atoi( str.c_str() );
 			}
 
-			BOOTIL_EXPORT unsigned long long UInt64( const BString & str )
+			BOOTIL_EXPORT uint64_t UInt64( const BString & str )
 			{
-				unsigned long long val = 0;
-				sscanf( str.c_str(), "%llu", &val );
+				uint64_t val = 0;
+				sscanf( str.c_str(), "%" SCNu64, &val );
 				return val;
 			}
 
@@ -39,9 +43,7 @@ namespace Bootil
 				if ( str.size() == 0 ) { return false; }
 
 				if ( str[0] == 'T' || str[0] == 't' || str[0] == 'y' || str[0] == 'Y' ) { return true; }
-
 				if ( str[0] == 'F' || str[0] == 'f' || str[0] == 'n' || str[0] == 'N' ) { return false; }
-
 				if ( str[0] == '0' ) { return false; }
 
 				return true;
