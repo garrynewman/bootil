@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 //
 // Original function alters passed string - we define a Get# version of that
 // function which returns the result instead - leaving the original string untouched.
