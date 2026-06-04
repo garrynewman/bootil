@@ -117,7 +117,7 @@ namespace Bootil
 			BOOTIL_EXPORT BString NiceFloat( float f );
 			BOOTIL_EXPORT BString NiceDouble( double f );
 			BOOTIL_EXPORT BString BinaryToHex( const void* pData, unsigned int iLength );
-			BOOTIL_EXPORT BString UInt64( uint64_t iBytes );
+			BOOTIL_EXPORT BString UInt64( unsigned long long iBytes );
 			BOOTIL_EXPORT BString Int( int iBytes );
 		}
 
@@ -128,7 +128,7 @@ namespace Bootil
 			BOOTIL_EXPORT double Double( const BString & str );
 			BOOTIL_EXPORT bool Floats( const BString & str, float* f, int iCount );
 			BOOTIL_EXPORT bool Bool( const BString & str ); // Converts true, false, yes, no, 0, 1
-			BOOTIL_EXPORT uint64_t UInt64( const BString & str );
+			BOOTIL_EXPORT unsigned long long UInt64( const BString & str );
 		}
 
 		namespace URL

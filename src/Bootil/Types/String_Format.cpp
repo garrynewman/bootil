@@ -1,8 +1,5 @@
-#define __STDC_FORMAT_MACROS
 
 #include "Bootil/Bootil.h"
-
-#include <inttypes.h>
 
 namespace Bootil
 {
@@ -138,9 +135,9 @@ namespace Bootil
 				return str;
 			}
 
-			BOOTIL_EXPORT BString UInt64( uint64_t iBytes )
+			BOOTIL_EXPORT BString UInt64( unsigned long long iBytes )
 			{
-				return Print( "%" SCNu64, iBytes );
+				return Print( "%llu", iBytes );
 			}
 
 			BOOTIL_EXPORT BString Int( int iBytes )
